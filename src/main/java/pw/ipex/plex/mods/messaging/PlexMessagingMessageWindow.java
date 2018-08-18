@@ -20,6 +20,7 @@ public final class PlexMessagingMessageWindow extends GuiScreen {
 	public int paddingBottom = 5;
 	public int paddingLeft = 0;
 	public int paddingRight = 0;
+	public int paddingRightWithScrollbar = 0;
 	
 	public int renderBorderTop = 5;
 	public int renderBorderBottom = 5;
@@ -78,11 +79,11 @@ public final class PlexMessagingMessageWindow extends GuiScreen {
 	}
 	
 	public int getChatAreaWidth() {
-		return this.endX - this.startX - (this.scrollbar.barVisible() ? 8 : 0) - this.paddingLeft - this.paddingRight;
+		return this.getChatEndX() - this.getChatStartX();
 	}
 	
 	public int getChatAreaHeight() {
-		return this.endY - this.startY - this.paddingTop - this.paddingBottom;
+		return this.getChatEndY() - this.getChatStartY();
 	}
 	
 	public int getChatStartX() {
@@ -90,7 +91,7 @@ public final class PlexMessagingMessageWindow extends GuiScreen {
 	}
 	
 	public int getChatEndX() {
-		return this.endX - this.paddingRight;
+		return this.endX - (this.scrollbar.barVisible() ? 8 + this.paddingRightWithScrollbar : this.paddingRight); //this.endX - this.paddingRight - (this.scrollbar.barVisible() ? 8 : 0);
 	}
 	
 	public int getChatStartY() {
@@ -98,7 +99,7 @@ public final class PlexMessagingMessageWindow extends GuiScreen {
 	}
 	
 	public int getChatEndY() {
-		return this.endX - this.paddingBottom;
+		return this.endY - this.paddingBottom; //this.endX - this.paddingBottom;
 	}
 	
 	public int getRenderBorderTop() {
@@ -138,7 +139,7 @@ public final class PlexMessagingMessageWindow extends GuiScreen {
 	}
 	
 	public int getDefaultBackdropSizeByScaledTextHeight(int textHeight, float scale) {
-		return (int) ((textHeight * scale) / this.messageContentPaddingPercent);
+		return (int) ((textHeight * scale) + this.getYPaddingByTextHeight((int) (Plex.minecraft.fontRendererObj.FONT_HEIGHT * scale)) * 2) ;
 	}
 	
 	public int addToNonZero(int number, int add) {
@@ -146,10 +147,18 @@ public final class PlexMessagingMessageWindow extends GuiScreen {
 	}
 	
 	public boolean channelContainsHeads() {
+		if (this.displayedChannel == null) {
+			return false;
+		}
+		for (PlexMessagingMessage message : this.displayedChannel.channelMessages) {
+			if (message.playerHead != null) {
+				return true;
+			}
+		}
 		return false;
 	}
 	
-	public PlexMessagingMessageRenderData calculateMessageRenderData(PlexMessagingMessage message, boolean includeAuthor) {
+	public PlexMessagingMessageRenderData calculateMessageRenderData(PlexMessagingMessage message, PlexMessagingMessageRenderState renderState) {
 		int maxWidth = 0;
 		int totalHeight = 0;
 		List<String> textLines = new ArrayList<String>();
@@ -159,9 +168,12 @@ public final class PlexMessagingMessageWindow extends GuiScreen {
 		if (message.type == message.TYPE_CHAT_MESSAGE) {
 			int backdropWidth = 0;
 			renderData.displayBackdrop = true;
-			int authorExtra = includeAuthor ? (int)(Plex.minecraft.fontRendererObj.FONT_HEIGHT * this.authorTextScale) + this.messageAuthorSeparator : 0;
-			int playerHeadExtra = message.playerHead == null ? 0 : getDefaultBackdropSizeByScaledTextHeight(Plex.minecraft.fontRendererObj.FONT_HEIGHT, this.messageTextScale) + this.playerHeadMessageSpacing;
-			renderData.authorVisible = includeAuthor;
+			boolean headsShown = renderState.RENDER_HEADS_SHOWN;
+			int authorExtra = renderState.RENDER_AUTHOR_ENABLED ? (int)(Plex.minecraft.fontRendererObj.FONT_HEIGHT * this.authorTextScale) + this.messageAuthorSeparator : 0;
+			int authorWidth = renderState.RENDER_AUTHOR_ENABLED ? PlexCoreRenderUtils.calculateScaledStringWidth(message.fromUser, this.authorTextScale) : 0;
+			int playerHeadExtra = !headsShown ? 0 : getDefaultBackdropSizeByScaledTextHeight(Plex.minecraft.fontRendererObj.FONT_HEIGHT, this.messageTextScale) + this.playerHeadMessageSpacing;
+			renderData.headsShown = headsShown;
+			renderData.authorVisible = renderState.RENDER_AUTHOR_ENABLED;
 			renderData.authorName = message.fromUser;
 			renderData.authorScale = this.authorTextScale;
 			totalHeight += authorExtra;
@@ -188,7 +200,7 @@ public final class PlexMessagingMessageWindow extends GuiScreen {
 			renderData.authorY = 0;
 			if (message.position == message.POSITION_LEFT) {
 				renderData.relativeX = 0;
-				if (message.playerHead == null) {
+				if (message.playerHead == null || !renderState.RENDER_HEADS_SHOWN) {
 					maxWidth = backdropWidth;
 					renderData.textBackdropX = 0;
 				}
@@ -197,14 +209,19 @@ public final class PlexMessagingMessageWindow extends GuiScreen {
 					maxWidth = backdropWidth + headSize + this.playerHeadMessageSpacing;
 					renderData.authorX = headSize + this.playerHeadMessageSpacing;
 					renderData.textBackdropX = headSize + this.playerHeadMessageSpacing;
-					renderData.playerHead = message.playerHead;
-					renderData.playerHeadSize = headSize;
-					renderData.playerHeadX = 0;
-					renderData.playerHeadY = authorExtra;
+					if (renderState.RENDER_HEAD_ENABLED) {
+						renderData.playerHead = message.playerHead;
+						renderData.playerHeadSize = headSize;
+						renderData.playerHeadX = 0;
+						renderData.playerHeadY = authorExtra;						
+					}
 				}
 			}
 			else if (message.position == message.POSITION_RIGHT) {
-				if (message.playerHead == null) {
+				if (authorWidth > backdropWidth) {
+					renderData.authorX -= authorWidth - backdropWidth;
+				}
+				if (message.playerHead == null || !renderState.RENDER_HEADS_SHOWN) {
 					maxWidth = backdropWidth;
 					renderData.relativeX = 0 - backdropWidth;
 					renderData.textBackdropX = 0;
@@ -214,10 +231,12 @@ public final class PlexMessagingMessageWindow extends GuiScreen {
 					maxWidth = backdropWidth + this.playerHeadMessageSpacing + headSize;
 					renderData.relativeX = 0 - backdropWidth - this.playerHeadMessageSpacing - headSize;
 					renderData.textBackdropX = 0;
-					renderData.playerHead = message.playerHead;
-					renderData.playerHeadSize = headSize;
-					renderData.playerHeadX = backdropWidth + this.playerHeadMessageSpacing;
-					renderData.playerHeadY = authorExtra;
+					if (renderState.RENDER_HEAD_ENABLED) {
+						renderData.playerHead = message.playerHead;
+						renderData.playerHeadSize = headSize;
+						renderData.playerHeadX = backdropWidth + this.playerHeadMessageSpacing;
+						renderData.playerHeadY = authorExtra;						
+					}
 				}
 			}
 		}
@@ -247,13 +266,14 @@ public final class PlexMessagingMessageWindow extends GuiScreen {
 		return renderData;
 	}
 	
-	public PlexMessagingMessageRenderData getRenderData(PlexMessagingMessage message, boolean showAuthor) {
+	public PlexMessagingMessageRenderData getRenderData(PlexMessagingMessage message, PlexMessagingMessageRenderState renderState) {
 		if (message.cachedRenderData != null) {
-			if (message.cachedRenderData.authorVisible == showAuthor) {
+			if (message.cachedRenderData.renderState.matches(renderState)) {
 				return message.cachedRenderData;
 			}
 		}
-		message.cachedRenderData = this.calculateMessageRenderData(message, showAuthor);
+		message.cachedRenderData = this.calculateMessageRenderData(message, renderState);
+		message.cachedRenderData.renderState = renderState;
 		return message.cachedRenderData;
 	}
 	
@@ -263,10 +283,15 @@ public final class PlexMessagingMessageWindow extends GuiScreen {
 		if (this.displayedChannel == null) {
 			return 0;
 		}
+		boolean headsEnabled = this.channelContainsHeads();
 		for (PlexMessagingMessage message : this.displayedChannel.channelMessages) {
+			PlexMessagingMessageRenderState messageState = new PlexMessagingMessageRenderState();
+			messageState.setHeadsShown(headsEnabled);
 			if (message.type == message.TYPE_SYSTEM_MESSAGE) {
+				messageState.setAuthorEnabled(false);
+				messageState.setHeadEnabled(false);
 				totalHeight = this.addToNonZero(totalHeight, this.messageSpacingDifferentAuthor);
-				totalHeight += this.getRenderData(message, false).totalHeight;
+				totalHeight += this.getRenderData(message, messageState).totalHeight;
 				lastUser = null;
 			}
 			if (message.type == message.TYPE_CHAT_MESSAGE) {
@@ -276,8 +301,10 @@ public final class PlexMessagingMessageWindow extends GuiScreen {
 						author = false;
 					}
 				}
+				messageState.setAuthorEnabled(author);
+				messageState.setHeadEnabled(false);
 				totalHeight = this.addToNonZero(totalHeight, author ? this.messageSpacingDifferentAuthor : this.messageSpacingSameAuthor);
-				totalHeight += this.getRenderData(message, author).totalHeight;
+				totalHeight += this.getRenderData(message, messageState).totalHeight;
 				lastUser = message.fromUser;
 			}
 		}
@@ -291,37 +318,44 @@ public final class PlexMessagingMessageWindow extends GuiScreen {
 
 		int totalHeight = 0;
 		//for (int i = this.displayedChannel.channelMessages.size() - 1; i >= 0 ; i--) {
+		boolean headsEnabled = this.channelContainsHeads();
 		for (int i = 0; i < this.displayedChannel.channelMessages.size(); i++) {
 			PlexMessagingMessage previousMessage = i - 1 >= 0 ? this.displayedChannel.channelMessages.get(i - 1) : null;
 			PlexMessagingMessage message = this.displayedChannel.channelMessages.get(i);
+			PlexMessagingMessageRenderState messageState = new PlexMessagingMessageRenderState();
+			messageState.setHeadsShown(headsEnabled);
 			boolean renderItem = false;
 			boolean author = false;
 			if (message.type == message.TYPE_SYSTEM_MESSAGE) {
 				renderItem = true;
+				messageState.setAuthorEnabled(false);
+				messageState.setHeadEnabled(false);
 				totalHeight = this.addToNonZero(totalHeight, this.messageSpacingDifferentAuthor);
-				totalHeight += this.getRenderData(message, false).totalHeight;
+				//totalHeight += this.getRenderData(message, messageState).totalHeight;
 			}
 			if (message.type == message.TYPE_CHAT_MESSAGE) {
 				renderItem = true;
 				author = true;
 				if (previousMessage != null) {
-					if (previousMessage.fromUser.equals(message.fromUser)) {
+					if (previousMessage.fromUser.equals(message.fromUser) && previousMessage.position.equals(message.position)) {
 						author = false;
 					}
 				}
+				messageState.setAuthorEnabled(author);
+				messageState.setHeadEnabled(author);
 				totalHeight = this.addToNonZero(totalHeight, author ? this.messageSpacingDifferentAuthor : this.messageSpacingSameAuthor);
 			}
 			if (renderItem) {
-				int itemTotalHeight = this.getRenderData(message, author).totalHeight;
+				int itemTotalHeight = this.getRenderData(message, messageState).totalHeight;
 				totalHeight += itemTotalHeight;
 			}
 		}
 		return totalHeight;
 	}
 	
-	public int drawMessage(PlexMessagingMessage message, int positionY, boolean showAuthor) {
-		PlexMessagingMessageRenderData renderData = this.getRenderData(message, showAuthor);
-		if (renderData.playerHead != null) {
+	public int drawMessage(PlexMessagingMessage message, int positionY, PlexMessagingMessageRenderState messageState) {
+		PlexMessagingMessageRenderData renderData = this.getRenderData(message, messageState);
+		if (renderData.playerHead != null && messageState.RENDER_HEAD_ENABLED) {
 			int headX = renderData.getItemXPosition(this.getChatStartX(), this.getChatEndX(), renderData.playerHeadX);
 			int headY = renderData.getItemYPosition(positionY, renderData.playerHeadY);
 			if (headY + renderData.playerHeadSize > this.getRenderBorderTop() && headY < this.getRenderBorderBottom()) {
@@ -341,7 +375,7 @@ public final class PlexMessagingMessageWindow extends GuiScreen {
 			}
 			PlexCoreRenderUtils.staticDrawGradientRect(bdStartX, bdTop, bdEndX, bdBottom, renderData.backdropColour, renderData.backdropColour);
 		}
-		if (renderData.authorVisible) {
+		if (renderData.authorVisible && messageState.RENDER_AUTHOR_ENABLED) {
 			int authorX = renderData.getItemXPosition(this.getChatStartX(), this.getChatEndX(), renderData.authorX);
 			int authorY = renderData.getItemYPosition(positionY, renderData.authorY);
 			if (authorY + (Plex.minecraft.fontRendererObj.FONT_HEIGHT * renderData.authorScale) > this.getRenderBorderTop() && authorY < this.getRenderBorderBottom()) {
@@ -372,33 +406,44 @@ public final class PlexMessagingMessageWindow extends GuiScreen {
 		int viewportTop = (int)(scrollRange * this.scrollbar.scrollValue + 0);
 		//int viewportBottom = (int)(scrollRange * this.scrollbar.scrollValue + this.getChatAreaHeight());
 		int currentY = 0;
+		PlexCoreRenderUtils.drawScaledString("" + totalHeight, this.getChatStartX() + 5, this.getChatStartY() + 5, 0xffffff, 0.5F, false);
+		PlexCoreRenderUtils.drawScaledString("" + scrollRange, this.getChatStartX() + 5, this.getChatStartY() + 15, 0xffffff, 0.5F, false);
+		PlexCoreRenderUtils.drawScaledString("" + viewportTop, this.getChatStartX() + 5, this.getChatStartY() + 20, 0xffffff, 0.5F, false);
+		PlexCoreRenderUtils.drawScaledString("" + this.getChatAreaHeight(), this.getChatStartX() + 5, this.getChatStartY() + 25, 0xffffff, 0.5F, false);
+		boolean headsEnabled = this.channelContainsHeads();
 		for (int i = 0; i < this.displayedChannel.channelMessages.size(); i++) {
 			PlexMessagingMessage previousMessage = i - 1 >= 0 ? this.displayedChannel.channelMessages.get(i - 1) : null;
 			PlexMessagingMessage message = this.displayedChannel.channelMessages.get(i);
+			PlexMessagingMessageRenderState messageState = new PlexMessagingMessageRenderState();
+			messageState.setHeadsShown(headsEnabled);
 			boolean renderItem = false;
 			boolean author = false;
 			if (message.type == message.TYPE_SYSTEM_MESSAGE) {
 				renderItem = true;
+				messageState.setAuthorEnabled(false);
+				messageState.setHeadEnabled(false);
 				currentY = this.addToNonZero(currentY, this.messageSpacingDifferentAuthor);
-				currentY += this.getRenderData(message, false).totalHeight;
+				//currentY += this.getRenderData(message, false).totalHeight;
 			}
 			if (message.type == message.TYPE_CHAT_MESSAGE) {
 				renderItem = true;
 				author = true;
 				if (previousMessage != null) {
-					if (previousMessage.fromUser.equals(message.fromUser)) {
+					if (previousMessage.fromUser.equals(message.fromUser) && previousMessage.position.equals(message.position)) {
 						author = false;
 					}
 				}
+				messageState.setAuthorEnabled(author);
+				messageState.setHeadEnabled(author);
 				currentY = this.addToNonZero(currentY, author ? this.messageSpacingDifferentAuthor : this.messageSpacingSameAuthor);
 			}
 			if (renderItem) {
 				int itemStartY = this.getChatStartY() + (currentY - viewportTop);
-				int itemTotalHeight = this.getRenderData(message, author).totalHeight;
+				int itemTotalHeight = this.getRenderData(message, messageState).totalHeight;
 				int itemEndY = itemStartY + itemTotalHeight;
 				currentY += itemTotalHeight;
 				if (itemEndY > this.getRenderBorderTop() && itemStartY < this.getRenderBorderBottom()) {
-					this.drawMessage(message, itemStartY, author);
+					this.drawMessage(message, itemStartY, messageState);
 				}
 			}
 		}

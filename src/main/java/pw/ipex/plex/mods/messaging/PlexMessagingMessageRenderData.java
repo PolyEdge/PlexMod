@@ -22,6 +22,7 @@ public class PlexMessagingMessageRenderData {
 	public int playerHeadX = 0;
 	public int playerHeadY = 0;
 	public int playerHeadSize = 0;
+	public boolean headsShown = false;
 	
 	public int textBackdropX = 0;
 	public int textBackdropY = 0;
@@ -31,6 +32,8 @@ public class PlexMessagingMessageRenderData {
 	
 	public int textColour = 0xffffff;
 	public int backdropColour = 0x85454545;
+	
+	public PlexMessagingMessageRenderState renderState = new PlexMessagingMessageRenderState();
 	
 	public PlexMessagingMessageRenderData() {
 		this.textLines = new ArrayList<PlexMessagingMessageTextData>();

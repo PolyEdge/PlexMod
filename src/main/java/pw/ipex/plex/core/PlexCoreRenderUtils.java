@@ -68,11 +68,12 @@ public class PlexCoreRenderUtils extends GuiScreen {
 	}
 	
 	public static void drawPlayerHead(String username, int x, int y, int size) {
-		PlexCoreRenderUtils.drawPlayerHead(username, x, y, size);
+		PlexCoreRenderUtils.drawPlayerHead(PlexCoreUtils.getSkin(username), x, y, size);
 	}
 
 	public static void drawPlayerHead(ResourceLocation playerSkin, int x, int y, int size) {
 		Plex.minecraft.renderEngine.bindTexture(playerSkin);
+		GL11.glPushMatrix();
 		GlStateManager.disableDepth();
         GlStateManager.disableColorLogic();
         GlStateManager.enableTexture2D();
@@ -80,6 +81,7 @@ public class PlexCoreRenderUtils extends GuiScreen {
 		GlStateManager.disableCull();
 		GuiScreen.drawScaledCustomSizeModalRect(x, y, 8.0F, 8.0F, 8, 8, size, size, 64.0F, 64.0F);
 		GuiScreen.drawScaledCustomSizeModalRect(x, y, 40.0F, 8.0F, 8, 8, size, size, 64.0F, 64.0F);
+		GL11.glPopMatrix();
 	}
 
 	public static void drawScaledGradientRect(int startX, int startY, int endX, int endY, float scale, int colour1, int colour2) {
