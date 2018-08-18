@@ -59,7 +59,11 @@ public class PlexMessagingMod extends PlexModBase {
 			List<String> messageCi = PlexCoreChatRegex.determineRegularMessageData(chatMessageContent);
 			if (!(messageCi == null)) {
 				PlexMessagingPartyChatChannel partyChannel = (PlexMessagingPartyChatChannel) channelManager.getChannel("@Party");
-				partyChannel.addAgressiveMessage(new PlexMessagingMessage().setChatMessage().setContent(PlexCoreChatRegex.getMessageField(messageCi, "message")).setLeft().setNow().setUser(PlexCoreChatRegex.getMessageField(messageCi, "ign")).setColour(0xffe820e8));
+				PlexMessagingMessage message = new PlexMessagingMessage().setChatMessage().setContent(PlexCoreChatRegex.getMessageField(messageCi, "message")).setNow().setUser(PlexCoreChatRegex.getMessageField(messageCi, "ign")).setColour(0xffe820e8).setLeft();
+				if (PlexCoreChatRegex.getMessageField(messageCi, "ign").equalsIgnoreCase(PlexCore.getPlayerIGN())) {
+					message.setRight();
+				}
+				partyChannel.addAgressiveMessage(message);
 				channelManager.bumpChannelToTop(partyChannel);		
 			}
 		}

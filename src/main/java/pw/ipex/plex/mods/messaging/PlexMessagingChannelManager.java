@@ -61,6 +61,14 @@ public class PlexMessagingChannelManager {
 		this.setSelectedChannel((PlexMessagingChannelBase) null);
 	}
 	
+	public void deleteMessageRenderCache() {
+		for (PlexMessagingChannelBase channel : this.channels) {
+			for (PlexMessagingMessage message : channel.channelMessages) {
+				message.cachedRenderData = null;
+			}
+		}
+	}
+	
 	public void bumpChannelToTop(PlexMessagingChannelBase channel) {
 		List<PlexMessagingChannelBase> remove = new ArrayList<PlexMessagingChannelBase>();
 		remove.add(channel);

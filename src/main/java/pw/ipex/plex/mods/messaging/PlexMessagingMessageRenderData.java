@@ -9,8 +9,13 @@ public class PlexMessagingMessageRenderData {
 	
 	public int totalHeight = 0;
 	public int maxWidth = 0;
+	
 	public String authorName = "";
 	public boolean authorVisible = false;
+	public int authorX = 0;
+	public int authorY = 0;
+	public float authorScale = 1.0F;
+	
 	public List<PlexMessagingMessageTextData> textLines;
 	
 	public String playerHead = null;
@@ -31,13 +36,14 @@ public class PlexMessagingMessageRenderData {
 		this.textLines = new ArrayList<PlexMessagingMessageTextData>();
 	}
 	
-	public void addTextLine(String text, float scale, int x, int y, int width) {
+	public void addTextLine(String text, float scale, int x, int y, int width, int colour) {
 		PlexMessagingMessageTextData textData = new PlexMessagingMessageTextData();
 		textData.text = text;
 		textData.scale = scale;
 		textData.x = x;
 		textData.y = y;
 		textData.width = width;
+		textData.colour = colour;
 		this.textLines.add(textData);
 	}
 	
@@ -45,7 +51,10 @@ public class PlexMessagingMessageRenderData {
 		if (this.relativeX == null) {
 			return startX + ((endX - startX) / 2);
 		}
-		return startX + (this.relativeX % (endX - startX));
+		if (this.relativeX < 0) {
+			return endX + this.relativeX;
+		}
+		return startX + this.relativeX;
 	}
 
 	public int getYPosition(int yPos) {

@@ -9,12 +9,12 @@ public class PlexMessagingMessage {
 	public int POSITION_LEFT = 0;
 	public int POSITION_RIGHT = 1;
 	
-	public Integer type;
-	public String content;
-	public Integer colour;
-	public Integer backgroundColour;
-	public String fromUser;
-	public Long time;
+	public Integer type = 0;
+	public String content = "";
+	public Integer colour = 0xb5b5b5;
+	public Integer backgroundColour = 0x65757575;
+	public String fromUser = "";
+	public Long time = 0L;
 	public Integer position = 0;
 	public String playerHead = null;
 	

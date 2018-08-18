@@ -8,6 +8,7 @@ public class PlexMessagingMessageTextData {
 	public int x = 0;
 	public int y = 0;
 	public int width = 0;
+	public int colour = 0xffffff;
 	
 	public int getHeight() {
 		return (int) (this.scale * Plex.minecraft.fontRendererObj.FONT_HEIGHT);
