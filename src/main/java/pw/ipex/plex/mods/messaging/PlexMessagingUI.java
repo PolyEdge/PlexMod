@@ -107,17 +107,17 @@ public class PlexMessagingUI extends PlexUIBase {
 		//	PlexMessagingMod.channelManager.addChannel(pchannel);
 		//}
 		
-		if (PlexMessagingMod.channelManager.selectedChannel != null) {
-			for (int i = 0; i < 8; i++) {
-				PlexMessagingPartyChatChannel partyChannel = (PlexMessagingPartyChatChannel) PlexMessagingMod.channelManager.getChannel("@Party");
-				PlexMessagingMessage message = new PlexMessagingMessage().setChatMessage().setContent("Message - " + Minecraft.getSystemTime()).setNow().setUser("system").setColour(0xffe820e8).setLeft();
-				if (i % 2 == 0) {
-					message.setRight().setContent("Reply - " + Minecraft.getSystemTime());
-				}
-				partyChannel.addAgressiveMessage(message);
-				PlexMessagingMod.channelManager.bumpChannelToTop(partyChannel);		
-			}			
-		}
+//		if (PlexMessagingMod.channelManager.selectedChannel != null) {
+//			for (int i = 0; i < 8; i++) {
+//				PlexMessagingPartyChatChannel partyChannel = (PlexMessagingPartyChatChannel) PlexMessagingMod.channelManager.getChannel("@Party");
+//				PlexMessagingMessage message = new PlexMessagingMessage().setChatMessage().setContent("Message - " + Minecraft.getSystemTime()).setNow().setUser("system").setColour(0xffe820e8).setLeft();
+//				if (i % 2 == 0) {
+//					message.setRight().setContent("Reply - " + Minecraft.getSystemTime());
+//				}
+//				partyChannel.addAgressiveMessage(message);
+//				PlexMessagingMod.channelManager.bumpChannelToTop(partyChannel);		
+//			}			
+//		}
 	}
 	
 	public Integer getContactsPaneSize() {

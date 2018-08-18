@@ -31,7 +31,7 @@ public class PlexMessagingMod extends PlexModBase {
 	    toggleChatUI = new KeyBinding("Open Chat UI", 157, "Plex Mod");
 	    ClientRegistry.registerKeyBinding(toggleChatUI);
 	    
-	    PlexCore.registerUiTab("DMs", PlexMessagingUI.class);
+	    PlexCore.registerUiTab("Messaging", PlexMessagingUI.class);
 	}
 
 	@Override
@@ -59,7 +59,7 @@ public class PlexMessagingMod extends PlexModBase {
 			List<String> messageCi = PlexCoreChatRegex.determineRegularMessageData(chatMessageContent);
 			if (!(messageCi == null)) {
 				PlexMessagingPartyChatChannel partyChannel = (PlexMessagingPartyChatChannel) channelManager.getChannel("@Party");
-				PlexMessagingMessage message = new PlexMessagingMessage().setChatMessage().setContent(PlexCoreChatRegex.getMessageField(messageCi, "message")).setNow().setUser(PlexCoreChatRegex.getMessageField(messageCi, "ign")).setColour(0xffe820e8).setLeft().setHead(PlexCore.getPlayerIGN());
+				PlexMessagingMessage message = new PlexMessagingMessage().setChatMessage().setContent(PlexCoreChatRegex.getMessageField(messageCi, "message")).setNow().setUser(PlexCoreChatRegex.getMessageField(messageCi, "ign")).setColour(0xffe820e8).setLeft().setHead(PlexCoreChatRegex.getMessageField(messageCi, "ign"));
 				if (PlexCoreChatRegex.getMessageField(messageCi, "ign").equalsIgnoreCase(PlexCore.getPlayerIGN())) {
 					message.setRight();
 				}
