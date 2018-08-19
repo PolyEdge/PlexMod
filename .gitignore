@@ -3,6 +3,7 @@ bin/
 .settings/
 .classpath
 .project
+/eclipse
 *.launch
 
 # Gradle/ForgeGradle files
