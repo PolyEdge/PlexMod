@@ -37,14 +37,6 @@ public class PlexMessagingMod extends PlexModBase {
 	@Override
 	public void saveModConfig() {
 	}
-
-	public void joinedMineplex() {
-		MinecraftForge.EVENT_BUS.register(this);
-	}
-	
-	public void leftMineplex() {
-		MinecraftForge.EVENT_BUS.unregister(this);
-	}
 	
 	@SubscribeEvent
 	public void onChat(ClientChatReceivedEvent event) {
