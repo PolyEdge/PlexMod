@@ -158,10 +158,9 @@ public class PlexAutoThankMod extends PlexModBase {
 		this.modSetting("autoThank_enabled", false).set(this.modEnabled.booleanValue);
 	}
 
-	public void joinedMineplex() {
-		MinecraftForge.EVENT_BUS.register(this);
-	}
-	
+
+
+	@Override
 	public void leftMineplex() {
 		MinecraftForge.EVENT_BUS.unregister(this);
 		thankQueue.clear();

@@ -64,14 +64,6 @@ public class PlexFriendsListEnhancementsMod extends PlexModBase {
 		PlexCore.registerUiTab("Friends", PlexFriendsListEnhancementsUI.class);
 	}
 	
-	public void joinedMineplex() {
-		MinecraftForge.EVENT_BUS.register(this);
-	}
-	
-	public void leftMineplex() {
-		MinecraftForge.EVENT_BUS.unregister(this);
-	}
-	
 	@SubscribeEvent
 	public void onChat(final ClientChatReceivedEvent e) {
 		if (!PlexCoreUtils.isChatMessage(e.type)) {
