@@ -3,7 +3,7 @@
 
 # Plex Mod
 
-Plex Mod is a mod for Minecraft that provides several useful features for playing on the popular Mineplex server. 
+Plex Mod is a mod for Minecraft that provides several useful QoL features for playing on the popular Mineplex server.
 
 ## Installing the Mod
 
