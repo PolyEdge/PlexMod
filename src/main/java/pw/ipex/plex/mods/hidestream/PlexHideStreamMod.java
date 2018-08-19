@@ -164,14 +164,6 @@ public class PlexHideStreamMod extends PlexModBase {
 			}
 		}
 	}
-
-	public void joinedMineplex() {
-		MinecraftForge.EVENT_BUS.register(this);
-	}
-	
-	public void leftMineplex() {
-		MinecraftForge.EVENT_BUS.unregister(this);
-	}
 	
 	@Override
 	public void saveModConfig() {

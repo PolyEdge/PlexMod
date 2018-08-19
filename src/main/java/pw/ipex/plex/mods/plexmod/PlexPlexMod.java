@@ -73,12 +73,10 @@ public class PlexPlexMod extends PlexModBase {
 	}
 
 	@Override
-	public void joinedMineplex() {
-	}
+	public void joinedMineplex() { }
 
 	@Override
-	public void leftMineplex() {
-	}
+	public void leftMineplex() { }
 
 	@Override
 	public void switchedLobby(String name) {
