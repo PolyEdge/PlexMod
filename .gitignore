@@ -1,7 +1,10 @@
-/exclude
-/run
-/build
-/.classpath
-/eclipse
-/bin
-/.gradle
+# Eclipse files
+.settings/
+.classpath
+.project
+*.launch
+
+# Gradle/ForgeGradle files
+.gradle/
+build/
+run/
