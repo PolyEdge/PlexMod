@@ -219,6 +219,16 @@ public class PlexBetterReplyMod extends PlexModBase {
 		PlexCoreUtils.chatAddMessage(PlexCoreUtils.chatStyleText("GOLD", "STRIKETHROUGH", "BOLD", "========================="));
 
 	}
+
+	@Override
+	public void joinedMineplex() {
+		MinecraftForge.EVENT_BUS.register(this);
+	}
+
+	@Override
+	public void leftMineplex() {
+		MinecraftForge.EVENT_BUS.unregister(this);
+	}
 	
 	@SubscribeEvent
 	public void onChat(final ClientChatReceivedEvent e) {

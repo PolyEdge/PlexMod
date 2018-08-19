@@ -321,7 +321,6 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 		richPresenceOpened = false;
 	}
 
-	@Override
 	public void joinedMineplex() {
 		if (this.modEnabled.booleanValue) {
 			openRP();
@@ -329,8 +328,7 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 		MinecraftForge.EVENT_BUS.register(this);
 		lastRPupdate = Minecraft.getSystemTime();
 	}
-
-	@Override
+	
 	public void leftMineplex() {
 		closeRP();
 //		if (richPresenceOpened && richPresenceLoaded) {
