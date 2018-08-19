@@ -1,3 +1,6 @@
+
+  [![Discord](https://img.shields.io/discord/465349851920597029.svg?logo=discord&colorA=7289DA&logoWidth=15&colorB=gray)](https://discord.gg/neGvHCc)
+
 # Plex Mod
 
 Plex Mod is a mod for Minecraft that provides several useful features for playing on the popular Mineplex server. 
