@@ -39,7 +39,7 @@ Building from source is rather simple. Simply switch to the repository directory
 ./gradlew build
 ```
 
-A PlexMod jar will be generated in the lib/ folder.
+A PlexMod jar will be generated in the build/lib folder.
 
 ## Setting Up Development Environment
 
