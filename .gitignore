@@ -1,6 +1,7 @@
 # Eclipse files
 bin/
 .settings/
+/.settings
 .classpath
 .project
 /eclipse
