@@ -1,5 +1,7 @@
 package pw.ipex.plex.mod;
 
+import net.minecraft.client.Minecraft;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Property;
 import pw.ipex.plex.Plex;
 
@@ -25,11 +27,15 @@ public abstract class PlexModBase {
 	}
 	
 	public abstract void saveModConfig();
-	
-	public abstract void joinedMineplex();
-	
-	public abstract void leftMineplex();
-	
+
+	public void joinedMineplex() {
+		MinecraftForge.EVENT_BUS.register(this);
+	}
+
+	public void leftMineplex() {
+		MinecraftForge.EVENT_BUS.unregister(this);
+	}
+
 	public abstract void switchedLobby(String name);
 	
 	public void communicate(Object ...args) {

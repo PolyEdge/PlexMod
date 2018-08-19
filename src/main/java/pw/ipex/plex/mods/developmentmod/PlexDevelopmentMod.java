@@ -52,16 +52,6 @@ public class PlexDevelopmentMod extends PlexModBase {
 		}
 		PlexCoreUtils.chatAddMessage("[plexDev] sound: " + e.name + ": " + e.sound.getPitch());
 	}
-	
-	@Override
-	public void joinedMineplex() {
-		MinecraftForge.EVENT_BUS.register(this);
-	}
-	
-	@Override
-	public void leftMineplex() {
-		MinecraftForge.EVENT_BUS.unregister(this);
-	}
 
 	@Override
 	public void switchedLobby(String name) {
