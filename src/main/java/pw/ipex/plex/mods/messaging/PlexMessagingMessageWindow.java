@@ -356,6 +356,115 @@ public final class PlexMessagingMessageWindow extends GuiScreen {
 		return totalHeight;
 	}
 	
+	public PlexMessagingMessageHoverState getMouseOverMessage(int mouseX, int mouseY) {		
+		if (this.displayedChannel == null) {
+			return null;
+		}
+		int totalHeight = this.getTotalChatHeight();
+		
+		int scrollRange = totalHeight - this.getChatAreaHeight();
+		int viewportTop = (int)(scrollRange * this.scrollbar.scrollValue + 0);
+		
+		int currentY = 0;
+		//for (int i = this.displayedChannel.channelMessages.size() - 1; i >= 0 ; i--) {
+		boolean headsEnabled = this.channelContainsHeads();
+		for (int i = 0; i < this.displayedChannel.channelMessages.size(); i++) {
+			PlexMessagingMessage previousMessage = i - 1 >= 0 ? this.displayedChannel.channelMessages.get(i - 1) : null;
+			PlexMessagingMessage message = this.displayedChannel.channelMessages.get(i);
+			PlexMessagingMessageRenderState messageState = new PlexMessagingMessageRenderState();
+			messageState.setHeadsShown(headsEnabled);
+			boolean renderItem = false;
+			boolean author = false;
+			if (message.type == message.TYPE_SYSTEM_MESSAGE) {
+				renderItem = true;
+				messageState.setAuthorEnabled(false);
+				messageState.setHeadEnabled(false);
+				currentY = this.addToNonZero(currentY, this.messageSpacingDifferentAuthor);
+				//totalHeight += this.getRenderData(message, messageState).totalHeight;
+			}
+			if (message.type == message.TYPE_CHAT_MESSAGE) {
+				renderItem = true;
+				author = true;
+				if (previousMessage != null) {
+					if (previousMessage.fromUser.equals(message.fromUser) && previousMessage.position.equals(message.position)) {
+						author = false;
+					}
+				}
+				messageState.setAuthorEnabled(author);
+				messageState.setHeadEnabled(author);
+				currentY = this.addToNonZero(currentY, author ? this.messageSpacingDifferentAuthor : this.messageSpacingSameAuthor);
+			}
+			if (renderItem) {
+				int itemStartY = this.getChatStartY() + (currentY - viewportTop);
+				PlexMessagingMessageHoverState hoverState = this.getMessageHoverState(message, itemStartY, messageState, mouseX, mouseY);
+				if (hoverState.IS_SELECTED) {
+					return hoverState;
+				}
+				int itemTotalHeight = this.getRenderData(message, messageState).totalHeight;
+				currentY += itemTotalHeight;
+			}
+		}
+		return null;
+	}
+	
+	public PlexMessagingMessageHoverState getMessageHoverState(PlexMessagingMessage message, int positionY, PlexMessagingMessageRenderState messageState, int mouseX, int mouseY) {
+		PlexMessagingMessageHoverState hoverState = new PlexMessagingMessageHoverState().setMessage(message);
+		if (mouseY < this.getRenderBorderTop() || mouseY > this.getRenderBorderBottom()) {
+			return hoverState;
+		}
+		PlexMessagingMessageRenderData renderData = this.getRenderData(message, messageState);
+		if (renderData.playerHead != null && messageState.RENDER_HEAD_ENABLED) {
+			int headX = renderData.getItemXPosition(this.getChatStartX(), this.getChatEndX(), renderData.playerHeadX);
+			int headY = renderData.getItemYPosition(positionY, renderData.playerHeadY);
+			if (mouseX > headX  && mouseY > headY && mouseX < headX + renderData.playerHeadSize && mouseY < headY + renderData.playerHeadSize) {
+				return hoverState.setHeadSelected(true);
+			}
+		}
+		if (renderData.authorVisible && messageState.RENDER_AUTHOR_ENABLED) {
+			int authorX = renderData.getItemXPosition(this.getChatStartX(), this.getChatEndX(), renderData.authorX);
+			int authorY = renderData.getItemYPosition(positionY, renderData.authorY);
+			int authorWidth = PlexCoreRenderUtils.calculateScaledStringWidth(renderData.authorName, renderData.authorScale);
+			int authorHeight = (int) (Plex.minecraft.fontRendererObj.FONT_HEIGHT * renderData.authorScale);
+			if (mouseX > authorX && mouseY > authorY && mouseX < authorX + authorWidth && mouseY < authorY + authorHeight) {
+				return hoverState.setAuthorSelected(true);
+			}
+		}
+		for (PlexMessagingMessageTextData line : renderData.textLines) {
+			int lineX = renderData.getItemXPosition(this.getChatStartX(), this.getChatEndX(), line.x);
+			int lineY = renderData.getItemYPosition(positionY, line.y);
+			int lineHeight = line.getHeight();
+			int wordSpaceWidth = PlexCoreRenderUtils.calculateScaledStringWidth(" ", line.scale);
+			int wordX = lineX;
+			for (String word : line.text.split(" ")) {
+				int wordWidth = PlexCoreRenderUtils.calculateScaledStringWidth(word, line.scale);
+				if (mouseX > wordX && mouseY > lineY && mouseX < wordX + wordWidth && mouseY < lineY + lineHeight) {
+					return hoverState.setSelectedWord(word).setSelectedLine(line);
+				}
+				wordX += wordWidth + wordSpaceWidth;
+			}
+			if (mouseX > lineX && mouseY > lineY && mouseX < lineX + line.width && mouseY < lineY + lineHeight) {
+				hoverState.setMessageSelected(true).setSelectedLine(line);
+			}
+		}
+		if (renderData.displayBackdrop) {
+			int bdStartX = renderData.getItemXPosition(this.getChatStartX(), this.getChatEndX(), renderData.textBackdropX);
+			int bdEndX = bdStartX + renderData.textBackdropWidth;
+			int bdTop = renderData.getItemYPosition(positionY, renderData.textBackdropY); 
+			int bdBottom = bdTop + renderData.textBackdropHeight;
+			if (mouseX > bdStartX && mouseY > bdTop && mouseX < bdEndX && mouseY < bdBottom) {
+				return hoverState.setMessageSelected(true);
+			}
+		}
+		return hoverState;
+	}
+	
+	public void processMouseClick(PlexMessagingMessage message, int positionY, PlexMessagingMessageRenderState messageState, int mouseX, int mouseY, List<PlexMessagingMessageClickCallback> callbacks) {
+		PlexMessagingMessageHoverState hoverState = this.getMessageHoverState(message, positionY, messageState, mouseX, mouseY);
+		for (PlexMessagingMessageClickCallback callback : callbacks) {
+			callback.clickCallback(hoverState);
+		}
+	}
+	
 	public int drawMessage(PlexMessagingMessage message, int positionY, PlexMessagingMessageRenderState messageState) {
 		PlexMessagingMessageRenderData renderData = this.getRenderData(message, messageState);
 		if (renderData.playerHead != null && messageState.RENDER_HEAD_ENABLED) {

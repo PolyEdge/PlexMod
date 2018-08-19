@@ -1,6 +1,10 @@
 package pw.ipex.plex.mods.messaging;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
+
+import pw.ipex.plex.core.PlexCoreChatRegexEntry;
 
 public class PlexMessagingMessage {
 	public int TYPE_CHAT_MESSAGE = 0;
@@ -17,6 +21,9 @@ public class PlexMessagingMessage {
 	public Long time = 0L;
 	public Integer position = 0;
 	public String playerHead = null;
+	
+	public List<PlexMessagingMessageClickCallback> callbacks = new ArrayList<PlexMessagingMessageClickCallback>();
+	public PlexCoreChatRegexEntry chatRegex = null;
 	
 	public PlexMessagingMessageRenderData cachedRenderData;
 	

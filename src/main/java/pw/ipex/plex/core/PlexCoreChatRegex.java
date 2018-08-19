@@ -8,15 +8,45 @@ import java.util.regex.Pattern;
 
 public class PlexCoreChatRegex {
 	
-	// group format: (1:level) (2:rank) (3:ign) (4:message)
-	
 	public static String MATCH_PLAYER_CHAT = "^(?:&7Dead )?(?:(?:&[0-9a-fA-Fklmnor])*([0-9]{1,3}) ) *(?:(?:&[0-9a-fA-Fklmnor])*&l(ULTRA|HERO|LEGEND|TITAN|ETERNAL|YT|YOUTUBE|ARTIST|TRAINEE|SUPPORT|MOD|SR\\.MOD|MAPPER|BUILDER|MAPLEAD|JR\\.DEV|DEV|ADMIN|LEADER|OWNER))? *(?:&[0-9a-fA-Fklmnor])* *([a-zA-Z0-9_-]+) *(?:&[0-9a-fA-Fklmnor])* *(.*)$";
 	public static String MATCH_PLAYER_MPS_CHAT = "^(?:&7Dead )?(?:(?:&[0-9a-fA-Fklmnor])*([0-9]{1,3}) )? *(?:(?:&[0-9a-fA-Fklmnor])*&l(ULTRA|HERO|LEGEND|TITAN|ETERNAL|YT|YOUTUBE|ARTIST|TRAINEE|SUPPORT|MOD|SR\\.MOD|MAPPER|BUILDER|MAPLEAD|JR\\.DEV|DEV|ADMIN|LEADER|OWNER))? *(?:&[0-9a-fA-Fkmnor])* *([a-zA-Z0-9_-]+) *(?:&[0-9a-fA-Fklmnor])* *(.*)$"; // there are no levels in mps, so a weaker regex is given (player's name cannot be bold)
 	public static String MATCH_PARTY_CHAT_OLD = "^(?:(?:&[0-9a-fA-Fklmnor]){1,3}([0-9]{1,3}) )? ?(?:&5&lParty) ()?(?:&[0-9a-fA-Fklmnor]){0,4}([a-zA-Z0-9_-]{1,16}) ?(?:&[0-9a-fA-Fklmnor]){0,4} ?(.*)$";
 	public static String MATCH_PARTY_CHAT = "^(?:(?:&[0-9a-fA-Fklmnor]){1,3}([0-9]{1,3}) )? ?(?:&5&lParty) ()?(?:&[0-9a-fA-Fklmnor]){0,4}([a-zA-Z0-9_-]{1,16}) ?&d(.*)$";
 	public static String MATCH_TEAM_CHAT = "^&lTeam (?:&7Dead )?(?:(?:&[0-9a-fA-Fklmnor]){1,3}([0-9]{1,3}) )?(?:&[0-9a-fA-Fklmnor]){0,4}(ULTRA|HERO|LEGEND|TITAN|ETERNAL|YT|YOUTUBE|ARTIST|TRAINEE|SUPPORT|MOD|SR\\.MOD|MAPPER|BUILDER|MAPLEAD|JR\\.DEV|DEV|ADMIN|LEADER|OWNER)? ?(?:&[0-9a-fA-Fklmnor]){0,4}([a-zA-Z0-9_-]{1,16}) ?(?:&[0-9a-fA-Fklmnor]){0,4} ?(.*)$";
 	public static String MATCH_DIRECT_MESSAGE = "^&6&l([a-zA-Z0-9 _]+) > ([a-zA-Z0-9 _]+)&e &e&l(.*)$";
-	// COMS - &[0-9a-f]&l([a-zA-Z0-9])&[0-9a-f]&l([a-zA-Z0-9])
+	public static String MATCH_COMMUNITY_CHAT = "^&([0-9a-f])&l([a-zA-Z0-9])&[0-9a-f]&l([a-zA-Z0-9])$";
+	
+	public static String MATCH_PARTY_INVITE = "^&9Party> &7You have been invited to &e([a-zA-Z0-9_]+)&7's party! (.*)$";
+	public static String MATCH_PARTY_INVITED = "^&9Party> &e([a-zA-Z0-9_]+)&7 has invited &e([a-zA-Z0-9_]+)&7 to the party\\.$";
+	public static String MATCH_PARTY_REPLY = "^&9Party> &7Reply: &a&lACCEPT &c&lDENY &e&lVIEW$";
+	public static String MATCH_PARTY_JOIN  = "^&9Party> &e([a-zA-Z0-9_]+)&7 has joined the party\\.$";
+	public static String MATCH_PARTY_REMOVE = "^&9Party> &e([a-zA-Z0-9_]+)&7 has been removed from the party\\.$";
+	public static String MATCH_PARTY_LEFT = "^&9Party> &e([a-zA-Z0-9_]+)&7 has left the party\\.$";
+	public static String MATCH_PARTY_LEAVE = "^&9Party> &7You have left your party\\.$";
+	public static String MATCH_PARTY_DECLINED = "^&9Party> &e([a-zA-Z0-9_]+)&7 has denied your invite\\.?$";
+	public static String MATCH_PARTY_DECLINE = "^&9Party> &7You have denied your invite to &e([a-zA-Z0-9_]+)&7's party\\.$";
+	
+	public static List<PlexCoreChatRegexEntry> regexEntries = new ArrayList<PlexCoreChatRegexEntry>();
+	
+	static {
+		addEntry(new PlexCoreChatRegexEntry("player_chat", MATCH_PLAYER_CHAT).addGroup(1, "level").addGroup(2, "rank").addGroup(3, "ign").addGroup(4, "message"));
+		addEntry(new PlexCoreChatRegexEntry("player_chat_mps", MATCH_PLAYER_MPS_CHAT).addGroup(1, "level").addGroup(2, "rank").addGroup(3, "ign").addGroup(4, "message"));
+		addEntry(new PlexCoreChatRegexEntry("party_chat", MATCH_PARTY_CHAT).addGroup(1, "level").addGroup(2, "rank").addGroup(3, "ign").addGroup(4, "message"));
+		addEntry(new PlexCoreChatRegexEntry("team_chat", MATCH_TEAM_CHAT).addGroup(1, "level").addGroup(2, "rank").addGroup(3, "ign").addGroup(4, "message"));
+		addEntry(new PlexCoreChatRegexEntry("direct_message", MATCH_TEAM_CHAT).addGroup(1, "author").addGroup(2, "destination").addGroup(3, "message"));
+		addEntry(new PlexCoreChatRegexEntry("community_chat", MATCH_COMMUNITY_CHAT).addGroup(1, "colour").addGroup(2, "community").addGroup(3, "ign").addGroup(4, "message"));
+		
+		addEntry(new PlexCoreChatRegexEntry("party_invite", MATCH_PARTY_INVITE).addGroup(1, "sender").addGroup(2, "extra"));
+		addEntry(new PlexCoreChatRegexEntry("party_invited", MATCH_PARTY_INVITED).addGroup(1, "sender").addGroup(2, "invited_player"));
+		addEntry(new PlexCoreChatRegexEntry("party_invite_reply", MATCH_PARTY_REPLY));
+		addEntry(new PlexCoreChatRegexEntry("party_join", MATCH_PARTY_JOIN).addGroup(1, "ign"));
+		addEntry(new PlexCoreChatRegexEntry("party_remove", MATCH_PARTY_REMOVE).addGroup(1, "ign"));
+		addEntry(new PlexCoreChatRegexEntry("party_left", MATCH_PARTY_REMOVE).addGroup(1, "ign"));
+		addEntry(new PlexCoreChatRegexEntry("party_leave", MATCH_PARTY_LEAVE));
+		addEntry(new PlexCoreChatRegexEntry("party_declined", MATCH_PARTY_DECLINED).addGroup(1, "ign"));
+		addEntry(new PlexCoreChatRegexEntry("party_decline", MATCH_PARTY_DECLINE));
+		
+	}
 	
 	
 	public static Pattern PATTERN_PLAYER_CHAT = Pattern.compile(MATCH_PLAYER_CHAT);
@@ -128,5 +158,18 @@ public class PlexCoreChatRegex {
 		catch (Exception e) {
 			return null;
 		}
+	}
+	
+	public static void addEntry(PlexCoreChatRegexEntry entry) {
+		regexEntries.add(entry);
+	}
+	
+	public static PlexCoreChatRegexEntry getEntryMatchingText(String text) {
+		for (PlexCoreChatRegexEntry entry : regexEntries) {
+			if (entry.matches(text)) {
+				return entry;
+			}
+		}
+		return null;
 	}
 }

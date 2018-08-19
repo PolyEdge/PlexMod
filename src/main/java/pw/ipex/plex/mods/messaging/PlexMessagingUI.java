@@ -290,12 +290,29 @@ public class PlexMessagingUI extends PlexUIBase {
 		this.channelProgressBar.drawScreen(par1, par2, par3);
 		
 		
+		
+		
+		PlexMessagingMessageHoverState selectedMessage = this.chatWindow.getMouseOverMessage(par1, par2);
+		if (selectedMessage != null) {
+			if (selectedMessage.selectedLine != null) {
+				PlexCoreRenderUtils.drawScaledString(selectedMessage.selectedLine.text, (float)this.parentUI.zoneStartX() + 5, (float)this.parentUI.zoneStartY() + 5, 0xffffff, 0.5F, false);
+			}
+			if (selectedMessage.selectedWord != null) {
+				PlexCoreRenderUtils.drawScaledString(selectedMessage.selectedWord, (float)this.parentUI.zoneStartX() + 5, (float)this.parentUI.zoneStartY() + 10, 0xffffff, 0.5F, false);
+			}
+			if (selectedMessage.messageSelected) {
+				PlexCoreRenderUtils.drawScaledString("ms", (float)this.parentUI.zoneStartX() + 5, (float)this.parentUI.zoneStartY() + 15, 0xffffff, 0.5F, false);
+			}
+		}
+		
+		
 
 		//PlexCoreRenderUtils.drawPlayerHead(PlexCoreUtils.getSkin("cysk"), this.parentUI.zoneCenterX(), this.parentUI.zoneCenterY(), 45);
 		//this.parentUI.drawHorizontalLine(this.parentUI.zoneStartX() + 5, this.parentUI.zoneStartX() + 5 + Math.round((float)(this.parentUI.horizontalPixelCount() - (getContactsPaneSize()) - 6 - 25) * this.barCurrentPercentage), this.parentUI.zoneEndY() - 6, PlexCoreUtils.replaceColour(this.currentBarColour, null, null, null, 255));
 		
+		//String drawText = "";
 
-		//String drawText = "";	
+		//
 		//drawText = "" + this.channelProgressBar.colour;
 		//drawText = "" + this.channelStatusLabel.displayTextWidth;
 		
@@ -305,7 +322,7 @@ public class PlexMessagingUI extends PlexUIBase {
 		
 		//drawText = "" + PlexDirectMessagingMod.channelManager.selectedChannel;
 		//drawText = "" + this.contactsScrollbar.scrollValue + " " + this.contactsScrollbar.barScale;
-		//PlexCoreRenderUtils.drawScaledString(drawText, (float)this.parentUI.zoneCenterX(), (float)this.parentUI.zoneCenterY(), 0xffffff, 0.5F, false);
+		//PlexCoreRenderUtils.drawScaledString(drawText, (float)this.parentUI.zoneStartX() + 5, (float)this.parentUI.zoneStartY() + 5, 0xffffff, 0.5F, false);
 		//this.parentUI.getFontRenderer().drawString("y: " + sbarTop + ", " + sbarBottom + " x: " + sbarLeft + ", " + sbarRight, this.parentUI.zoneCenterX(), this.parentUI.zoneCenterY(), 0xffffff);
 		//this.parentUI.getFontRenderer().drawString("" + par1 + ", " + par2, this.parentUI.zoneCenterX(), this.parentUI.zoneCenterY() - 8, 0xffffff);
 		//this.parentUI.getFontRenderer().drawString(this.textField.text.getText(), this.parentUI.zoneCenterX(), this.parentUI.zoneCenterY(), 0xffffff);
@@ -315,13 +332,15 @@ public class PlexMessagingUI extends PlexUIBase {
 		
 		if (PlexMessagingMod.channelManager.selectedChannel != null) {
 			PlexMessagingMod.channelManager.selectedChannel.lastTextTyped = this.textField.text.getText();
-			
 		}
 	}
 	
 	public void sendMessage() {
-		PlexMessagingMod.channelManager.selectedChannel.sendMessage(this.textField.text.getText());
-		this.textField.text.setText("");
+		if (PlexMessagingMod.channelManager.selectedChannel != null) {
+			PlexMessagingMod.channelManager.selectedChannel.sendMessage(this.textField.text.getText());
+			this.textField.text.setText("");
+		}
+
 	}
 	
 	public Boolean isSelectedChannelReady() {
