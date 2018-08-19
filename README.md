@@ -7,6 +7,7 @@ Plex Mod is a mod for Minecraft that provides several useful features for playin
 ### Prerequisites
 
 Be sure to have run Minecraft 1.8.9 at least once before installing Forge. Download the latest 1.8.9 MinecraftForge installer (version 11.15.1.2318) [here](http://files.minecraftforge.net/maven/net/minecraftforge/forge/index_1.8.9.html). You can download either the Windows installer, which is a .exe file, or the plain installer, which is a .jar file, they're the same. Bear in mind, however, you must have Java installed to run the .jar installer (Minecraft installs its own version of Java, so you may not have it installed already). Chrome will also declare that the .jar installer may be harmful. You can safely ignore this warning and keep the file.
+
 Once the installer has finished downloading, run it. Leave the default settings and press "OK" to install Forge. Wait until it is finished installing. You can then close out and delete the installer file. Minecraft Forge is now installed! There should be a new Forge launch profile in the Minecraft launcher. Run it at least once before continuing.
 
 ### Installing
