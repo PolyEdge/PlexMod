@@ -107,17 +107,16 @@ public class PlexMessagingUI extends PlexUIBase {
 		//	PlexMessagingMod.channelManager.addChannel(pchannel);
 		//}
 		
-//		if (PlexMessagingMod.channelManager.selectedChannel != null) {
-//			for (int i = 0; i < 8; i++) {
-//				PlexMessagingPartyChatChannel partyChannel = (PlexMessagingPartyChatChannel) PlexMessagingMod.channelManager.getChannel("@Party");
-//				PlexMessagingMessage message = new PlexMessagingMessage().setChatMessage().setContent("Message - " + Minecraft.getSystemTime()).setNow().setUser("system").setColour(0xffe820e8).setLeft();
-//				if (i % 2 == 0) {
-//					message.setRight().setContent("Reply - " + Minecraft.getSystemTime());
-//				}
-//				partyChannel.addAgressiveMessage(message);
-//				PlexMessagingMod.channelManager.bumpChannelToTop(partyChannel);		
-//			}			
-//		}
+		if (PlexMessagingMod.channelManager.selectedChannel != null) {
+			for (int i = 0; i < 1; i++) {
+				PlexMessagingPartyChatChannel partyChannel = (PlexMessagingPartyChatChannel) PlexMessagingMod.channelManager.getChannel("@Party");
+				PlexMessagingMessage message = new PlexMessagingMessage().setSystemMessage().setContent("Party invite from user").setNow().setUser("system").setColour(0xffe820e8);
+				PlexMessagingMessage message2 = new PlexMessagingMessage().setSystemMessage().setContent("ACCEPT  DENY").setNow().setUser("system").setColour(0xffe820e8);
+				partyChannel.addAgressiveMessage(message);
+				partyChannel.addAgressiveMessage(message2);
+				PlexMessagingMod.channelManager.bumpChannelToTop(partyChannel);		
+			}			
+		}
 	}
 	
 	public Integer getContactsPaneSize() {

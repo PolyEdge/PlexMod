@@ -1,9 +1,10 @@
 package pw.ipex.plex.mods.messaging;
-
-import java.time.Instant;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import net.minecraft.client.Minecraft;
 import pw.ipex.plex.core.PlexCoreChatRegexEntry;
 
 public class PlexMessagingMessage {
@@ -22,14 +23,28 @@ public class PlexMessagingMessage {
 	public Integer position = 0;
 	public String playerHead = null;
 	
+	public Map<String, String> tags = new HashMap<String, String>();
+	
 	public List<PlexMessagingMessageClickCallback> callbacks = new ArrayList<PlexMessagingMessageClickCallback>();
 	public PlexCoreChatRegexEntry chatRegex = null;
 	
 	public PlexMessagingMessageRenderData cachedRenderData;
 	
+	public PlexMessagingMessage setTag(String key, String value) {
+		this.tags.put(key, value);
+		return this;
+	}
+	
+	public boolean hasTag(String key) {
+		return this.tags.containsKey(key);
+	}
+	
+	public String getTag(String key) {
+		return this.tags.get(key);
+	}
+	
 	public PlexMessagingMessage setNow() {
-	    Instant instant = Instant.now();
-		this.setTime(instant.getEpochSecond());
+		this.setTime(Minecraft.getSystemTime());
 		return this;
 	}
 	

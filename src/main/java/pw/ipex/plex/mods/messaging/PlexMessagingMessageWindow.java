@@ -182,8 +182,17 @@ public final class PlexMessagingMessageWindow extends GuiScreen {
 			totalHeight += authorExtra;
 			renderData.textBackdropY = totalHeight;
 			
-			textLines = PlexCoreRenderUtils.textWrapScaledString(message.content, this.getMaxChatMessageWidth() - (this.getXPaddingByScaledTextHeight(Plex.minecraft.fontRendererObj.FONT_HEIGHT, this.messageTextScale) * 2) - playerHeadExtra, this.messageTextScale);
-			
+			List<String> textLinesSplit = new ArrayList<String>();
+			for (String line : message.content.split("\n")) {
+				textLinesSplit.add(line);
+			}
+			for (String line : textLinesSplit) {
+				List<String> textWrapLines = PlexCoreRenderUtils.textWrapScaledString(line, this.getMaxChatMessageWidth() - (this.getXPaddingByScaledTextHeight(Plex.minecraft.fontRendererObj.FONT_HEIGHT, this.messageTextScale) * 2) - playerHeadExtra, this.messageTextScale);
+				for (String wrapLine : textWrapLines) {
+					textLines.add(wrapLine);
+				}
+			}
+
 			int y = authorExtra;
 			for (String line : textLines) {
 				int lineSize = PlexCoreRenderUtils.calculateScaledStringWidth(line, this.messageTextScale); // text width
@@ -246,13 +255,22 @@ public final class PlexMessagingMessageWindow extends GuiScreen {
 		else if (message.type == message.TYPE_SYSTEM_MESSAGE) {
 			renderData.relativeX = null; // centered
 			//totalHeight += this.getYPaddingByTextHeight((int) (Plex.minecraft.fontRendererObj.FONT_HEIGHT * this.messageTextScale));
-			textLines = PlexCoreRenderUtils.textWrapScaledString(message.content, this.getMaxSystemMessageWidth() - (this.getXPaddingByScaledTextHeight(Plex.minecraft.fontRendererObj.FONT_HEIGHT, this.messageTextScale) * 2), this.messageTextScale);
+			List<String> textLinesSplit = new ArrayList<String>();
+			for (String line : message.content.split("\n")) {
+				textLinesSplit.add(line);
+			}
+			for (String line : textLinesSplit) {
+				List<String> textWrapLines = PlexCoreRenderUtils.textWrapScaledString(line, this.getMaxSystemMessageWidth() - (this.getXPaddingByScaledTextHeight(Plex.minecraft.fontRendererObj.FONT_HEIGHT, this.messageTextScale) * 2), this.messageTextScale);
+				for (String wrapLine : textWrapLines) {
+					textLines.add(wrapLine);
+				}
+			}
 			int width = 0;
 			int y = 0;
 			for (String line : textLines) {
 				int lineSize = PlexCoreRenderUtils.calculateScaledStringWidth(line, this.messageTextScale); // text width
 				//lineSize += (this.getXPaddingByScaledTextHeight(Plex.minecraft.fontRendererObj.FONT_HEIGHT, this.messageTextScale) * 2); // padding
-				renderData.addTextLine(line, this.messageTextScale, lineSize / 2, y, lineSize, message.colour);
+				renderData.addTextLine(line, this.messageTextScale, 0 - (lineSize / 2), y, lineSize, message.colour);
 				if (lineSize > width) {
 					width = lineSize;
 				}

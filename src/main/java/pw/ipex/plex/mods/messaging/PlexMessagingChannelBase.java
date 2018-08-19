@@ -103,7 +103,7 @@ public abstract class PlexMessagingChannelBase implements PlexUIScrolledItem {
 	}
 	
 	public void readingChannel() {
-		lastChannelRead = Minecraft.getSystemTime();
+		this.lastChannelRead = Minecraft.getSystemTime();
 	}
 	
 	public List<PlexMessagingMessage> getMessagesSinceLastRead() {
@@ -111,7 +111,7 @@ public abstract class PlexMessagingChannelBase implements PlexUIScrolledItem {
 		//ListIterator<PlexMessagingMessage> totalMessages = messages.listIterator(messages.size());
 
 		for (PlexMessagingMessage message : this.channelMessages) {
-			if (message.time > lastChannelRead) {
+			if (message.time > this.lastChannelRead) {
 				messages.add(message);
 				continue;
 			}
