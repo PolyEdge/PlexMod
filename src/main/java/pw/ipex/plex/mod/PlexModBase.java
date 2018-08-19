@@ -1,6 +1,5 @@
 package pw.ipex.plex.mod;
 
-import net.minecraft.client.Minecraft;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Property;
 import pw.ipex.plex.Plex;
