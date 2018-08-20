@@ -16,7 +16,6 @@ public abstract class PlexMessagingChannelBase implements PlexUIScrolledItem {
 	public Long lastAgressiveActivity = 0L;
 	public Long lastChannelRead = 0L;
 	public String name = "channel" + Minecraft.getSystemTime();
-	public String displayName = "Channel_" + Minecraft.getSystemTime();
 	public String recipientEntityName = "";
 	public String lastTextTyped = "";
 	public Float lastMessagesScroll = 1.0F;
@@ -32,10 +31,6 @@ public abstract class PlexMessagingChannelBase implements PlexUIScrolledItem {
 	
 	public void setName(String name) {
 		this.name = name;
-	}
-	
-	public void setDisplayName(String name) {
-		this.displayName = name;
 	}
 	
 	public void setRecipientEntityName(String name) {
@@ -57,11 +52,15 @@ public abstract class PlexMessagingChannelBase implements PlexUIScrolledItem {
 	public void channelDeselected() {}
 	
 	public String getDisplayName() {
-		return this.displayName;
+		return "";
 	}
 	
 	public Integer getDisplayColour() {
 		return 0xffffff;
+	}
+	
+	public Integer getMessageBackgroundColour() {
+		return 0x65757575;
 	}
 	
 	protected void selected() {
