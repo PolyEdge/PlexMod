@@ -49,14 +49,20 @@ public class PlexMessagingMod extends PlexModBase {
 		if (messageAdapter == null) {
 			return;
 		}
+		String channelName = messageAdapter.getChannelName(chatMessage);
 		String recipientEntityName = messageAdapter.getRecipientEntityName(chatMessage);
 		if (messageAdapter.regexEntryName.equals("direct_message")) {
 			recipientEntityName = messageAdapter.formatStringWithGroups("{author}", chatMessage);
-			if (recipientEntityName.equals(PlexCore.getPlayerIGN())) {
+			channelName = messageAdapter.formatStringWithGroups("{author}", chatMessage);
+			if (recipientEntityName.equalsIgnoreCase(PlexCore.getPlayerIGN())) {
 				recipientEntityName = messageAdapter.formatStringWithGroups("{destination}", chatMessage);
 			}
+			if (channelName.equalsIgnoreCase(PlexCore.getPlayerIGN())) {
+				channelName = messageAdapter.formatStringWithGroups("{destination}", chatMessage);
+			}	
+			channelName = "PM." + channelName;
 		}
-		PlexMessagingChannelBase channel = getChannel(messageAdapter.getChannelName(chatMessage), messageAdapter.getChannelClass(), recipientEntityName);
+		PlexMessagingChannelBase channel = getChannel(channelName, messageAdapter.getChannelClass(), recipientEntityName);
 		PlexMessagingMessage message = messageAdapter.getIncompleteMessageFromText(chatMessage).setNow().setHead(messageAdapter.formatStringWithGroups("{author}", chatMessage));
 		if (messageAdapter.formatStringWithGroups("{author}", chatMessage).equals(PlexCore.getPlayerIGN())) {
 			message.setRight();
