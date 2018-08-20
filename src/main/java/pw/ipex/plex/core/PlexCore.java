@@ -32,6 +32,7 @@ public class PlexCore {
     /**
      * Registers a mod
      * @param mod - the mod to register
+     * @see PlexModBase
      */
 	public static void registerMod(PlexModBase mod) {
 		plexMods.put(mod.getModName(), mod);
@@ -44,6 +45,7 @@ public class PlexCore {
      * Returns a mod
      * @param modName - mod looking for
      * @return the mod if exists
+     * @see PlexModBase
      */
 	public static PlexModBase getMod(String modName) {
 		if (plexMods.containsKey(modName)) {
@@ -57,6 +59,7 @@ public class PlexCore {
      * Registers a command handler
      * @param namespace - key to the command handler
      * @param handler - command handler
+     * @see PlexCommandHandler
      */
 	public static void registerCommandHandler(String namespace, PlexCommandHandler handler) {
 		commandHandlerNamespace.put(namespace, handler);
@@ -66,6 +69,7 @@ public class PlexCore {
      * Gets a command handler
      * @param namespace - key to the command handler
      * @return the command handler
+     * @see PlexCommandHandler
      */
 	public static PlexCommandHandler getCommandHandler(String namespace) {
 		if (commandHandlerNamespace.containsKey(namespace)) {
@@ -77,6 +81,7 @@ public class PlexCore {
     /**
      * Registers a listener
      * @param listener - listener to register
+     * @see PlexCommandListener
      */
 	public static void registerCommandListener(PlexCommandListener listener) {
 		commandListenerNamespace.put(listener.getCommandName(), listener);
@@ -84,9 +89,10 @@ public class PlexCore {
 	}
 
     /**
-     * Returns a command listener
+     * Returns a specified command listener
      * @param name - name of the listener
      * @return the listener is exists
+     * @see PlexCommandListener
      */
 	public static PlexCommandListener getCommandListener(String name) {
 		if (commandListenerNamespace.containsKey(name)) {
@@ -98,15 +104,17 @@ public class PlexCore {
     /**
      * Registers a shared value
      * @param value - shared value to register
+     * @see PlexCoreValue
      */
 	public static void registerSharedValue(PlexCoreValue value) {
 		sharedValues.put(value.name, value);
 	}
 
     /**
-     * Returns a shared value
+     * Returns a specified shared value
      * @param name - name of the shared value
      * @return the value if exists
+     * @see PlexCoreValue
      */
 	public static PlexCoreValue getSharedValue(String name) {
 		if (sharedValues.containsKey(name)) {
@@ -119,6 +127,7 @@ public class PlexCore {
      * Register a UI tab
      * @param name - Name of the UI tab (usually the mod)
      * @param class1 - Class to register the UI tab for
+     * @see PlexUIBase
      */
 	public static void registerUiTab(String name, Class<? extends PlexUIBase> class1) {
 		uiTabList.add(new java.util.AbstractMap.SimpleEntry<String, Class<? extends PlexUIBase>>(name, class1));
@@ -129,6 +138,7 @@ public class PlexCore {
      * Get UI tab class if exists
      * @param name - name of the UI tab
      * @return the UI tab is exists
+     * @see PlexUIBase
      */
 	public static Class<? extends PlexUIBase> getUiTab(String name) {
 		for (java.util.Map.Entry<String, Class<? extends PlexUIBase>> tab : uiTabList) {
@@ -143,6 +153,7 @@ public class PlexCore {
      * Get the UI class name at position X
      * @param pos - get name of UI tab at pos X
      * @return the name of UI tab if exists
+     * @see PlexUIBase
      */
 	public static String getUiTabTitleAt(Integer pos) {
 		if (!(pos < uiTabList.size())) {
@@ -155,6 +166,7 @@ public class PlexCore {
      * Gets the UI class at position X
      * @param pos - Get class of UI tab at pos X
      * @return class if exists
+     * @see PlexUIBase
      */
 	public static Class<? extends PlexUIBase> getUiTabClassAt(Integer pos) {
 		if (!(pos < uiTabList.size())) {
@@ -166,6 +178,7 @@ public class PlexCore {
     /**
      * Returns the UI tab list
      * @return the UI tab list
+     * @see PlexUIBase
      */
 	public static List<java.util.Map.Entry<String, Class<? extends PlexUIBase>>> getUiTabList() {
 		return uiTabList;
@@ -183,6 +196,7 @@ public class PlexCore {
 
     /**
      * Call the joinedMineplex() method in all registered mods
+     * @see PlexModBase
      */
 	public static void joinedMineplex() {
 		for (final PlexModBase mod : plexMods.values()) {
@@ -196,6 +210,7 @@ public class PlexCore {
 
     /**
      * Call the leftMineplex() method in all registered mods
+     * @see PlexModBase
      */
 	public static void leftMineplex() {
 		for (final PlexModBase mod : plexMods.values()) {
@@ -210,6 +225,7 @@ public class PlexCore {
     /**
      * Displays a UI screen
      * @param screen - screen to display
+     * @see PlexUIBase
      */
 	public static void displayUIScreen(PlexUIBase screen) {
 		if (screen == null) {
