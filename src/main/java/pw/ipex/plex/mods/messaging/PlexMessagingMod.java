@@ -1,6 +1,7 @@
 package pw.ipex.plex.mods.messaging;
 
 import java.util.List;
+import java.util.Map;
 
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
@@ -38,25 +39,49 @@ public class PlexMessagingMod extends PlexModBase {
 	
 	@SubscribeEvent
 	public void onChat(ClientChatReceivedEvent event) {
-		String chatMessageContent = PlexCoreUtils.condenseChatAmpersandFilter(event.message.getFormattedText());
-		String chatMessageType = PlexCoreChatRegex.determinePotentialChatType(chatMessageContent);
-		if (chatMessageType.equals("party")) {
-			if (channelManager.getChannel("@Party") == null) {
-				PlexMessagingPartyChatChannel pchannel = new PlexMessagingPartyChatChannel();
-				pchannel.setName("@Party");
-				channelManager.addChannel(pchannel);
-			}
-			List<String> messageCi = PlexCoreChatRegex.determineRegularMessageData(chatMessageContent);
-			if (!(messageCi == null)) {
-				PlexMessagingPartyChatChannel partyChannel = (PlexMessagingPartyChatChannel) channelManager.getChannel("@Party");
-				PlexMessagingMessage message = new PlexMessagingMessage().setChatMessage().setContent(PlexCoreChatRegex.getMessageField(messageCi, "message")).setNow().setUser(PlexCoreChatRegex.getMessageField(messageCi, "ign")).setColour(0xffe820e8).setLeft().setHead(PlexCoreChatRegex.getMessageField(messageCi, "ign"));
-				if (PlexCoreChatRegex.getMessageField(messageCi, "ign").equalsIgnoreCase(PlexCore.getPlayerIGN())) {
-					message.setRight();
-				}
-				partyChannel.addAgressiveMessage(message);
-				channelManager.bumpChannelToTop(partyChannel);		
-			}
+		String chatMessageContent = PlexCoreUtils.condenseChatFilter(event.message.getFormattedText());
+		this.handleMessage(chatMessageContent);
+	}
+	
+	public void handleMessage(String message) {
+		this.handleChatMessasge(message);
+		this.handleOtherMessage(message);
+	}
+	
+	public void handleChatMessasge(String chatMessage) {
+		PlexMessagingChatMessageAdapter messageAdapter = PlexMessagingChatMessageConstructor.getAdapterForChatMessageWithRegexTag(chatMessage, "chatMessage");
+		if (messageAdapter == null) {
+			return;
 		}
+		PlexMessagingChannelBase channel = getChannel(messageAdapter.getChannelName(chatMessage), messageAdapter.getChannelClass());
+		
+		//PlexMessagingMessage message = new PlexMessagingMessage()
+//		if (PlexCoreChatRegex.getEntryNamed("party_chat").matches(chatMessage)) {
+//			Map<String, String> messageData = PlexCoreChatRegex.getEntryNamed("party_chat").getAllFields(chatMessage);
+//			PlexMessagingMessage message = new PlexMessagingMessage().setChatMessage().setContent(messageData.get("message")).setNow().setUser(messageData.get("ign")).setLeft().setHead(messageData.get("ign"));
+//			if (messageData.get("ign").equalsIgnoreCase(PlexCore.getPlayerIGN())) {
+//				message.setRight();
+//			}
+//			getChannel("@Party", PlexMessagingPartyChatChannel.class).addAgressiveMessage(message);
+//			channelManager.bumpChannelToTop(getChannel("@Party", PlexMessagingPartyChatChannel.class));		
+//		}
+	}
+	
+	public void handleOtherMessage(String chatMessage) {
+		
+	}
+	
+	public PlexMessagingChannelBase getChannel(String name, Class<? extends PlexMessagingChannelBase> type) {
+		if (channelManager.getChannel(name) == null) {
+			PlexMessagingChannelBase channel;
+			try {
+				channel = (PlexMessagingPartyChatChannel) type.newInstance();
+				channel.setName(name);
+				channelManager.addChannel(channel);
+			} 
+			catch (InstantiationException | IllegalAccessException e) {}
+		}
+		return channelManager.getChannel(name);
 	}
 
 	@SubscribeEvent
@@ -65,6 +90,7 @@ public class PlexMessagingMod extends PlexModBase {
 			PlexCore.displayUIScreen(new PlexMessagingUI());
 		}
 	}
+	
 	@Override
 	public void switchedLobby(String name) {
 	}

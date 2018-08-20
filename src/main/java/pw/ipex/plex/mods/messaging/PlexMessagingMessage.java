@@ -16,12 +16,15 @@ public class PlexMessagingMessage {
 	
 	public Integer type = 0;
 	public String content = "";
-	public Integer colour = 0xb5b5b5;
-	public Integer backgroundColour = 0x65757575;
+	public Integer defaultColour = 0xb5b5b5;
+	public Integer colour;
+	public Integer defaultBackgroundColour = 0x65757575;
+	public Integer backgroundColour;
 	public String fromUser = "";
 	public Long time = 0L;
 	public Integer position = 0;
 	public String playerHead = null;
+	public PlexMessagingChannelBase parentChannel;
 	
 	public Map<String, String> tags = new HashMap<String, String>();
 	
@@ -96,5 +99,30 @@ public class PlexMessagingMessage {
 	public PlexMessagingMessage setHead(String head) {
 		this.playerHead = head;
 		return this;
+	}
+	
+	public PlexMessagingMessage setChannel(PlexMessagingChannelBase channel) {
+		this.parentChannel = channel;
+		return this;
+	}
+	
+	public int getColour() {
+		if (this.colour != null) {
+			return this.colour;
+		}
+		if (this.parentChannel != null) {
+			return this.parentChannel.getDisplayColour();
+		}
+		return this.defaultColour;
+	}
+	
+	public int getBackgroundColour() {
+		if (this.backgroundColour != null) {
+			return this.backgroundColour;
+		}
+		if (this.parentChannel != null) {
+			return this.parentChannel.getMessageBackgroundColour();
+		}
+		return this.defaultColour;
 	}
 }

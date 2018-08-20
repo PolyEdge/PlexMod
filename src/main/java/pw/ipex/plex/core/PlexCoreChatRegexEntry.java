@@ -28,24 +28,24 @@ public class PlexCoreChatRegexEntry {
 		this.regexPattern = Pattern.compile(pattern);
 	}
 	
-	public PlexCoreChatRegexEntry(String idTag, String name, String pattern) {
+	public PlexCoreChatRegexEntry(String name, String pattern, String idTag) {
 		pattern = this.formatInput(pattern);
 		this.entryName = name;
 		this.regexString = pattern;
 		this.regexPattern = Pattern.compile(pattern);
-		this.addIdTag(idTag);
+		this.tag(idTag);
 	}
 	
-	public PlexCoreChatRegexEntry addIdTag(String name) {
+	public PlexCoreChatRegexEntry tag(String name) {
 		this.identifierTags.add(name);
 		return this;
 	}
 	
-	public boolean hasIdTag(String name) {
+	public boolean hasTag(String name) {
 		return this.identifierTags.contains(name);
 	}
 	
-	public PlexCoreChatRegexEntry addGroup(int group, String name) {
+	public PlexCoreChatRegexEntry addField(int group, String name) {
 		this.patternNames.put(name, group);
 		return this;
 	}
@@ -54,16 +54,20 @@ public class PlexCoreChatRegexEntry {
 		return string.matches(this.regexString);
 	}
 	
-	public String getValue(String input, String groupName) {
+	public boolean hasField(String field) {
+		return this.patternNames.keySet().contains(field);
+	}
+	
+	public String getField(String input, String field) {
 		try {
-			return this.getValues(input).get(groupName);
+			return this.getAllFields(input).get(field);
 		}
 		catch (Throwable e) {
 			return null;
 		}
 	}
 	
-	public Map<String, String> getValues(String input) {
+	public Map<String, String> getAllFields(String input) {
 		Map<String, String> output = new HashMap<String, String>();
 		Matcher matcher = this.regexPattern.matcher(input);
 		matcher.find();
@@ -78,10 +82,10 @@ public class PlexCoreChatRegexEntry {
 		return output;		
 	}
 	
-	public String formatStringWithGroups(String groupsInput, String formattingString) {
-		groupsInput = this.formatInput(groupsInput);
+	public String formatStringWithGroups(String messageInput, String formattingString) {
+		messageInput = this.formatInput(messageInput);
 		formattingString = this.formatInput(formattingString);
-		Map<String, String> groups = this.getValues(groupsInput);
+		Map<String, String> groups = this.getAllFields(messageInput);
 		for (String groupName : groups.keySet()) {
 			formattingString = formattingString.replace("{" + groupName + "}", groups.get(groupName) != null ? groups.get(groupName) : "");
 		}

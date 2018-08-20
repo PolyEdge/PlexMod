@@ -163,8 +163,8 @@ public final class PlexMessagingMessageWindow extends GuiScreen {
 		int totalHeight = 0;
 		List<String> textLines = new ArrayList<String>();
 		PlexMessagingMessageRenderData renderData = new PlexMessagingMessageRenderData();
-		renderData.textColour = message.colour;
-		renderData.backdropColour = message.backgroundColour;
+		renderData.textColour = message.getColour();
+		renderData.backdropColour = message.getBackgroundColour();
 		if (message.type == message.TYPE_CHAT_MESSAGE) {
 			int backdropWidth = 0;
 			int headSize = getDefaultBackdropSizeByScaledTextHeight(Plex.minecraft.fontRendererObj.FONT_HEIGHT, this.messageTextScale);
@@ -197,7 +197,7 @@ public final class PlexMessagingMessageWindow extends GuiScreen {
 			for (String line : textLines) {
 				int lineSize = PlexCoreRenderUtils.calculateScaledStringWidth(line, this.messageTextScale); // text width
 				lineSize += (this.getXPaddingByScaledTextHeight(Plex.minecraft.fontRendererObj.FONT_HEIGHT, this.messageTextScale) * 2); // padding
-				renderData.addTextLine(line, this.messageTextScale, this.getXPaddingByScaledTextHeight(Plex.minecraft.fontRendererObj.FONT_HEIGHT, this.messageTextScale) + (message.position == message.POSITION_LEFT ? playerHeadExtra : 0), y + this.getYPaddingByScaledTextHeight(Plex.minecraft.fontRendererObj.FONT_HEIGHT, this.messageTextScale), lineSize, message.colour);
+				renderData.addTextLine(line, this.messageTextScale, this.getXPaddingByScaledTextHeight(Plex.minecraft.fontRendererObj.FONT_HEIGHT, this.messageTextScale) + (message.position == message.POSITION_LEFT ? playerHeadExtra : 0), y + this.getYPaddingByScaledTextHeight(Plex.minecraft.fontRendererObj.FONT_HEIGHT, this.messageTextScale), lineSize, message.getColour());
 				if (lineSize > backdropWidth) {
 					backdropWidth = lineSize;
 				}
@@ -270,7 +270,7 @@ public final class PlexMessagingMessageWindow extends GuiScreen {
 			for (String line : textLines) {
 				int lineSize = PlexCoreRenderUtils.calculateScaledStringWidth(line, this.messageTextScale); // text width
 				//lineSize += (this.getXPaddingByScaledTextHeight(Plex.minecraft.fontRendererObj.FONT_HEIGHT, this.messageTextScale) * 2); // padding
-				renderData.addTextLine(line, this.messageTextScale, 0 - (lineSize / 2), y, lineSize, message.colour);
+				renderData.addTextLine(line, this.messageTextScale, 0 - (lineSize / 2), y, lineSize, message.getColour());
 				if (lineSize > width) {
 					width = lineSize;
 				}
