@@ -23,6 +23,7 @@ import pw.ipex.plex.core.PlexCoreValue;
 import pw.ipex.plex.mod.PlexModBase;
 
 public class PlexAutoThankMod extends PlexModBase {
+
 	public static String MATCH_AMPLIFIER_MESSAGE = "^amplifier> [a-zA-Z0-9_]{1,20} has activated a game amplifier on ([a-zA-Z ]+)!$";
 	public static String MATCH_SUCCESSFUL_TIP = "^tip> you thanked [a-zA-Z0-9_]{1,20}\\. they earned 5 treasure shards and you got 5 treasure shards in return!$";
 	
