@@ -49,7 +49,14 @@ public class PlexMessagingMod extends PlexModBase {
 		if (messageAdapter == null) {
 			return;
 		}
-		PlexMessagingChannelBase channel = getChannel(messageAdapter.getChannelName(chatMessage), messageAdapter.getChannelClass());
+		String recipientEntityName = messageAdapter.getRecipientEntityName(chatMessage);
+		if (messageAdapter.regexEntryName.equals("direct_message")) {
+			recipientEntityName = messageAdapter.formatStringWithGroups("{author}", chatMessage);
+			if (recipientEntityName.equals(PlexCore.getPlayerIGN())) {
+				recipientEntityName = messageAdapter.formatStringWithGroups("{destination}", chatMessage);
+			}
+		}
+		PlexMessagingChannelBase channel = getChannel(messageAdapter.getChannelName(chatMessage), messageAdapter.getChannelClass(), recipientEntityName);
 		PlexMessagingMessage message = messageAdapter.getIncompleteMessageFromText(chatMessage).setNow().setHead(messageAdapter.formatStringWithGroups("{author}", chatMessage));
 		if (messageAdapter.formatStringWithGroups("{author}", chatMessage).equals(PlexCore.getPlayerIGN())) {
 			message.setRight();
@@ -63,11 +70,19 @@ public class PlexMessagingMod extends PlexModBase {
 	}
 	
 	public PlexMessagingChannelBase getChannel(String name, Class<? extends PlexMessagingChannelBase> type) {
+		return this.getChannel(name, type, null);
+	}
+	
+	public PlexMessagingChannelBase getChannel(String name, Class<? extends PlexMessagingChannelBase> type, String recipientEntityName) {
+		if (recipientEntityName == null) {
+			recipientEntityName = "";
+		}
 		if (channelManager.getChannel(name) == null) {
 			PlexMessagingChannelBase channel;
 			try {
-				channel = (PlexMessagingPartyChatChannel) type.newInstance();
+				channel = type.newInstance();
 				channel.setName(name);
+				channel.setRecipientEntityName(recipientEntityName);
 				channelManager.addChannel(channel);
 			} 
 			catch (InstantiationException | IllegalAccessException e) {}

@@ -1,7 +1,9 @@
 package pw.ipex.plex.mods.messaging;
 
 import net.minecraft.util.IChatComponent;
+import net.minecraft.util.ResourceLocation;
 import pw.ipex.plex.Plex;
+import pw.ipex.plex.core.PlexCoreUtils;
 
 public class PlexMessagingPrivateMessagesChannel extends PlexMessagingChannelBase {
 
@@ -15,12 +17,28 @@ public class PlexMessagingPrivateMessagesChannel extends PlexMessagingChannelBas
 	
 	@Override
 	public String getDisplayName() {
-		return "PMs - " + this.recipientEntityName;
+		return this.recipientEntityName;
 	}
 
 	@Override
 	public void readyChannel() {
 		this.setReady();
+	}
+	
+	@Override
+	public Integer getDisplayColour() {
+		return 0xffffaa00;
+	}
+	
+	@Override
+	public ResourceLocation getAttachedPlayerHead() {
+		if (this.recipientEntityName == null) {
+			return null;
+		}
+		if (this.recipientEntityName.trim().equals("")) {
+			return null;
+		}
+		return PlexCoreUtils.getSkin(this.recipientEntityName);
 	}
 
 	@Override

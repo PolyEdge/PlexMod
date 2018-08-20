@@ -65,6 +65,10 @@ public class PlexUIScrolledItemList extends GuiScreen {
 		return this.endX - this.startX;
 	}
 	
+	public int getSizeXWithScrollbar() {
+		return this.getEndXWithScrollbar() - this.startX;
+	}
+	
 	public int getSizeY() {
 		return this.endY - this.startY;
 	}
@@ -175,7 +179,7 @@ public class PlexUIScrolledItemList extends GuiScreen {
 				PlexCoreRenderUtils.drawScaledStringLeftSide(finalText, this.startX + this.paddingX, itemYposition + (heightOrDefault(item) - (Plex.minecraft.fontRendererObj.FONT_HEIGHT / 2)), itemForegroundColour, 1.0F);
 			}
 			else {
-				item.listItemRenderText(this.startX + this.paddingX, itemYposition, this.getEndXWithScrollbar() - this.paddingX * 2, heightOrDefault(item), isSelected, isMouseOver);
+				item.listItemRenderText(this.startX + this.paddingX, itemYposition, this.getSizeXWithScrollbar() - this.paddingX * 2, heightOrDefault(item), isSelected, isMouseOver);
 			}
 		}
 		this.scrollbar.drawScreen(mouseX, mouseY, par3);

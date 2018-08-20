@@ -295,7 +295,14 @@ public class PlexMessagingUI extends PlexUIBase {
 		
 		
 
-		//PlexCoreRenderUtils.drawPlayerHead(PlexCoreUtils.getSkin("cysk"), this.parentUI.zoneCenterX(), this.parentUI.zoneCenterY(), 45);
+		//PlexCoreRenderUtils.drawPlayerHead(PlexCoreUtils.getSkin("cysk"), this.parentUI.zoneCenterX(), this.parentUI.zoneCenterY() - 128, 32);
+		//PlexCoreRenderUtils.drawPlayerHead(PlexCoreUtils.getSkin("qydn"), this.parentUI.zoneCenterX(), this.parentUI.zoneCenterY() - 96, 32);
+		//PlexCoreRenderUtils.drawPlayerHead(PlexCoreUtils.getSkin("arou"), this.parentUI.zoneCenterX(), this.parentUI.zoneCenterY() - 64, 32);
+		//PlexCoreRenderUtils.drawPlayerHead(PlexCoreUtils.getSkin("dysporium"), this.parentUI.zoneCenterX(), this.parentUI.zoneCenterY() - 32, 32);
+
+
+		
+		
 		//this.parentUI.drawHorizontalLine(this.parentUI.zoneStartX() + 5, this.parentUI.zoneStartX() + 5 + Math.round((float)(this.parentUI.horizontalPixelCount() - (getContactsPaneSize()) - 6 - 25) * this.barCurrentPercentage), this.parentUI.zoneEndY() - 6, PlexCoreUtils.replaceColour(this.currentBarColour, null, null, null, 255));
 		
 		//String drawText = "";

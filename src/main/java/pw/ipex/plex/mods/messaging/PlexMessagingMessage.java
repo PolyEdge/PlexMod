@@ -67,7 +67,7 @@ public class PlexMessagingMessage {
 	}
 	
 	public PlexMessagingMessage setAuthor(String user) {
-		fromUser = user;
+		this.fromUser = user;
 		return this;
 	}
 	

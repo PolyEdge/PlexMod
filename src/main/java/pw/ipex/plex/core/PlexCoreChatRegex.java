@@ -33,7 +33,7 @@ public class PlexCoreChatRegex {
 		addEntry(new PlexCoreChatRegexEntry("player_chat_mps", MATCH_PLAYER_MPS_CHAT).addField(1, "level").addField(2, "rank").addField(3, "author").addField(4, "message"));
 		addEntry(new PlexCoreChatRegexEntry("party_chat", MATCH_PARTY_CHAT, "party").addField(1, "level").addField(2, "rank").addField(3, "author").addField(4, "message").tag("chatMessage"));
 		addEntry(new PlexCoreChatRegexEntry("team_chat", MATCH_TEAM_CHAT).addField(1, "level").addField(2, "rank").addField(3, "author").addField(4, "message").tag("chatMessage"));
-		addEntry(new PlexCoreChatRegexEntry("direct_message", MATCH_TEAM_CHAT).addField(1, "author").addField(2, "destination").addField(3, "message").tag("chatMessage"));
+		addEntry(new PlexCoreChatRegexEntry("direct_message", MATCH_DIRECT_MESSAGE).addField(1, "author").addField(2, "destination").addField(3, "message").tag("chatMessage"));
 		addEntry(new PlexCoreChatRegexEntry("community_chat", MATCH_COMMUNITY_CHAT).addField(1, "colour").addField(2, "community").addField(3, "author").addField(4, "message").tag("chatMessage"));
 		
 		addEntry(new PlexCoreChatRegexEntry("party_invite", MATCH_PARTY_INVITE, "party").addField(1, "sender").addField(2, "extra"));

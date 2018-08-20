@@ -7,7 +7,6 @@ import java.util.Map;
 
 import pw.ipex.plex.core.PlexCoreChatRegex;
 import pw.ipex.plex.core.PlexCoreChatRegexEntry;
-import pw.ipex.plex.core.PlexCoreUtils;
 
 public class PlexMessagingChatMessageAdapter {
 	public Map<String, String> messageTags = new HashMap<String, String>();
@@ -62,6 +61,11 @@ public class PlexMessagingChatMessageAdapter {
 	
 	public PlexMessagingChatMessageAdapter setAuthor(String author) {
 		this.author = author;
+		return this;
+	}
+	
+	public PlexMessagingChatMessageAdapter setRecipientEntityName(String recipient) {
+		this.recipientEntityName = recipient;
 		return this;
 	}
 	
@@ -130,7 +134,7 @@ public class PlexMessagingChatMessageAdapter {
 		message.setContent(this.getMessageContent(text));
 		String theAuthor = this.getAuthor(text);
 		if (theAuthor != null) {
-			message.fromUser = theAuthor;
+			message.setAuthor(theAuthor);
 		}
 		return message;
 	}

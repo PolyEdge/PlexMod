@@ -17,7 +17,7 @@ public class PlexMessagingChatMessageConstructor {
 		
 		addAdapter("chatMessage", "party_chat", "{message}", "@Party").setChannelClass(getGroupChannelClass("party")).setDefaultMessageType(0).setAuthor("{author}");
 		addAdapter("chatMessage", "team_chat", "{message}", "#Team").setChannelClass(getGroupChannelClass("team")).setDefaultMessageType(0).setAuthor("{author}");
-		addAdapter("chatMessage", "community_chat", "{message}", "!{community}").setChannelClass(getGroupChannelClass("community")).setDefaultMessageType(0).setAuthor("{author}");
+		addAdapter("chatMessage", "community_chat", "{message}", "!{community}").setChannelClass(getGroupChannelClass("community")).setDefaultMessageType(0).setAuthor("{author}").setRecipientEntityName("{community}");
 		addAdapter("chatMessage", "direct_message", "{message}", "PM.{author}").setChannelClass(getGroupChannelClass("direct_message")).setDefaultMessageType(0).setAuthor("{author}");
 		
 		addAdapter("party", "party_invite", "&7Party invite from {}\n&a&lACCEPT  &c&lDENY", "@Party").addMessageTag("invitation_sender_ign", "{ign}");
@@ -77,6 +77,16 @@ public class PlexMessagingChatMessageConstructor {
 		List<PlexMessagingChatMessageAdapter> adapters = new ArrayList<PlexMessagingChatMessageAdapter>();
 		for (PlexMessagingChatMessageAdapter adapter : messageHandlers) {
 			if (adapter.matchesMessage(chatMessage) && adapter.regexEntryHasTag(tag)) {
+				adapters.add(adapter);
+			}
+		}
+		return adapters;
+	}
+	
+	public static List<PlexMessagingChatMessageAdapter> adaptersWithGroup(String group) {
+		List<PlexMessagingChatMessageAdapter> adapters = new ArrayList<PlexMessagingChatMessageAdapter>();
+		for (PlexMessagingChatMessageAdapter adapter : messageHandlers) {
+			if (adapter.chatGroup.equals(group)) {
 				adapters.add(adapter);
 			}
 		}
