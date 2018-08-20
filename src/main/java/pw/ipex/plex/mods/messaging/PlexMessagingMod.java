@@ -1,8 +1,5 @@
 package pw.ipex.plex.mods.messaging;
 
-import java.util.List;
-import java.util.Map;
-
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
@@ -10,7 +7,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent.KeyInputEvent;
 import pw.ipex.plex.Plex;
 import pw.ipex.plex.core.PlexCore;
-import pw.ipex.plex.core.PlexCoreChatRegex;
 import pw.ipex.plex.core.PlexCoreUtils;
 import pw.ipex.plex.mod.PlexModBase;
 
@@ -54,17 +50,12 @@ public class PlexMessagingMod extends PlexModBase {
 			return;
 		}
 		PlexMessagingChannelBase channel = getChannel(messageAdapter.getChannelName(chatMessage), messageAdapter.getChannelClass());
-		
-		//PlexMessagingMessage message = new PlexMessagingMessage()
-//		if (PlexCoreChatRegex.getEntryNamed("party_chat").matches(chatMessage)) {
-//			Map<String, String> messageData = PlexCoreChatRegex.getEntryNamed("party_chat").getAllFields(chatMessage);
-//			PlexMessagingMessage message = new PlexMessagingMessage().setChatMessage().setContent(messageData.get("message")).setNow().setUser(messageData.get("ign")).setLeft().setHead(messageData.get("ign"));
-//			if (messageData.get("ign").equalsIgnoreCase(PlexCore.getPlayerIGN())) {
-//				message.setRight();
-//			}
-//			getChannel("@Party", PlexMessagingPartyChatChannel.class).addAgressiveMessage(message);
-//			channelManager.bumpChannelToTop(getChannel("@Party", PlexMessagingPartyChatChannel.class));		
-//		}
+		PlexMessagingMessage message = messageAdapter.getIncompleteMessageFromText(chatMessage).setNow().setHead(messageAdapter.formatStringWithGroups("{author}", chatMessage));
+		if (messageAdapter.formatStringWithGroups("{author}", chatMessage).equals(PlexCore.getPlayerIGN())) {
+			message.setRight();
+		}
+		channel.addAgressiveMessage(message);
+		channelManager.bumpChannelToTop(channel);
 	}
 	
 	public void handleOtherMessage(String chatMessage) {

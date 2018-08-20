@@ -25,7 +25,7 @@ public class PlexMessagingPrivateMessagesChannel extends PlexMessagingChannelBas
 
 	@Override
 	public void sendMessage(String message) {
-		Plex.minecraft.thePlayer.sendChatMessage("/s " + this.recipientEntityName + " " + message);
+		Plex.minecraft.thePlayer.sendChatMessage("/w " + this.recipientEntityName + " " + message);
 
 	}
 

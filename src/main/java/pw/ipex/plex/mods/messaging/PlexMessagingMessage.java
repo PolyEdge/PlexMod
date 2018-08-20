@@ -66,7 +66,7 @@ public class PlexMessagingMessage {
 		return this;
 	}
 	
-	public PlexMessagingMessage setUser(String user) {
+	public PlexMessagingMessage setAuthor(String user) {
 		fromUser = user;
 		return this;
 	}
@@ -103,6 +103,11 @@ public class PlexMessagingMessage {
 	
 	public PlexMessagingMessage setChannel(PlexMessagingChannelBase channel) {
 		this.parentChannel = channel;
+		return this;
+	}
+	
+	public PlexMessagingMessage addCallback(PlexMessagingMessageClickCallback callback) {
+		this.callbacks.add(callback);
 		return this;
 	}
 	

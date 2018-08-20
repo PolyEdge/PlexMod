@@ -93,11 +93,13 @@ public abstract class PlexMessagingChannelBase implements PlexUIScrolledItem {
 	
 	public void addPassiveMessage(PlexMessagingMessage message) {
 		channelMessages.add(message);
+		message.parentChannel = this;
 		lastPassiveActivity = Minecraft.getSystemTime();
 	}
 	
 	public void addAgressiveMessage(PlexMessagingMessage message) {
 		channelMessages.add(message);
+		message.parentChannel = this;
 		lastAgressiveActivity = Minecraft.getSystemTime();
 	}
 	
