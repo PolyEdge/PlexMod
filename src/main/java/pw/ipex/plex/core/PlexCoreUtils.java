@@ -20,6 +20,7 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.client.resources.DefaultPlayerSkin;
 import net.minecraft.client.resources.SkinManager;
 import net.minecraft.command.ICommandSender;
@@ -30,6 +31,8 @@ import pw.ipex.plex.Plex;
 
 public class PlexCoreUtils {
 	public static ConcurrentHashMap<String, String> nameToUuid = new ConcurrentHashMap<String, String>();
+	public static ConcurrentHashMap<String, Long> uuidLookupTimes = new ConcurrentHashMap<String, Long>();
+	public static ConcurrentHashMap<String, Long> skinLookupTimes = new ConcurrentHashMap<String, Long>();
 	public static ConcurrentHashMap<String, ResourceLocation> uuidToTexture = new ConcurrentHashMap<String, ResourceLocation>();
 	public static ConcurrentHashMap<String, ResourceLocation> nameDefaultSkins = new ConcurrentHashMap<String, ResourceLocation>();
 	public static ConcurrentHashMap<String, ResourceLocation> uuidDefaultSkins = new ConcurrentHashMap<String, ResourceLocation>();
@@ -343,46 +346,110 @@ public class PlexCoreUtils {
 		return uuidDefaultSkins.get(profile.getId().toString());
 	}
 	
-	public static ResourceLocation getSkin(final GameProfile player) {
+	public static String getUUID(String ign, boolean requestIfNeeded) {
+		if (nameToUuid.get(ign) == null) {
+			NetworkPlayerInfo playerInfo = Plex.minecraft.getNetHandler().getPlayerInfo(ign);
+			if (playerInfo != null) {
+				if (playerInfo.getGameProfile().getId() != null) {
+					nameToUuid.put(ign, playerInfo.getGameProfile().getId().toString());
+				}
+			}
+		}
+		if (nameToUuid.get(ign) != null) {
+			return nameToUuid.get(ign);
+		}
+		if (uuidLookupTimes.get(ign) == null) {
+			uuidLookupTimes.put(ign, 0L);
+		}
+		if (Minecraft.getSystemTime() > uuidLookupTimes.get(ign) + 30000L && requestIfNeeded) {
+			uuidLookupTimes.put(ign, Minecraft.getSystemTime());
+			new Thread(new Runnable() {
+				public void run() {
+					PlexCoreUtils.fetchUUID(ign);
+				}
+			}).start();
+		}
+		if (nameToUuid.containsKey(ign)) {
+			return nameToUuid.get(ign);
+		}
+		return null;
+	}
+	
+	public static ResourceLocation getSkin(final GameProfile player) {	
+		return getSkin(player, true);
+	}
+	
+	public static ResourceLocation getSkin(final GameProfile player, boolean requestIfNeeded) {
 		if (player == null) {
 			return getDefaultSkin();
 		}
 		if (player.getId() == null && player.getName() == null) {
 			return getDefaultSkin();
 		}
+		String playerUUID = null;
 		if (player.getId() == null) {
-			backgroundFetchUUID(player.getName().toLowerCase(), false);
-			if (PlexCoreUtils.nameToUuid.get(player.getName()) == null) {
-				return profileDefaultSkin(player);
-			}
-			if (PlexCoreUtils.nameToUuid.get(player.getName()).equals("")) {
-				return profileDefaultSkin(player);
-			}
-			backgroundLoadSkin(new GameProfile(UUID.fromString(PlexCoreUtils.nameToUuid.get(player.getName().toLowerCase())), player.getName()), false);
-			return uuidToTexture.get(nameToUuid.get(player.getName()));
+			playerUUID = getUUID(player.getName().toLowerCase(), true);
 		}
 		else {
-			backgroundLoadSkin(player, false);
-			return uuidToTexture.get(player.getId().toString());
+			playerUUID = player.getId().toString();
 		}
+		if (playerUUID == null) {
+			return profileDefaultSkin(player);
+		}
+		if (uuidToTexture.containsKey(playerUUID)) {
+			return uuidToTexture.get(playerUUID);
+		}
+		if (skinLookupTimes.get(playerUUID) == null) {
+			skinLookupTimes.put(playerUUID, 0L);
+		}
+		if (Minecraft.getSystemTime() > skinLookupTimes.get(playerUUID) + 30000L && requestIfNeeded) {
+			skinLookupTimes.put(playerUUID, Minecraft.getSystemTime());
+			final GameProfile playerGameProfile = new GameProfile(UUID.fromString(playerUUID), player.getName());
+			new Thread(new Runnable() {
+				public void run() {
+					PlexCoreUtils.fetchSkin(playerGameProfile);
+				}
+			}).start();
+		}
+		if (uuidToTexture.containsKey(playerUUID)) {
+			return uuidToTexture.get(playerUUID);
+		}
+		return profileDefaultSkin(player);
 	}
 	
-	public static void loadSkin(final GameProfile player) {
-		loadSkin(player, true);
+	public static String fetchUUID(String ign) {
+		if (nameToUuid.containsKey(ign)) {
+			return nameToUuid.get(ign);
+		}
+		PlexCoreUtils.chatAddMessage("fetching uuid for " + ign);
+		try {
+			URL uuidAPI = new URL("https://api.mojang.com/users/profiles/minecraft/" + ign);
+			InputStreamReader uuidInputReader = new InputStreamReader(uuidAPI.openStream());
+			JsonReader jsonReader = new JsonReader(uuidInputReader);
+			JsonParser jsonParser = new com.google.gson.JsonParser();
+			JsonElement apiResponse = jsonParser.parse(jsonReader);
+			uuidInputReader.close();
+			final String playerUUID = apiResponse.getAsJsonObject().get("id").getAsString();
+			final String formattedPlayerUUID = toFormattedUUID(playerUUID);
+			nameToUuid.put(ign.toLowerCase(), formattedPlayerUUID);
+			return playerUUID;
+		}
+		catch (Throwable e) {
+			Plex.logger.info("[PlexCoreUtils] exception getting player uuid for " + ign);
+			Plex.logger.info(org.apache.commons.lang3.exception.ExceptionUtils.getStackTrace(e));
+		}
+		return null;
 	}
 	
-	public static void loadSkin(final GameProfile player, Boolean loadIfAlreadyLoaded) {
+	public static void fetchSkin(final GameProfile player) {
 		if (player.getId() == null) {
 			return;
 		}
 		final String uuid = player.getId().toString();
-		if (!PlexCoreUtils.uuidToTexture.containsKey(uuid)) {
-			PlexCoreUtils.uuidToTexture.put(uuid, profileDefaultSkin(player)); 
-		}
-		else if (!loadIfAlreadyLoaded) {
+		if (uuidToTexture.containsKey(uuid)) {
 			return;
 		}
-
+		PlexCoreUtils.chatAddMessage("loading skin " + player.getId() + (player.getName() == null ? "" : " // " + player.getName()));
 		Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> skinCache = Plex.minecraft.getSkinManager().loadSkinFromCache(player);
 		if (skinCache.containsKey(MinecraftProfileTexture.Type.SKIN)) {
 			PlexCoreUtils.uuidToTexture.put(uuid, Plex.minecraft.getSkinManager().loadSkin((MinecraftProfileTexture) skinCache.get(MinecraftProfileTexture.Type.SKIN), MinecraftProfileTexture.Type.SKIN));
@@ -404,72 +471,6 @@ public class PlexCoreUtils {
 				}
 			}
 		}, true);		
-	}
-	
-	public static String fetchUUID(String ign) {
-		return fetchUUID(ign, true);
-	}
-	
-	public static String fetchUUID(String ign, Boolean loadIfAlreadyLoaded) {
-		if (nameToUuid.containsKey(ign) && (!loadIfAlreadyLoaded)) {
-			return nameToUuid.get(ign);
-		}
-		PlexCoreUtils.nameToUuid.put(ign, "");
-		try {
-			URL uuidAPI = new URL("https://api.mojang.com/users/profiles/minecraft/" + ign);
-			InputStreamReader uuidInputReader = new InputStreamReader(uuidAPI.openStream());
-			JsonReader jsonReader = new JsonReader(uuidInputReader);
-			JsonParser jsonParser = new com.google.gson.JsonParser();
-			JsonElement apiResponse = jsonParser.parse(jsonReader);
-			uuidInputReader.close();
-			final String playerUUID = apiResponse.getAsJsonObject().get("id").getAsString();
-			final String formattedPlayerUUID = toFormattedUUID(playerUUID);
-			nameToUuid.put(ign.toLowerCase(), formattedPlayerUUID);
-			return playerUUID;
-		}
-		catch (Throwable e) {
-			Plex.logger.info("[PlexCoreUtils] exception getting player uuid for " + ign);
-			Plex.logger.info(org.apache.commons.lang3.exception.ExceptionUtils.getStackTrace(e));
-		}
-		return null;
-	}
-	
-	public static void backgroundLoadSkin(final GameProfile player) {
-		backgroundLoadSkin(player, true);
-	}
-	
-	public static void backgroundLoadSkin(final GameProfile player, final Boolean loadIfAlreadyLoaded) {
-		if (player.getId() == null) {
-			return;
-		}
-		final String uuid = player.getId().toString();
-		if (!PlexCoreUtils.uuidToTexture.containsKey(uuid)) {
-			PlexCoreUtils.uuidToTexture.put(uuid, profileDefaultSkin(player)); 
-		}
-		else if (!loadIfAlreadyLoaded) {
-			return;
-		}
-		new Thread(new Runnable() {
-			public void run() {
-				PlexCoreUtils.loadSkin(player, true);
-			}
-		}).start();		
-	}
-
-	public static void backgroundFetchUUID(final String ign) {
-		backgroundFetchUUID(ign, true);
-	}
-	
-	public static void backgroundFetchUUID(final String ign, final Boolean loadIfAlreadyLoaded) {
-		if (nameToUuid.containsKey(ign) && (!loadIfAlreadyLoaded)) {
-			return;
-		}
-		PlexCoreUtils.nameToUuid.put(ign, "");
-		new Thread(new Runnable() {
-			public void run() {
-				PlexCoreUtils.fetchUUID(ign, true);
-			}
-		}).start();
 	}
 	
 	public static String toFormattedUUID(String uuid) {

@@ -70,11 +70,11 @@ public class PlexBetterReplyMod extends PlexModBase {
 		PlexCore.registerCommandHandler("rr", betterReplyCommand);
 		PlexCore.registerCommandHandler("dms", betterReplyCommand);
 		
-		Plex.plexCommand.registerPlexCommand("messaging", new PlexBetterReplyCommand());
+		Plex.plexCommand.registerPlexCommand("reply", new PlexBetterReplyCommand());
 		
-		PlexCore.registerUiTab("Messaging", PlexBetterReplyUI.class);
+		PlexCore.registerUiTab("Reply", PlexBetterReplyUI.class);
 		
-		Plex.plexCommand.addPlexHelpCommand("messaging", "Displays messaging enhancements options");
+		Plex.plexCommand.addPlexHelpCommand("reply", "Displays messaging enhancements options");
 		Plex.plexCommand.addHelpCommand("rr", "$partial username", "Messages somebody who you have messaged with previously (without typing full ign)");
 		Plex.plexCommand.addHelpCommand("dms", "%page", "Shows DM history");
 		Plex.plexCommand.addHelpCommand("dms", "$user", "%page", "Shows previous DMs between you and a user.");

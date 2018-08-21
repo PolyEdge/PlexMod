@@ -242,6 +242,7 @@ public class PlexMessagingUI extends PlexUIBase {
 			this.lastChannelChange = PlexMessagingMod.channelManager.lastChannelChange;
 			if (PlexMessagingMod.channelManager.selectedChannel != null) {
 				this.textField.text.setText(PlexMessagingMod.channelManager.selectedChannel.lastTextTyped);
+				this.chatWindow.scrollbar.setScroll(PlexMessagingMod.channelManager.selectedChannel.lastChannelScroll);
 			}
 			else {
 				this.textField.text.setText("");
@@ -327,6 +328,7 @@ public class PlexMessagingUI extends PlexUIBase {
 		
 		if (PlexMessagingMod.channelManager.selectedChannel != null) {
 			PlexMessagingMod.channelManager.selectedChannel.lastTextTyped = this.textField.text.getText();
+			PlexMessagingMod.channelManager.selectedChannel.lastChannelScroll = this.chatWindow.scrollbar.realScrollValue;
 		}
 	}
 	
