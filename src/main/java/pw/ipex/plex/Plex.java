@@ -25,6 +25,8 @@ import pw.ipex.plex.mods.richpresence.PlexNewRichPresenceMod;
 
 import org.apache.logging.log4j.Logger;
 
+import com.bashmagic.plex.mods.autogg.PlexAutoGGMod;
+
 @Mod(modid = Plex.MODID, version = Plex.VERSION, clientSideOnly = true, acceptedMinecraftVersions = "[1.8.8,1.8.9]")
 public class Plex {
 	public static final String MODID = "PolyEdge_Plex";
@@ -69,5 +71,6 @@ public class Plex {
 		PlexCore.registerMod(new PlexDevelopmentMod());
 		//PlexCore.registerMod(new PlexRichPresenceMod());
 		PlexCore.registerMod(new PlexNewRichPresenceMod());
+		PlexCore.registerMod(new PlexAutoGGMod());
 	}
 }
