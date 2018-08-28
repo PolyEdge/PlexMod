@@ -3,7 +3,7 @@ package pw.ipex.plex.mods.friendslistenhancements;
 import net.minecraft.client.gui.GuiButton;
 import pw.ipex.plex.core.PlexCore;
 import pw.ipex.plex.ui.PlexUIBase;
-import pw.ipex.plex.ui.PlexUIMenuScreen;
+import pw.ipex.plex.ui.PlexUIModMenuScreen;
 import pw.ipex.plex.ui.PlexUISlider;
 
 public class PlexFriendsListEnhancementsUI extends PlexUIBase {
@@ -13,7 +13,7 @@ public class PlexFriendsListEnhancementsUI extends PlexUIBase {
 	}
 
 	@Override
-	public void uiAddButtons(PlexUIMenuScreen ui) {
+	public void uiAddButtons(PlexUIModMenuScreen ui) {
 		Integer top = ui.startingYPos(72);
 		Integer paneSize = ui.centeredPaneSize(1, 20, 160);
 		Integer pane1Pos = ui.centeredPanePos(0, 1, 20, 160);
@@ -28,11 +28,6 @@ public class PlexFriendsListEnhancementsUI extends PlexUIBase {
 
 	@Override
 	public void uiSliderInteracted(PlexUISlider slider) {
-	}
-
-	@Override
-	public String uiGetSliderDisplayString(PlexUISlider slider) {
-		return null;
 	}
 	
 	@Override

@@ -6,7 +6,7 @@ import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
-import pw.ipex.plex.core.PlexCoreListeners;
+import pw.ipex.plex.Plex;
 import pw.ipex.plex.core.PlexCoreUtils;
 
 public class PlexCommandQueue {
@@ -35,16 +35,19 @@ public class PlexCommandQueue {
 	}
 	
 	public Boolean canSendCommand(Long commandDelay, Long lobbySwitchDelay, Long joinServerDelay, Long chatOpenDelay) {
+		if (!Plex.serverState.onMineplex) {
+			return false;
+		}
 		if (!(Minecraft.getSystemTime() > lastCommandSent + commandDelay)) {
 			return false;
 		}
-		if (!(Minecraft.getSystemTime() > PlexCoreListeners.lastLobbySwitch + lobbySwitchDelay)) {
+		if (!(Minecraft.getSystemTime() > Plex.serverState.lastLobbySwitch + lobbySwitchDelay)) {
 			return false;
 		}
-		if (!(Minecraft.getSystemTime() > PlexCoreListeners.lastServerJoin + joinServerDelay)) {
+		if (!(Minecraft.getSystemTime() > Plex.serverState.lastServerJoin + joinServerDelay)) {
 			return false;
 		}
-		if (!(Minecraft.getSystemTime() > PlexCoreListeners.lastChatOpen + chatOpenDelay)) {
+		if (!(Minecraft.getSystemTime() > Plex.serverState.lastChatOpen + chatOpenDelay)) {
 			return false;
 		}
 		return true;

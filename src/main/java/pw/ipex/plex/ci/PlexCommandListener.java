@@ -33,7 +33,7 @@ public class PlexCommandListener extends CommandBase {
 	}
 	
 	public Boolean isListenerActive() {
-		return (this.listenerEnabled && (this.enableOnUnsupportedServers || Plex.onMineplex));
+		return (this.listenerEnabled && (this.enableOnUnsupportedServers || Plex.serverState.onMineplex));
 	}
 	
 	@Override

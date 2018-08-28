@@ -6,7 +6,7 @@ import net.minecraftforge.fml.common.gameevent.InputEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
 import pw.ipex.plex.Plex;
 import pw.ipex.plex.core.PlexCore;
-import pw.ipex.plex.core.PlexCoreListeners;
+import pw.ipex.plex.core.PlexCoreLobbyType;
 import pw.ipex.plex.core.PlexCoreUtils;
 import pw.ipex.plex.core.PlexCoreValue;
 import pw.ipex.plex.mod.PlexModBase;
@@ -21,7 +21,9 @@ import java.util.regex.Pattern;
 import com.jagrosh.discordipc.*;
 import com.jagrosh.discordipc.entities.Callback;
 import com.jagrosh.discordipc.entities.DiscordBuild;
+import com.jagrosh.discordipc.entities.Packet;
 import com.jagrosh.discordipc.entities.RichPresence;
+import com.jagrosh.discordipc.entities.pipe.PipeStatus;
 
 import net.minecraft.client.Minecraft;
 
@@ -36,6 +38,7 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 	public static IPCClient ipcClient;
 	
 	public Long AFK_IDLE_TIME = 30000L;
+	public RichPresence currentStatus = null;
 	
 	public Boolean richPresenceOpening = false;
 	public Boolean richPresenceOpened = false;
@@ -146,8 +149,21 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 	}
 	
 	public void putRichPresence() {
-		ipcClient.sendRichPresence(getRichPresence(), new Callback() {
-			
+		if (ipcClient.getStatus() == PipeStatus.CLOSED || ipcClient.getStatus() == PipeStatus.DISCONNECTED) {
+			this.openRP();
+			return;
+		}
+		final RichPresence status = getRichPresence();
+		final PlexNewRichPresenceMod me = this;
+		ipcClient.sendRichPresence(status, new Callback() {
+			@Override
+			public void succeed(Packet packet) {
+				me.currentStatus = status;
+			}
+			@Override
+			public void fail(String message) {
+
+			}
 		});
 		//DiscordRPC.INSTANCE.Discord_UpdatePresence(getRichPresence());
 	}
@@ -157,7 +173,7 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 		if (!richPresenceOpened) {
 			return;
 		}
-		if (this.modEnabled.booleanValue && Plex.onMineplex) {
+		if (this.modEnabled.booleanValue && Plex.serverState.onMineplex) {
 			openRP();
 			putRichPresence();
 		}
@@ -173,48 +189,48 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 		presence.setDetails(gameState[0]);
 		presence.setState(gameState[1]);
 		presence.setLargeImage("mineplex_logo", serverIP);
-		if ((Minecraft.getSystemTime() > (PlexCoreListeners.lastControlInput == null ? 0 : PlexCoreListeners.lastControlInput) + AFK_IDLE_TIME) && PlexCoreListeners.lastControlInput != null) {
+		if ((Minecraft.getSystemTime() > (Plex.serverState.lastControlInput == null ? 0 : Plex.serverState.lastControlInput) + AFK_IDLE_TIME) && Plex.serverState.lastControlInput != null) {
 			isAfk = true;
 			presence.setDetails("AFK | " + gameState[0]);
 			presence.setSmallImage("afk", "AFK | " + gameState[0]);
 			return presence.build();
 		}
-		if (Plex.currentLobbyType != null) {
-			if (Plex.currentLobbyType.equals("gameIngame")) {
-				if (Plex.currentGameName != null) {
-					if (gameIcons.containsKey(Plex.currentGameName.toLowerCase())) {
-						presence.setSmallImage(gameIcons.get(Plex.currentGameName.toLowerCase()), (PlexCoreListeners.isGameSpectator ? "Spectating " : "Playing ") + Plex.currentGameName);
+		if (Plex.serverState.currentLobbyType != null) {
+			if (Plex.serverState.currentLobbyType.equals(PlexCoreLobbyType.GAME_INGAME)) {
+				if (Plex.serverState.currentGameName != null) {
+					if (gameIcons.containsKey(Plex.serverState.currentGameName.toLowerCase())) {
+						presence.setSmallImage(gameIcons.get(Plex.serverState.currentGameName.toLowerCase()), gameState[0]);
 					}
-					if (PlexCore.getSharedValue("richPresence_timerMode").integerValue.equals(1) && (PlexCoreListeners.gameStartDT != null)) {
+					if (PlexCore.getSharedValue("richPresence_timerMode").integerValue.equals(1) && (Plex.serverState.gameStartDateTime != null)) {
 						//PlexCoreUtils.chatAddMessage("" + PlexCoreListeners.gameStartEpoch);
 						//PlexCoreUtils.chatAddMessage("" + OffsetDateTime.of(LocalDateTime.ofEpochSecond(PlexCoreListeners.gameStartEpoch / 10, 0, ZoneOffset.ofTotalSeconds(0)), ZoneOffset.ofTotalSeconds(0)).toEpochSecond());
 						//presence.setStartTimestamp(OffsetDateTime.of(LocalDateTime.ofEpochSecond(PlexCoreListeners.gameStartEpoch / 1000, 0, ZoneOffset.ofTotalSeconds(0)), ZoneOffset.ofTotalSeconds(0)));
-						presence.setStartTimestamp(PlexCoreListeners.gameStartDT);
+						presence.setStartTimestamp(Plex.serverState.gameStartDateTime);
 					}
 				}
 			}
-			if (Plex.currentLobbyType.equals("clansServer")) {
+			if (Plex.serverState.currentLobbyType.equals(PlexCoreLobbyType.CLANS_SERVER)) {
 				presence.setSmallImage(gameIcons.get("clans"), "Playing Clans");
 			}	
 		}
-		if (PlexCore.getSharedValue("richPresence_timerMode").integerValue.equals(2) && PlexCoreListeners.serverJoinDT != null) {
+		if (PlexCore.getSharedValue("richPresence_timerMode").integerValue.equals(2) && Plex.serverState.serverJoinDateTime != null) {
 			//presence.setStartTimestamp(OffsetDateTime.of(LocalDateTime.ofEpochSecond(PlexCoreListeners.serverJoinEpoch / 100, 0, ZoneOffset.ofTotalSeconds(0)), ZoneOffset.ofTotalSeconds(0)));
-			presence.setStartTimestamp(PlexCoreListeners.serverJoinDT);
+			presence.setStartTimestamp(Plex.serverState.serverJoinDateTime);
 		}
 		return presence.build();
 	}
 	
 
 	public String getServerIP() {
-		return PlexCoreListeners.serverIP.startsWith("us") ? "us.mineplex.com" : (PlexCoreListeners.serverIP.startsWith("eu") ? "eu.mineplex.com" : "mineplex.com");
+		return Plex.serverState.serverIP.startsWith("us") ? "us.mineplex.com" : (Plex.serverState.serverIP.startsWith("eu") ? "eu.mineplex.com" : "mineplex.com");
 	}
 	
 	public String serverIgn() {
-		Boolean showLobby = this.displayLobbyName.booleanValue && (Plex.currentLobbyName != null);
+		Boolean showLobby = this.displayLobbyName.booleanValue && (Plex.serverState.currentLobbyName != null);
 		Boolean showIGN = this.displayIGN.booleanValue;
 		String output = "";
 		if (showLobby) {
-			output += Plex.currentLobbyName;
+			output += Plex.serverState.currentLobbyName;
 		}
 		if (showIGN) {
 			if (showLobby) {
@@ -227,22 +243,25 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 	
 	public String[] getPresenceStrings(Boolean showLobby) {
 		String state = serverIgn();
-		if (Plex.currentLobbyType == null) {
+		if (Plex.serverState.currentLobbyType == null) {
 			return new String[] {"Playing on " + getServerIP(), state};
 		}
-		if (Plex.currentLobbyType.equals("mineplexHub")) {
+		if (Plex.serverState.currentLobbyType.equals(PlexCoreLobbyType.SERVER_UNDETERMINED) || Plex.serverState.currentLobbyType.equals(PlexCoreLobbyType.SERVER_UNKNOWN)) {
+			return new String[] {"Playing on " + getServerIP(), state};
+		}
+		if (Plex.serverState.currentLobbyType.equals(PlexCoreLobbyType.SERVER_HUB)) {
 			return new String[] {"In a Main Lobby", state};
 		}
-		if (Plex.currentLobbyType.equals("clansHub")) {
+		if (Plex.serverState.currentLobbyType.equals(PlexCoreLobbyType.CLANS_HUB)) {
 			return new String[] {"In a Clans Hub", state};
 		}
-		if (Plex.currentLobbyType.equals("clansServer")) {
+		if (Plex.serverState.currentLobbyType.equals(PlexCoreLobbyType.CLANS_SERVER)) {
 			return new String[] {"Playing Clans", state};
 		}
-		if (Plex.currentLobbyType.equals("gameLobby")) {
-			if (Plex.currentLobbyName != null) {
-				if (Plex.currentLobbyName.matches(MATCH_SERVER_NAME)) {
-					Matcher serverIDmatcher = PATTERN_SERVER_NAME.matcher(Plex.currentLobbyName);
+		if (Plex.serverState.currentLobbyType.equals(PlexCoreLobbyType.GAME_LOBBY)) {
+			if (Plex.serverState.currentLobbyName != null) {
+				if (Plex.serverState.currentLobbyName.matches(MATCH_SERVER_NAME)) {
+					Matcher serverIDmatcher = PATTERN_SERVER_NAME.matcher(Plex.serverState.currentLobbyName);
 					serverIDmatcher.find();
 					String serverID = serverIDmatcher.group(1);
 					if (lobbyNames.containsKey(serverID.toLowerCase())) {
@@ -255,13 +274,13 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 			}
 			return new String[] {"In a Game Lobby", state};
 		}
-		if (Plex.currentLobbyType.equals("gameIngame")) {
-			if (Plex.currentGameName == null) {
-				return new String[] {(PlexCoreListeners.isGameSpectator ? "Spectating" : "Playing") + " a Game", state};
+		if (Plex.serverState.currentLobbyType.equals(PlexCoreLobbyType.GAME_INGAME)) {
+			if (Plex.serverState.currentGameName == null) {
+				return new String[] {(Plex.serverState.isGameSpectator ? "Spectating" : "Playing") + " a Game", state};
 			}
-			return new String[] {(PlexCoreListeners.isGameSpectator ? "Spectating " : "Playing ") + Plex.currentGameName, state};
+			return new String[] {(Plex.serverState.isGameSpectator ? "Spectating " : "Playing ") + Plex.serverState.currentGameName, state};
 		}
-		return new String[] {"Playing on " + getServerIP(), "No information available"};
+		return new String[] {"Playing on " + getServerIP(), state};
 	}
 
 	@Override
@@ -279,7 +298,7 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 		}
 		new Timer().schedule(new TimerTask() {
 			public void run() {
-				if (Plex.onMineplex) {
+				if (Plex.serverState.onMineplex) {
 					updateRichPresence();
 				}
 			}
@@ -287,9 +306,9 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 	}
 	
 	public void showLibError() {
-		for (Integer x = 0; x < 6; x++) {
-			PlexCoreUtils.chatAddMessage(PlexCoreUtils.chatPlexPrefix() + PlexCoreUtils.chatStyleText("DARK_RED", "Failed to load the rich presence libraries! Check the log for details."));
-		}		
+		//for (Integer x = 0; x < 2; x++) {
+		PlexCoreUtils.chatAddMessage(PlexCoreUtils.chatPlexPrefix() + PlexCoreUtils.chatStyleText("DARK_RED", "The Discord Rich Presence libraries failed to connect to discord. This error is normal when Discord closes unexpectedly while the mod is already connected. Check the log for details"));
+		//}		
 	}
 	
 	public void openRP() {
@@ -300,7 +319,11 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 				//DiscordRPC.INSTANCE.Discord_Initialize("463568324458971147", new DiscordEventHandlers(), true, null);
 			}
 			catch (Throwable e) {
-				Plex.logger.error("Failed to load the rich presence libraries");
+				String error = e.getMessage();
+				if (error == null) {
+					error = "null";
+				}
+				Plex.logger.error("The rich presence failed to connect due to " + error);
 				Plex.logger.error(org.apache.commons.lang3.exception.ExceptionUtils.getStackTrace(e));
 				richPresenceOpened = false;
 				richPresenceOpening = false;
@@ -341,10 +364,10 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 	
 	@SubscribeEvent
 	public void onClientTick(ClientTickEvent e) {
-		if (Plex.onMineplex && (Minecraft.getSystemTime() > lastRPupdate + 30000L)) {
+		if (Plex.serverState.onMineplex && (Minecraft.getSystemTime() > lastRPupdate + 30000L)) {
 			updateRichPresence();
 		}
-		if (Plex.onMineplex && showRichPresenceError && !richPresenceErrorShown) {
+		if (Plex.serverState.onMineplex && showRichPresenceError && !richPresenceErrorShown) {
 			showRichPresenceError = false;
 			richPresenceErrorShown = true;
 			new Timer().schedule(new TimerTask() {
@@ -368,11 +391,11 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 	}
 
 	@Override
-	public void switchedLobby(String name) {
+	public void switchedLobby(PlexCoreLobbyType type) {
 		new Timer().schedule(new TimerTask() {
 			public void run() {
 				updateRichPresence();
 			}
-		}, 4000L);
+		}, 3000L);
 	}
 }

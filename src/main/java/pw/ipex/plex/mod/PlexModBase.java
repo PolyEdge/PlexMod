@@ -3,6 +3,7 @@ package pw.ipex.plex.mod;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Property;
 import pw.ipex.plex.Plex;
+import pw.ipex.plex.core.PlexCoreLobbyType;
 
 public abstract class PlexModBase {
 	public PlexModBase() {
@@ -25,6 +26,14 @@ public abstract class PlexModBase {
 		return Plex.config.get(this.getModName(), name, def);
 	}
 	
+	public Property modSetting(String name, Float def) {
+		return Plex.config.get(this.getModName(), name, def);
+	}
+	
+	public Property modSetting(String name, Double def) {
+		return Plex.config.get(this.getModName(), name, def);
+	}
+	
 	public abstract void saveModConfig();
 
 	public void joinedMineplex() {
@@ -35,7 +44,7 @@ public abstract class PlexModBase {
 		MinecraftForge.EVENT_BUS.unregister(this);
 	}
 
-	public abstract void switchedLobby(String name);
+	public abstract void switchedLobby(PlexCoreLobbyType lobbyType);
 	
 	public void communicate(Object ...args) {
 	}

@@ -4,15 +4,13 @@ import net.minecraft.client.gui.GuiButton;
 import pw.ipex.plex.core.PlexCoreUtils;
 
 public abstract class PlexUIBase {
-	public PlexUIMenuScreen parentUI;
+	public PlexUIModMenuScreen parentUI;
 	
 	public abstract String uiGetTitle();
 	
-	public abstract void uiAddButtons(PlexUIMenuScreen ui);
+	public abstract void uiAddButtons(PlexUIModMenuScreen ui);
 	
 	public abstract void uiSliderInteracted(PlexUISlider slider);
-	
-	public abstract String uiGetSliderDisplayString(PlexUISlider slider);
 	
 	public abstract void uiButtonClicked(GuiButton button);
 	

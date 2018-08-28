@@ -7,6 +7,7 @@ public class PlexCoreValue {
 	public Float floatValue;
 	public Integer integerValue;
 	public Long longValue;
+	public Double doubleValue;
 	public Object objectValue;
 	
 	public PlexCoreValue(String name) {
@@ -43,6 +44,12 @@ public class PlexCoreValue {
 		this.longValue = initVal;
 		PlexCore.registerSharedValue(this);
 	}
+	
+	public PlexCoreValue(String name, Double initVal) {
+		this.name = name;
+		this.doubleValue = initVal;
+		PlexCore.registerSharedValue(this);
+	}
 
 	public void set(Boolean value) {
 		this.booleanValue = value;
@@ -62,6 +69,10 @@ public class PlexCoreValue {
 	
 	public void set(Long value) {
 		this.longValue = value;
+	}
+
+	public void set(Double value) {
+		this.doubleValue = value;
 	}
 	
 	public void setObject(Object value) {

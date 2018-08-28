@@ -1,4 +1,5 @@
 package pw.ipex.plex.ui;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.lwjgl.input.Mouse;
@@ -25,10 +26,11 @@ public class PlexUIScrolledItemList extends GuiScreen {
 	public int mouseWheelScrollPixelAmount = 40;
 	
 	public List<? extends PlexUIScrolledItem> items;
+	public String searchText = "";
 	
 	public PlexUIScrollbar scrollbar;
 	
-	public <T> PlexUIScrolledItemList(List<? extends PlexUIScrolledItem> itemsList, int startX, int startY, int endX, int endY) {
+	public PlexUIScrolledItemList(List<? extends PlexUIScrolledItem> itemsList, int startX, int startY, int endX, int endY) {
 		this.items = itemsList;
 		this.scrollbar = new PlexUIScrollbar(startY, endY, endX - 8, 6);
 		this.setPosition(startX, startY, endX, endY);
@@ -89,13 +91,36 @@ public class PlexUIScrolledItemList extends GuiScreen {
 		this.scrollbar.scrollByPixels(pixels, this.getTotalListPixels(), this.getSizeY());
 	}
 	
+	public List<? extends PlexUIScrolledItem> getItemsMatchingSearchTerm(String searchTerm) {
+		if (searchTerm == null) {
+			return this.items;
+		}
+		if (searchTerm.equals("")) {
+			return this.items;
+		}
+		List<PlexUIScrolledItem> searchItems = new ArrayList<PlexUIScrolledItem>();
+		for (PlexUIScrolledItem item : this.items) {
+			if (item.listItemGetSearchText() == null) {
+				continue;
+			}
+			if (item.listItemGetSearchText() == "") {
+				continue;
+			}
+			if (item.listItemGetSearchText().toLowerCase().contains(searchTerm)) {
+				searchItems.add((PlexUIScrolledItem) item);
+			}
+		}
+		return searchItems;
+ 	}
+	
 	public int getTotalListPixels() {
 		int height = 0;
-		for (PlexUIScrolledItem item : this.items) {
+		List<? extends PlexUIScrolledItem> itemsSearch = this.getItemsMatchingSearchTerm(this.searchText);
+		for (PlexUIScrolledItem item : itemsSearch) {
 			height += heightOrDefault(item);
 		}
 		return height;
-	}
+	}	
 	
 	public PlexUIScrolledItem getMouseOverItem(int mouseX, int mouseY) {
 		int scrollRange = this.getTotalListPixels() - this.getSizeY();
@@ -104,11 +129,12 @@ public class PlexUIScrolledItemList extends GuiScreen {
 		if (!(mouseX > this.startX && mouseX < this.getEndXWithScrollbar())) {
 			return null;
 		}
-		if (this.items.size() == 0) {
+		List<? extends PlexUIScrolledItem> itemsSearch = this.getItemsMatchingSearchTerm(this.searchText);
+		if (itemsSearch.size() == 0) {
 			return null;
 		}
-		int currentY = -heightOrDefault(this.items.get(0));
-		for (PlexUIScrolledItem item : this.items) {
+		int currentY = -heightOrDefault(itemsSearch.get(0));
+		for (PlexUIScrolledItem item : itemsSearch) {
 			currentY += heightOrDefault(item);
 			if (currentY + heightOrDefault(item) < viewportTop - this.renderBorderTop) {
 				continue;
@@ -133,11 +159,12 @@ public class PlexUIScrolledItemList extends GuiScreen {
 		int scrollRange = this.getTotalListPixels() - this.getSizeY();
 		int viewportTop = (int)(scrollRange * this.scrollbar.scrollValue + 0);
 		int viewportBottom = (int)(scrollRange * this.scrollbar.scrollValue + this.getSizeY());
-		if (this.items.size() == 0) {
+		List<? extends PlexUIScrolledItem> itemsSearch = this.getItemsMatchingSearchTerm(this.searchText);
+		if (itemsSearch.size() == 0) {
 			return;
 		}
-		int currentY = -heightOrDefault(this.items.get(0));
-		for (PlexUIScrolledItem item : this.items) {
+		int currentY = -heightOrDefault(itemsSearch.get(0));
+		for (PlexUIScrolledItem item : itemsSearch) {
 			currentY += heightOrDefault(item);
 			if (currentY + heightOrDefault(item) < viewportTop - this.renderBorderTop) {
 				continue;
@@ -172,7 +199,7 @@ public class PlexUIScrolledItemList extends GuiScreen {
 				itemBackgroundColour = PlexCoreUtils.multiplyColour(itemBackgroundColour, 1.20F);
 			}
 			
-			PlexUIMenuScreen.drawRect(this.startX, itemYposition, this.endX, itemYposition + heightOrDefault(item), itemBackgroundColour);
+			PlexUIModMenuScreen.drawRect(this.startX, itemYposition, this.endX, itemYposition + heightOrDefault(item), itemBackgroundColour);
 	
 			if (itemText != null) {
 				String finalText = Plex.minecraft.fontRendererObj.trimStringToWidth(itemText, this.getEndXWithScrollbar() - this.paddingX * 2);

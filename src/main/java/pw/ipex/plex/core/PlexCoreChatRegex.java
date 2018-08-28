@@ -14,7 +14,7 @@ public class PlexCoreChatRegex {
 	public static String MATCH_PARTY_CHAT = "^(?:(?:&[0-9a-fA-Fklmnor]){1,3}([0-9]{1,3}) )? ?(?:&5&lParty) ()?(?:&[0-9a-fA-Fklmnor]){0,4}([a-zA-Z0-9_-]{1,16}) ?&d(.*)$";
 	public static String MATCH_TEAM_CHAT = "^&lTeam (?:&7Dead )?(?:(?:&[0-9a-fA-Fklmnor]){1,3}([0-9]{1,3}) )?(?:&[0-9a-fA-Fklmnor]){0,4}(ULTRA|HERO|LEGEND|TITAN|ETERNAL|YT|YOUTUBE|ARTIST|TRAINEE|SUPPORT|MOD|SR\\.MOD|MAPPER|BUILDER|MAPLEAD|JR\\.DEV|DEV|ADMIN|LEADER|OWNER)? ?(?:&[0-9a-fA-Fklmnor]){0,4}([a-zA-Z0-9_-]{1,16}) ?(?:&[0-9a-fA-Fklmnor]){0,4} ?(.*)$";
 	public static String MATCH_DIRECT_MESSAGE = "^&6&l([a-zA-Z0-9 _]+) > ([a-zA-Z0-9 _]+)&e &e&l(.*)$";
-	public static String MATCH_COMMUNITY_CHAT = "^&([0-9a-f])&l([a-zA-Z0-9])&[0-9a-f]&l([a-zA-Z0-9])$";
+	public static String MATCH_COMMUNITY_CHAT = "^&([0-9a-f])&l([a-zA-Z0-9])&([0-9a-f])&l([a-zA-Z0-9]) &([0-9a-f])(.*)$";
 	
 	public static String MATCH_PARTY_INVITE = "^&9Party> &7You have been invited to &e([a-zA-Z0-9_]+)&7's party! (.*)$";
 	public static String MATCH_PARTY_INVITED = "^&9Party> &e([a-zA-Z0-9_]+)&7 has invited &e([a-zA-Z0-9_]+)&7 to the party\\.$";
@@ -26,25 +26,31 @@ public class PlexCoreChatRegex {
 	public static String MATCH_PARTY_DECLINED = "^&9Party> &e([a-zA-Z0-9_]+)&7 has denied your invite\\.?$";
 	public static String MATCH_PARTY_DECLINE = "^&9Party> &7You have denied your invite to &e([a-zA-Z0-9_]+)&7's party\\.$";
 	
+	public static String MATCH_DM_PLAYER_OFFLINE = "^&9Online Player Search> &e0&7 matches for \\[&e([A-Za-z0-9_]+)&7]\\.$";
+	
 	public static List<PlexCoreChatRegexEntry> regexEntries = new ArrayList<PlexCoreChatRegexEntry>();
 	
 	static {
-		addEntry(new PlexCoreChatRegexEntry("player_chat", MATCH_PLAYER_CHAT).addField(1, "level").addField(2, "rank").addField(3, "author").addField(4, "message").tag("chatMessage"));
-		addEntry(new PlexCoreChatRegexEntry("player_chat_mps", MATCH_PLAYER_MPS_CHAT).addField(1, "level").addField(2, "rank").addField(3, "author").addField(4, "message"));
-		addEntry(new PlexCoreChatRegexEntry("party_chat", MATCH_PARTY_CHAT, "party").addField(1, "level").addField(2, "rank").addField(3, "author").addField(4, "message").tag("chatMessage"));
-		addEntry(new PlexCoreChatRegexEntry("team_chat", MATCH_TEAM_CHAT).addField(1, "level").addField(2, "rank").addField(3, "author").addField(4, "message").tag("chatMessage"));
-		addEntry(new PlexCoreChatRegexEntry("direct_message", MATCH_DIRECT_MESSAGE).addField(1, "author").addField(2, "destination").addField(3, "message").tag("chatMessage"));
-		addEntry(new PlexCoreChatRegexEntry("community_chat", MATCH_COMMUNITY_CHAT).addField(1, "colour").addField(2, "community").addField(3, "author").addField(4, "message").tag("chatMessage"));
+		addEntry("player_chat", MATCH_PLAYER_CHAT).addField(1, "level").addField(2, "rank").addField(3, "author").addField(4, "message").tag("chatMessage");
+		addEntry("player_chat_mps", MATCH_PLAYER_MPS_CHAT).addField(1, "level").addField(2, "rank").addField(3, "author").addField(4, "message");
+		addEntry("party_chat", MATCH_PARTY_CHAT, "party").addField(1, "level").addField(2, "rank").addField(3, "author").addField(4, "message").tag("chatMessage");
+		addEntry("team_chat", MATCH_TEAM_CHAT).addField(1, "level").addField(2, "rank").addField(3, "author").addField(4, "message").tag("chatMessage");
+		addEntry("direct_message", MATCH_DIRECT_MESSAGE).addField(1, "author").addField(2, "destination").addField(3, "message").tag("chatMessage");
+		addEntry("community_chat", MATCH_COMMUNITY_CHAT).addField(1, "com_name_colour").addField(2, "community").addField(3, "author_colour").addField(4, "author").addField(5, "message_colour").addField(6, "message").tag("chatMessage");
 		
-		addEntry(new PlexCoreChatRegexEntry("party_invite", MATCH_PARTY_INVITE, "party").addField(1, "sender").addField(2, "extra"));
-		addEntry(new PlexCoreChatRegexEntry("party_invited", MATCH_PARTY_INVITED, "party").addField(1, "sender").addField(2, "invited_player"));
-		addEntry(new PlexCoreChatRegexEntry("party_invite_reply", MATCH_PARTY_REPLY, "party"));
-		addEntry(new PlexCoreChatRegexEntry("party_join", MATCH_PARTY_JOIN, "party").addField(1, "ign"));
-		addEntry(new PlexCoreChatRegexEntry("party_remove", MATCH_PARTY_REMOVE, "party").addField(1, "ign"));
-		addEntry(new PlexCoreChatRegexEntry("party_left", MATCH_PARTY_REMOVE, "party").addField(1, "ign"));
-		addEntry(new PlexCoreChatRegexEntry("party_leave", MATCH_PARTY_LEAVE, "party"));
-		addEntry(new PlexCoreChatRegexEntry("party_declined", MATCH_PARTY_DECLINED, "party").addField(1, "ign"));
-		addEntry(new PlexCoreChatRegexEntry("party_decline", MATCH_PARTY_DECLINE, "party"));
+		addEntry("party_invite", MATCH_PARTY_INVITE, "party").addField(1, "sender").addField(2, "extra");
+		addEntry("party_invited", MATCH_PARTY_INVITED, "party").addField(1, "sender").addField(2, "invited_player");
+		addEntry("party_invite_reply", MATCH_PARTY_REPLY, "party");
+		addEntry("party_join", MATCH_PARTY_JOIN, "party").addField(1, "ign");
+		addEntry("party_remove", MATCH_PARTY_REMOVE, "party").addField(1, "ign");
+		addEntry("party_left", MATCH_PARTY_REMOVE, "party").addField(1, "ign");
+		addEntry("party_leave", MATCH_PARTY_LEAVE, "party");
+		addEntry("party_declined", MATCH_PARTY_DECLINED, "party").addField(1, "ign");
+		addEntry("party_decline", MATCH_PARTY_DECLINE, "party");
+		
+		
+		
+		addEntry("direct_message_player_offline", MATCH_DM_PLAYER_OFFLINE, "direct_message").addField(1, "destination");
 		
 	}
 	
@@ -160,8 +166,17 @@ public class PlexCoreChatRegex {
 		}
 	}
 	
-	public static void addEntry(PlexCoreChatRegexEntry entry) {
+	public static PlexCoreChatRegexEntry addEntry(String entryName, String entryRegex) {
+		return addEntry(new PlexCoreChatRegexEntry(entryName, entryRegex));
+	}
+	
+	public static PlexCoreChatRegexEntry addEntry(String entryName, String entryRegex, String tag) {
+		return addEntry(new PlexCoreChatRegexEntry(entryName, entryRegex, tag));
+	}
+	
+	public static PlexCoreChatRegexEntry addEntry(PlexCoreChatRegexEntry entry) {
 		regexEntries.add(entry);
+		return entry;
 	}
 	
 	public static PlexCoreChatRegexEntry getEntryNamed(String name) {

@@ -46,7 +46,7 @@ public class PlexPlexCommand extends PlexCommandHandler {
 		else if (args[0].equalsIgnoreCase("info")) {
 			PlexCoreUtils.chatAddMessage(PlexCoreUtils.getUiChatMessage("plex.modInfo"));
 		}
-		else if (!Plex.onMineplex) {
+		else if (!Plex.serverState.onMineplex) {
 			PlexCoreUtils.chatAddMessage(PlexCoreUtils.getUiChatMessage("plex.unsupportedServer"));
 		}
 		else if (plexNamespace.containsKey(args[0])) {

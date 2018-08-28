@@ -18,6 +18,9 @@ public class PlexMessagingChatMessageAdapter {
 	public String recipientEntityName = "";
 	public String channelName = "";
 	public String author;
+	public boolean requiresChannelOpen = false;
+	public boolean requiresChatOpen = false;
+	public boolean sendToSelectedChannel = false;
 	public List<PlexMessagingMessageClickCallback> callbacks = new ArrayList<PlexMessagingMessageClickCallback>();
 	public int defaultMessageType = 1;
 	public int defaultMessageSide = 0;
@@ -59,6 +62,11 @@ public class PlexMessagingChatMessageAdapter {
 		return this;
 	}
 	
+	public PlexMessagingChatMessageAdapter setSendToSelectedChannel(boolean send) {
+		this.sendToSelectedChannel = send;
+		return this;
+	}
+	
 	public PlexMessagingChatMessageAdapter setAuthor(String author) {
 		this.author = author;
 		return this;
@@ -79,6 +87,15 @@ public class PlexMessagingChatMessageAdapter {
 		return this;
 	}
 	
+	public PlexMessagingChatMessageAdapter setChannelOpenedRequired(boolean required) {
+		this.requiresChannelOpen = required;
+		return this;
+	}
+	
+	public PlexMessagingChatMessageAdapter setChatOpenedRequired(boolean required) {
+		this.requiresChatOpen = required;
+		return this;
+	}
 
 	public Class<? extends PlexMessagingChannelBase> getChannelClass() {
 		return this.channelClass;
@@ -89,6 +106,9 @@ public class PlexMessagingChatMessageAdapter {
 	}
 	
 	public String getChannelName(String text) {
+		if (this.sendToSelectedChannel) {
+			return "PI.Selected";
+		}
 		return this.formatStringWithGroups(this.channelName, text);
 	}
 	
@@ -137,5 +157,25 @@ public class PlexMessagingChatMessageAdapter {
 			message.setAuthor(theAuthor);
 		}
 		return message;
+	}
+	
+	public boolean meetsRequirements(boolean chatOpen, PlexMessagingChannelBase selectedChannel, PlexMessagingChannelBase messageChannel) {
+		boolean requiredChannelOpen = false;
+		if (selectedChannel != null && messageChannel != null) {
+			requiredChannelOpen = selectedChannel.equals(messageChannel);
+		}
+		if (this.sendToSelectedChannel) {
+			if (this.requiresChatOpen) {
+				return chatOpen;
+			}
+			return true;
+		}
+		if (this.requiresChannelOpen && !chatOpen) {
+			return false;
+		}
+		if (this.requiresChannelOpen && !requiredChannelOpen) {
+			return false;
+		}
+		return true;
 	}
 }

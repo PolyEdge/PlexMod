@@ -15,6 +15,7 @@ import net.minecraft.util.ResourceLocation;
 import pw.ipex.plex.Plex;
 import pw.ipex.plex.ci.PlexCommandListener;
 import pw.ipex.plex.core.PlexCore;
+import pw.ipex.plex.core.PlexCoreLobbyType;
 import pw.ipex.plex.core.PlexCoreTextures;
 //import pw.ipex.plex.core.PlexCoreUtils;
 import pw.ipex.plex.mod.PlexModBase;
@@ -69,17 +70,16 @@ public class PlexPlexMod extends PlexModBase {
 	}
 
 	@Override
-	public void saveModConfig() {
-	}
+	public void saveModConfig() {}
 
 	@Override
-	public void joinedMineplex() { }
+	public void joinedMineplex() {}
 
 	@Override
-	public void leftMineplex() { }
+	public void leftMineplex() {}
 
 	@Override
-	public void switchedLobby(String name) {
+	public void switchedLobby(PlexCoreLobbyType type) {
 	}
 
 }

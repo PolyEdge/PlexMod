@@ -22,7 +22,7 @@ public class PlexMessagingChannelManager {
 	
 	@SubscribeEvent
 	public void onMessage(ClientChatReceivedEvent e) {
-		if (!Plex.onMineplex || selectedChannel == null) {
+		if (!Plex.serverState.onMineplex || selectedChannel == null) {
 			return;
 		}
 		if (selectedChannel.awaitingReady) {

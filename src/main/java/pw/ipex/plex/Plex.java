@@ -11,7 +11,9 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import pw.ipex.plex.commandqueue.PlexCommandQueue;
 import pw.ipex.plex.core.PlexCore;
 import pw.ipex.plex.core.PlexCoreListeners;
+import pw.ipex.plex.core.PlexCoreServerState;
 import pw.ipex.plex.core.PlexCoreTextures;
+import pw.ipex.plex.mods.autogg.PlexAutoGGMod;
 import pw.ipex.plex.mods.autothank.PlexAutoThankMod;
 import pw.ipex.plex.mods.betterreply.PlexBetterReplyMod;
 import pw.ipex.plex.mods.developmentmod.PlexDevelopmentMod;
@@ -35,11 +37,7 @@ public class Plex {
 	public static Configuration config;
 	public static Logger logger;
 
-	public static Boolean onMineplex = false;
-	public static String currentLobbyType = null;
-	public static String currentLobbyName = null;
-	public static String currentGameName = null;
-
+	public static PlexCoreServerState serverState = new PlexCoreServerState();
 	public static PlexCoreListeners plexListeners = new PlexCoreListeners();
 	public static PlexCommandQueue plexCommandQueue = new PlexCommandQueue();
 	public static PlexPlexCommand plexCommand = new PlexPlexCommand();
@@ -69,5 +67,6 @@ public class Plex {
 		PlexCore.registerMod(new PlexDevelopmentMod());
 		//PlexCore.registerMod(new PlexRichPresenceMod());
 		PlexCore.registerMod(new PlexNewRichPresenceMod());
+		PlexCore.registerMod(new PlexAutoGGMod());
 	}
 }

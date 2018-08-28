@@ -14,18 +14,15 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
 import pw.ipex.plex.Plex;
 import pw.ipex.plex.core.PlexCore;
 import pw.ipex.plex.core.PlexCoreTextures;
 import pw.ipex.plex.core.PlexCoreUtils;
 import pw.ipex.plex.mods.plexmod.PlexPlexMod;
 
-public class PlexUIMenuScreen extends GuiScreen {
+public class PlexUIModMenuScreen extends GuiScreen {
 	public PlexUIBase baseUiScreen;
-	public PlexUIMenuScreen oldUiScreen;
+	public PlexUIModMenuScreen oldUiScreen;
 	public List<Class<? extends PlexUIBase>> ownUiData = new ArrayList<Class<? extends PlexUIBase>>();
 	public List<Gui> otherGuiItems = new ArrayList<Gui>();
 	public Long colourFadeTime = 500L;
@@ -34,12 +31,12 @@ public class PlexUIMenuScreen extends GuiScreen {
 	public Integer oldBackground = null;
 	public Boolean doneButtonShown = true;
 	
-	public PlexUIMenuScreen(PlexUIBase base) {
+	public PlexUIModMenuScreen(PlexUIBase base) {
 		this.baseUiScreen = base;
 		updateChild();
 	}
 	
-	public PlexUIMenuScreen(PlexUIBase base, PlexUIMenuScreen oldScreen) {
+	public PlexUIModMenuScreen(PlexUIBase base, PlexUIModMenuScreen oldScreen) {
 		this.baseUiScreen = base;
 		this.colourFade = Minecraft.getSystemTime();
 		this.oldUiScreen = oldScreen;
@@ -129,7 +126,6 @@ public class PlexUIMenuScreen extends GuiScreen {
 		this.addPlexUi();
 		this.baseUiScreen.uiOpened();
 		this.baseUiScreen.uiAddButtons(this);
-		MinecraftForge.EVENT_BUS.register(this);
 	}
 	
 	public void addPlexUi() {
@@ -183,7 +179,7 @@ public class PlexUIMenuScreen extends GuiScreen {
 			}
 			PlexCore.saveAllConfig();
 			try {
-				this.mc.displayGuiScreen(new PlexUIMenuScreen(ownUiData.get(button.id-200).newInstance(), this));
+				this.mc.displayGuiScreen(new PlexUIModMenuScreen(ownUiData.get(button.id-200).newInstance(), this));
 			} 
 			catch (InstantiationException e) {} 
 			catch (IllegalAccessException e) {}
@@ -234,6 +230,11 @@ public class PlexUIMenuScreen extends GuiScreen {
         int x = Mouse.getEventX() * this.width / this.mc.displayWidth;
         int y = this.height - Mouse.getEventY() * this.height / this.mc.displayHeight - 1;
 		this.baseUiScreen.handleMouseInput(x, y);
+	}
+	
+	@Override
+	public void onGuiClosed() {
+		this.baseUiScreen.uiClosed();
 	}
 	
 //    public void drawHorizontalLine(int startX, int endX, int y, int color) {
@@ -374,15 +375,5 @@ public class PlexUIMenuScreen extends GuiScreen {
 		drawHeaderImage();
 		drawSocialMedia();
 		super.drawScreen(par1, par2, par3);
-	}
-	
-	@SubscribeEvent
-	public void clientTick(ClientTickEvent e) {
-		if (Plex.minecraft.currentScreen != null) {
-			if (!Plex.minecraft.currentScreen.equals(this)) {
-				MinecraftForge.EVENT_BUS.unregister(this);
-				this.baseUiScreen.uiClosed();
-			}			
-		}
 	}
 }

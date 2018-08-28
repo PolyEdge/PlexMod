@@ -200,9 +200,9 @@ public class PlexUIScrollbar {
 		int sbarLeft = barPos[2];
 		int sbarRight = barPos[3];
 		
-        PlexUIMenuScreen.drawRect(left, top, right, bottom, 0xff000000);
-        PlexUIMenuScreen.drawRect(sbarLeft, sbarTop, sbarRight, sbarBottom, 0xff808080);
-        PlexUIMenuScreen.drawRect(sbarLeft, sbarTop, sbarRight - 1, sbarBottom - 1, 0xffc0c0c0);
+        PlexUIModMenuScreen.drawRect(left, top, right, bottom, 0xff000000);
+        PlexUIModMenuScreen.drawRect(sbarLeft, sbarTop, sbarRight, sbarBottom, 0xff808080);
+        PlexUIModMenuScreen.drawRect(sbarLeft, sbarTop, sbarRight - 1, sbarBottom - 1, 0xffc0c0c0);
 
         
         // original source just in case

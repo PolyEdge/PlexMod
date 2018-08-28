@@ -3,7 +3,7 @@ package pw.ipex.plex.mods.plexmod;
 import net.minecraft.client.gui.GuiButton;
 import pw.ipex.plex.Plex;
 import pw.ipex.plex.ui.PlexUIBase;
-import pw.ipex.plex.ui.PlexUIMenuScreen;
+import pw.ipex.plex.ui.PlexUIModMenuScreen;
 import pw.ipex.plex.ui.PlexUISlider;
 
 public class PlexPlexUI extends PlexUIBase {
@@ -15,7 +15,7 @@ public class PlexPlexUI extends PlexUIBase {
 	}
 
 	@Override
-	public void uiAddButtons(PlexUIMenuScreen ui) {
+	public void uiAddButtons(PlexUIModMenuScreen ui) {
 		// TODO Auto-generated method stub
 
 	}
@@ -36,12 +36,6 @@ public class PlexPlexUI extends PlexUIBase {
 	public void uiSliderInteracted(PlexUISlider slider) {
 		// TODO Auto-generated method stub
 
-	}
-
-	@Override
-	public String uiGetSliderDisplayString(PlexUISlider slider) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override

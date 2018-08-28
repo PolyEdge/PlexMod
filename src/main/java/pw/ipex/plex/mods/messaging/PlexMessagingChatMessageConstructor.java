@@ -20,7 +20,7 @@ public class PlexMessagingChatMessageConstructor {
 		addAdapter("chatMessage", "community_chat", "{message}", "!{community}").setChannelClass(getGroupChannelClass("community")).setDefaultMessageType(0).setAuthor("{author}").setRecipientEntityName("{community}");
 		addAdapter("chatMessage", "direct_message", "{message}", "PM.{author}").setChannelClass(getGroupChannelClass("direct_message")).setDefaultMessageType(0).setAuthor("{author}");
 		
-		addAdapter("party", "party_invite", "&7Party invite from {}\n&a&lACCEPT  &c&lDENY", "@Party").addMessageTag("invitation_sender_ign", "{ign}");
+		addAdapter("party", "party_invite", "&7Party invite from {ign}\n&a&lACCEPT  &c&lDENY", "@Party").addMessageTag("invitation_sender_ign", "{ign}");
 		addAdapter("party", "party_invited", "&e{sender} &7has invited &e{invited_player} &7to the party.", "@Party");
 		addAdapter("party", "party_join", "&e{ign} &7joined the party.", "@Party");
 		addAdapter("party", "party_left", "&e{ign} &7left the party.", "@Party");

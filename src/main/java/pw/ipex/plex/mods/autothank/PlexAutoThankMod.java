@@ -18,6 +18,7 @@ import pw.ipex.plex.Plex;
 import pw.ipex.plex.ci.PlexCommandListener;
 import pw.ipex.plex.commandqueue.PlexQueueCommand;
 import pw.ipex.plex.core.PlexCore;
+import pw.ipex.plex.core.PlexCoreLobbyType;
 import pw.ipex.plex.core.PlexCoreUtils;
 import pw.ipex.plex.core.PlexCoreValue;
 import pw.ipex.plex.mod.PlexModBase;
@@ -81,13 +82,11 @@ public class PlexAutoThankMod extends PlexModBase {
 			Plex.plexCommandQueue.cancelAllFromLowPriorityQueueMatchingGroup("autothank");
 			return;
 		}
-		if (Plex.currentLobbyType != null) {
-			if (Plex.currentLobbyType.equals("clansServer")) {
-				lastThankWave = 0L;
-				Plex.plexCommandQueue.cancelAll(thankQueue);
-				Plex.plexCommandQueue.cancelAllFromLowPriorityQueueMatchingGroup("autothank");
-				return;
-			}
+		if (Plex.serverState.currentLobbyType.equals(PlexCoreLobbyType.CLANS_SERVER)) {
+			lastThankWave = 0L;
+			Plex.plexCommandQueue.cancelAll(thankQueue);
+			Plex.plexCommandQueue.cancelAllFromLowPriorityQueueMatchingGroup("autothank");
+			return;
 		}
 		Plex.plexCommandQueue.removeCompleted(thankQueue);
 		if (thankQueue.size() > 0) {
@@ -97,7 +96,7 @@ public class PlexAutoThankMod extends PlexModBase {
 				}				
 			}
 		}
-		if (Plex.onMineplex && this.modEnabled.booleanValue) {
+		if (Plex.serverState.onMineplex && this.modEnabled.booleanValue) {
 			if (Minecraft.getSystemTime() > (lastThankWave + thankWaveInterval)) {
 				for (String game : gameNames.values()) {
 					thankQueue.add(Plex.plexCommandQueue.addLowPriorityCommand("autothank", "/amplifier thank " + game));
@@ -168,15 +167,13 @@ public class PlexAutoThankMod extends PlexModBase {
 	}
 
 	@Override
-	public void switchedLobby(String name) {
-		if (name != null) {
-			if (name.equals("clansServer")) {
-				new Timer().schedule(new TimerTask() {
-					public void run() {
-						PlexCoreUtils.chatAddMessage(PlexCoreUtils.chatPlexPrefix() + PlexCoreUtils.chatStyleText("DARK_GRAY", "Note: AutoThank does not work on clans servers and is inactive until you leave this clans game."));	
-					}
-				}, 2000L);
-			}
+	public void switchedLobby(PlexCoreLobbyType type) {
+		if (type.equals(PlexCoreLobbyType.CLANS_SERVER)) {
+			new Timer().schedule(new TimerTask() {
+				public void run() {
+					PlexCoreUtils.chatAddMessage(PlexCoreUtils.chatPlexPrefix() + PlexCoreUtils.chatStyleText("DARK_GRAY", "Note: AutoThank does not work on clans servers and is inactive until you leave this clans game."));	
+				}
+			}, 2000L);
 		}
 	}
 }

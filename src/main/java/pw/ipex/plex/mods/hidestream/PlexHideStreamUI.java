@@ -3,7 +3,7 @@ package pw.ipex.plex.mods.hidestream;
 import net.minecraft.client.gui.GuiButton;
 import pw.ipex.plex.core.PlexCore;
 import pw.ipex.plex.ui.PlexUIBase;
-import pw.ipex.plex.ui.PlexUIMenuScreen;
+import pw.ipex.plex.ui.PlexUIModMenuScreen;
 import pw.ipex.plex.ui.PlexUISlider;
 
 public class PlexHideStreamUI extends PlexUIBase {
@@ -13,7 +13,7 @@ public class PlexHideStreamUI extends PlexUIBase {
 	}
 
 	@Override
-	public void uiAddButtons(PlexUIMenuScreen ui) {
+	public void uiAddButtons(PlexUIModMenuScreen ui) {
 		Integer top = ui.startingYPos(94);
 		Integer paneSize = ui.centeredPaneSize(2, 20, 160);
 		Integer pane1Pos = ui.centeredPanePos(-1, 2, 20, 160);
@@ -62,11 +62,6 @@ public class PlexHideStreamUI extends PlexUIBase {
 		}
 	}
 
-	@Override
-	public String uiGetSliderDisplayString(PlexUISlider slider) {
-		return null;
-	}
-	
 	@Override
 	public Integer pageForegroundColour() {
 		return 0xff0cb2ff;

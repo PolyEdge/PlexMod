@@ -20,11 +20,6 @@ public class PlexUITextField extends net.minecraft.client.gui.Gui {
 		this.yPosition = y;
 		this.itemWidth = par5Width;
 		this.itemHeight = par6Height;
-		// TODO Auto-generated constructor stub
-	}
-
-
-	public void initGui() {
 		this.text = new GuiTextField(this.id, this.fontRendererInstance, this.xPosition, this.yPosition, this.itemWidth, this.itemHeight);
 	}
 	 

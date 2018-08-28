@@ -303,9 +303,10 @@ public class PlexCore {
 	 * @param lobbyType       Type of the new lobby
 	 * @param dispatchChanged Send lobby update message to all {@link PlexModBase}s
 	 */
-	public static void updateLobby(String lobbyType, Boolean dispatchChanged) {
-		if (lobbyType != Plex.currentLobbyType) {
-			Plex.currentLobbyType = lobbyType;
+	@Deprecated
+	public static void updateLobby(PlexCoreLobbyType lobbyType, Boolean dispatchChanged) {
+		if (lobbyType != Plex.serverState.currentLobbyType) {
+			Plex.serverState.currentLobbyType = lobbyType;
 		}
 		if (dispatchChanged) {
 			for (PlexModBase mod : plexMods.values()) {
@@ -313,14 +314,34 @@ public class PlexCore {
 			}
 		}
 	}
+	
+	/**
+	 * Update the lobby type
+	 * 
+	 * @param lobbyType       Type of the new lobby
+	 */
+	public static void setLobbyType(PlexCoreLobbyType lobbyType) {
+		Plex.serverState.currentLobbyType = lobbyType;
+	}
+	
+	/**
+	 * Dispatches to all mods that the lobby has been updated
+	 * 
+	 * @param lobbyType       Type of the lobby or PlexCoreLobbyType.SWITCHED_SERVERS for indiciating exactly when a change occurs.
+	 */
+	public static void dispatchLobbyChanged(PlexCoreLobbyType lobbyType) {
+		for (PlexModBase mod : plexMods.values()) {
+			mod.switchedLobby(lobbyType);
+		}		
+	}
 
 	/**
 	 * Gets the current lobby type
 	 * 
 	 * @return The current lobby type
 	 */
-	public static String getCurrentLobbyType() {
-		return Plex.currentLobbyType;
+	public static PlexCoreLobbyType getCurrentLobbyType() {
+		return Plex.serverState.currentLobbyType;
 	}
 
 	/**
@@ -329,7 +350,7 @@ public class PlexCore {
 	 * @param serverName The new server name
 	 */
 	public static void updateServerName(String serverName) {
-		Plex.currentLobbyName = serverName;
+		Plex.serverState.currentLobbyName = serverName;
 		for (PlexModBase mod : plexMods.values()) {
 			mod.serverNameChanged(serverName);
 		}
@@ -341,7 +362,7 @@ public class PlexCore {
 	 * @return The server name
 	 */
 	public static String getServerName() {
-		return Plex.currentLobbyName;
+		return Plex.serverState.currentLobbyName;
 	}
 
 	/**
@@ -350,7 +371,7 @@ public class PlexCore {
 	 * @param gameName The new game name
 	 */
 	public static void updateGameName(String gameName) {
-		Plex.currentGameName = gameName;
+		Plex.serverState.currentGameName = gameName;
 	}
 
 	/**
@@ -359,7 +380,7 @@ public class PlexCore {
 	 * @return The current game's name
 	 */
 	public static String getGameName() {
-		return Plex.currentGameName;
+		return Plex.serverState.currentGameName;
 	}
 
 	/**
@@ -377,7 +398,7 @@ public class PlexCore {
 			return Collections.emptyList();
 		}
 		PlexCommandHandler commandObj = commandHandlerNamespace.get(namespace);
-		if ((!commandObj.allowUnsupportedServers()) && (!Plex.onMineplex)) {
+		if ((!commandObj.allowUnsupportedServers()) && (!Plex.serverState.onMineplex)) {
 			return Collections.emptyList();
 		}
 		return commandHandlerNamespace.get(namespace).tabCompletion(sender, namespace, commandArgs, pos);
@@ -391,7 +412,7 @@ public class PlexCore {
 			return;
 		}
 		PlexCommandHandler commandObj = commandHandlerNamespace.get(namespace);
-		if ((!commandObj.allowUnsupportedServers()) && (!Plex.onMineplex)) {
+		if ((!commandObj.allowUnsupportedServers()) && (!Plex.serverState.onMineplex)) {
 			PlexCoreUtils.chatAddMessage(PlexCoreUtils.getUiChatMessage("notOnMineplex"));
 			return;
 		}

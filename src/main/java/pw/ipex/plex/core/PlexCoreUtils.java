@@ -421,7 +421,7 @@ public class PlexCoreUtils {
 		if (nameToUuid.containsKey(ign)) {
 			return nameToUuid.get(ign);
 		}
-		PlexCoreUtils.chatAddMessage("fetching uuid for " + ign);
+		//PlexCoreUtils.chatAddMessage("fetching uuid for " + ign);
 		try {
 			URL uuidAPI = new URL("https://api.mojang.com/users/profiles/minecraft/" + ign);
 			InputStreamReader uuidInputReader = new InputStreamReader(uuidAPI.openStream());
@@ -449,7 +449,7 @@ public class PlexCoreUtils {
 		if (uuidToTexture.containsKey(uuid)) {
 			return;
 		}
-		PlexCoreUtils.chatAddMessage("loading skin " + player.getId() + (player.getName() == null ? "" : " // " + player.getName()));
+		//PlexCoreUtils.chatAddMessage("loading skin " + player.getId() + (player.getName() == null ? "" : " // " + player.getName()));
 		Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> skinCache = Plex.minecraft.getSkinManager().loadSkinFromCache(player);
 		if (skinCache.containsKey(MinecraftProfileTexture.Type.SKIN)) {
 			PlexCoreUtils.uuidToTexture.put(uuid, Plex.minecraft.getSkinManager().loadSkin((MinecraftProfileTexture) skinCache.get(MinecraftProfileTexture.Type.SKIN), MinecraftProfileTexture.Type.SKIN));

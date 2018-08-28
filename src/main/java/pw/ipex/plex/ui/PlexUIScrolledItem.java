@@ -10,6 +10,8 @@ public interface PlexUIScrolledItem {
 	
 	public String listItemGetText();
 	
+	public String listItemGetSearchText();
+	
 	public void listItemRenderText(int x, int y, int cellWidth, int cellHeight, boolean selected, boolean mouseOver);
 	
 	public int listItemGetForegroundColour();

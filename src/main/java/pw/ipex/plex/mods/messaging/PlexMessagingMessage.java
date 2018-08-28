@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.gson.JsonObject;
+
 import net.minecraft.client.Minecraft;
 import pw.ipex.plex.core.PlexCoreChatRegexEntry;
 
@@ -20,11 +22,11 @@ public class PlexMessagingMessage {
 	public Integer colour;
 	public Integer defaultBackgroundColour = 0x65757575;
 	public Integer backgroundColour;
-	public String fromUser = "";
+	public String author = "";
 	public Long time = 0L;
 	public Integer position = 0;
 	public String playerHead = null;
-	public PlexMessagingChannelBase parentChannel;
+	public PlexMessagingChannelBase channel;
 	
 	public Map<String, String> tags = new HashMap<String, String>();
 	
@@ -67,7 +69,7 @@ public class PlexMessagingMessage {
 	}
 	
 	public PlexMessagingMessage setAuthor(String user) {
-		this.fromUser = user;
+		this.author = user;
 		return this;
 	}
 	
@@ -102,7 +104,7 @@ public class PlexMessagingMessage {
 	}
 	
 	public PlexMessagingMessage setChannel(PlexMessagingChannelBase channel) {
-		this.parentChannel = channel;
+		this.channel = channel;
 		return this;
 	}
 	
@@ -115,8 +117,8 @@ public class PlexMessagingMessage {
 		if (this.colour != null) {
 			return this.colour;
 		}
-		if (this.parentChannel != null) {
-			return this.parentChannel.getDisplayColour();
+		if (this.channel != null) {
+			return this.channel.getDisplayColour();
 		}
 		return this.defaultColour;
 	}
@@ -125,9 +127,22 @@ public class PlexMessagingMessage {
 		if (this.backgroundColour != null) {
 			return this.backgroundColour;
 		}
-		if (this.parentChannel != null) {
-			return this.parentChannel.getMessageBackgroundColour();
+		if (this.channel != null) {
+			return this.channel.getMessageBackgroundColour();
 		}
 		return this.defaultColour;
+	}
+	
+	public JsonObject toJson() {
+		JsonObject output = new JsonObject();
+		output.addProperty("t", this.type);
+		output.addProperty("c", this.content);
+		output.addProperty("p", this.position);
+		output.addProperty("fg", this.colour);
+		output.addProperty("bg", this.backgroundColour);
+		output.addProperty("a", this.author);
+		output.addProperty("_t", this.time);
+		output.addProperty("h", this.playerHead);
+		return output;
 	}
 }

@@ -7,6 +7,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import pw.ipex.plex.Plex;
 import pw.ipex.plex.ci.PlexCommandListener;
 import pw.ipex.plex.core.PlexCore;
+import pw.ipex.plex.core.PlexCoreLobbyType;
 import pw.ipex.plex.core.PlexCoreUtils;
 import pw.ipex.plex.core.PlexCoreValue;
 import pw.ipex.plex.mod.PlexModBase;
@@ -84,6 +85,6 @@ public class PlexLobbySoundFilterMod extends PlexModBase {
 	}
 
 	@Override
-	public void switchedLobby(String name) {
+	public void switchedLobby(PlexCoreLobbyType type) {
 	}
 }
