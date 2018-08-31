@@ -100,6 +100,7 @@ public class PlexCoreListeners {
 	@SubscribeEvent
 	public void playerLoggedOut(ClientDisconnectionFromServerEvent event) {
 		if (Plex.serverState.onMineplex) {
+			Plex.serverState.onMineplex = false;
 			Plex.serverState.lastControlInput = Minecraft.getSystemTime();
 			PlexCore.leftMineplex();
 			Plex.logger.info("[plex mod] removing mod from event bus");

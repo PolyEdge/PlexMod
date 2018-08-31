@@ -30,8 +30,9 @@ import org.apache.logging.log4j.Logger;
 @Mod(modid = Plex.MODID, version = Plex.VERSION, clientSideOnly = true, acceptedMinecraftVersions = "[1.8.8,1.8.9]")
 public class Plex {
 	public static final String MODID = "PolyEdge_Plex";
-	public static final String VERSION = "0.3";
-	public static final String PATCHID = null;
+	public static final String VERSION = "0.4-pre1";
+	public static final String PATCHID = "UPD_2";
+	public static final String RELEASENOTICE = "Unreleased test version **UNSTABLE**";
 
 	public static Minecraft minecraft = Minecraft.getMinecraft();
 	public static Configuration config;

@@ -1,4 +1,4 @@
-package pw.ipex.plex.mods.messaging;
+package pw.ipex.plex.mods.messaging.render;
 
 public class PlexMessagingMessageRenderState {
 	public boolean RENDER_HEADS_SHOWN = false;

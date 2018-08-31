@@ -1,4 +1,4 @@
-package pw.ipex.plex.mods.messaging;
+package pw.ipex.plex.mods.messaging.render;
 
 import pw.ipex.plex.Plex;
 

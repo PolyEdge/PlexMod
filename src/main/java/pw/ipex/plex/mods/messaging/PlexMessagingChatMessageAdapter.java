@@ -7,6 +7,7 @@ import java.util.Map;
 
 import pw.ipex.plex.core.PlexCoreChatRegex;
 import pw.ipex.plex.core.PlexCoreChatRegexEntry;
+import pw.ipex.plex.mods.messaging.channel.PlexMessagingChannelBase;
 
 public class PlexMessagingChatMessageAdapter {
 	public Map<String, String> messageTags = new HashMap<String, String>();

@@ -10,14 +10,11 @@ public class PlexPlexUI extends PlexUIBase {
 
 	@Override
 	public String uiGetTitle() {
-		// TODO Auto-generated method stub
 		return "Plex";
 	}
 
 	@Override
 	public void uiAddButtons(PlexUIModMenuScreen ui) {
-		// TODO Auto-generated method stub
-
 	}
 	
 	@Override
@@ -27,20 +24,20 @@ public class PlexPlexUI extends PlexUIBase {
 		Integer pane1Pos = parentUI.centeredPanePos(0, 1, 20, 160);
 		parentUI.drawCenteredString(parentUI.getFontRenderer(), "Plex Mod", pane1Pos + paneSize / 2, top + 0, 0xffffff); 
 		parentUI.drawCenteredString(parentUI.getFontRenderer(), "v" + Plex.VERSION + (Plex.PATCHID == null ? "" : "-" + Plex.PATCHID), pane1Pos + paneSize / 2, top + 10, 0xffffff);
-		parentUI.drawCenteredString(parentUI.getFontRenderer(), "[unreleased beta version]", pane1Pos + paneSize / 2, top + 30, 0xffe500);
+		if (Plex.RELEASENOTICE != null) {
+			parentUI.drawCenteredString(parentUI.getFontRenderer(), "[" + Plex.RELEASENOTICE + "]", pane1Pos + paneSize / 2, top + 30, 0xffe500);
+			
+		}
 		
-		parentUI.drawCenteredString(parentUI.getFontRenderer(), "Command help - /plex help", pane1Pos + paneSize / 2, parentUI.zoneEndY() - 12, 0xffffff);
+		parentUI.drawCenteredString(parentUI.getFontRenderer(), "Command list - /plex help", pane1Pos + paneSize / 2, parentUI.zoneEndY() - 12, 0xffffff);
 	}
 
 	@Override
 	public void uiSliderInteracted(PlexUISlider slider) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void uiButtonClicked(GuiButton button) {
-		// TODO Auto-generated method stub
 
 	}
 

@@ -1,4 +1,4 @@
-package pw.ipex.plex.mods.messaging;
+package pw.ipex.plex.mods.messaging.channel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,6 +10,8 @@ import net.minecraft.util.ResourceLocation;
 import pw.ipex.plex.Plex;
 import pw.ipex.plex.core.PlexCoreRenderUtils;
 import pw.ipex.plex.core.PlexCoreUtils;
+import pw.ipex.plex.mods.messaging.PlexMessagingMessage;
+import pw.ipex.plex.mods.messaging.PlexMessagingMod;
 import pw.ipex.plex.ui.PlexUIScrolledItem;
 
 public abstract class PlexMessagingChannelBase implements PlexUIScrolledItem {
@@ -68,21 +70,21 @@ public abstract class PlexMessagingChannelBase implements PlexUIScrolledItem {
 		return 0x65757575;
 	}
 	
-	protected void selected() {
+	public void selected() {
 		this.selectTime = Minecraft.getSystemTime();
 		this.awaitingReady = false;
 		this.channelReady = false;
 		this.channelSelected();
 	}
 	
-	protected void deselected() {
+	public void deselected() {
 		this.selectTime = Minecraft.getSystemTime();
 		this.awaitingReady = false;
 		this.channelReady = false;
 		this.channelDeselected();
 	}
 	
-	protected void getChannelReady() {
+	public void getChannelReady() {
 		this.awaitingReady = true;
 		this.channelReady = false;
 		this.readyChannel();

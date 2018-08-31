@@ -59,15 +59,27 @@ public class PlexCoreUtils {
 		String valueText = args[(args.length - 1)];
 		List<String> styles = Arrays.asList(args).subList(0, (args.length - 1));
 		String outputText = EnumChatFormatting.RESET + "";
-		for (String x:styles) {
-			outputText += EnumChatFormatting.valueOf(x.toUpperCase());
+		String[] words = valueText.split("\\s");
+		String output = "";
+		for (String word : words) {
+			String outputWord = "";
+			for (String style : styles) {
+				outputWord += EnumChatFormatting.valueOf(style.toUpperCase());
+			}
+			outputWord += word;
+			if (!output.equals("")) {
+				output += " " + outputWord;
+			}
+			else {
+				output += outputWord;
+			}
 		}
-		outputText = outputText + valueText + EnumChatFormatting.RESET;
+		outputText = output + EnumChatFormatting.RESET;
 		return outputText;
 	}
 	
 	public static String chatPlexPrefix() {
-		return chatStyleText("GOLD", "Plex") + chatStyleText("BLACK", "> ");
+		return chatStyleText("GOLD", "Plex") + chatStyleText("BLACK", ">") + " ";
 	}
 	
 	public static String getUiChatMessage(String message) {

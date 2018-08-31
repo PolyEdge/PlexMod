@@ -8,6 +8,8 @@ import com.google.gson.JsonObject;
 
 import net.minecraft.client.Minecraft;
 import pw.ipex.plex.core.PlexCoreChatRegexEntry;
+import pw.ipex.plex.mods.messaging.channel.PlexMessagingChannelBase;
+import pw.ipex.plex.mods.messaging.render.PlexMessagingMessageRenderData;
 
 public class PlexMessagingMessage {
 	public int TYPE_CHAT_MESSAGE = 0;

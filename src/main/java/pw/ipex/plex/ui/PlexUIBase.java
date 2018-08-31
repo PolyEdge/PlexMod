@@ -45,6 +45,14 @@ public abstract class PlexUIBase {
 	public Boolean disableUiFade() {
 		return false;
 	}
+
+	public Boolean disablePlexUi() {
+		return false;
+	}
+	
+	public Boolean disableSidebar() {
+		return false;
+	}
 	
 	public void keyTyped(char par1, int par2) {}
 	

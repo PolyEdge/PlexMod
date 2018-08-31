@@ -10,6 +10,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 //import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
 import pw.ipex.plex.Plex;
+import pw.ipex.plex.mods.messaging.channel.PlexMessagingChannelBase;
 
 public class PlexMessagingChannelManager {
 	public PlexMessagingChannelBase selectedChannel = null;

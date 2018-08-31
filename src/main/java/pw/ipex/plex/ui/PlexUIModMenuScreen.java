@@ -3,14 +3,11 @@ package pw.ipex.plex.ui;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map.Entry;
-
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
@@ -22,34 +19,27 @@ import pw.ipex.plex.mods.plexmod.PlexPlexMod;
 
 public class PlexUIModMenuScreen extends GuiScreen {
 	public PlexUIBase baseUiScreen;
-	public PlexUIModMenuScreen oldUiScreen;
-	public List<Class<? extends PlexUIBase>> ownUiData = new ArrayList<Class<? extends PlexUIBase>>();
-	public List<Gui> otherGuiItems = new ArrayList<Gui>();
+	public PlexUIColourState colourState = new PlexUIColourState();
+	public PlexUIColourState oldColourState = null;
+	public List<GuiButton> internalButtonList = new ArrayList<GuiButton>();
+	public List<PlexUITabContainer> uiTabs = new ArrayList<PlexUITabContainer>();
+	public Long initializationTime;
 	public Long colourFadeTime = 500L;
-	public Long colourFade = null;
-	public Integer oldForeground = null;
-	public Integer oldBackground = null;
-	public Boolean doneButtonShown = true;
 	
 	public PlexUIModMenuScreen(PlexUIBase base) {
 		this.baseUiScreen = base;
-		updateChild();
+		this.initializationTime = Minecraft.getSystemTime();
+		this.updateColourState();
+		this.updateChild();
 	}
 	
-	public PlexUIModMenuScreen(PlexUIBase base, PlexUIModMenuScreen oldScreen) {
-		this.baseUiScreen = base;
-		this.colourFade = Minecraft.getSystemTime();
-		this.oldUiScreen = oldScreen;
-		updateChild();
+	public PlexUIModMenuScreen(PlexUIBase base, PlexUIColourState oldColourState) {
+		this(base);
+		this.oldColourState = oldColourState;
 	}
 	
 	public void updateChild() {
 		this.baseUiScreen.parentUI = this;
-		doneButtonShown = !this.baseUiScreen.disableDoneButton();
-	}
-	
-	public Boolean showDoneButton() {
-		return !this.baseUiScreen.disableDoneButton();
 	}
 	
 	public Integer startingYPos(Integer contentHeight) {
@@ -66,10 +56,16 @@ public class PlexUIModMenuScreen extends GuiScreen {
 	}
 	
 	public Integer zoneStartX() {
+		if (this.baseUiScreen.disableSidebar() || this.baseUiScreen.disablePlexUi()) {
+			return 0;
+		}
 		return (this.width / 6);
 	}
 	
 	public Integer zoneStartY() {
+		if (this.baseUiScreen.disablePlexUi()) {
+			return 0;
+		}
 		return 50;
 	}
 	
@@ -78,10 +74,10 @@ public class PlexUIModMenuScreen extends GuiScreen {
 	}
 	
 	public Integer zoneEndY() {
-		if (showDoneButton()) {
-			return this.height - 30;
+		if (this.baseUiScreen.disableDoneButton()) {
+			return this.height;
 		}
-		return this.height;
+		return this.height - 30;
 	}
 	
 	public Integer zoneCenterX() {
@@ -123,27 +119,39 @@ public class PlexUIModMenuScreen extends GuiScreen {
 	@Override
 	public void initGui() {
 		this.buttonList.clear();
-		this.addPlexUi();
+		this.internalButtonList.clear();
+		this.addPlexUi();			
 		this.baseUiScreen.uiOpened();
 		this.baseUiScreen.uiAddButtons(this);
 	}
 	
 	public void addPlexUi() {
-		if (showDoneButton()) {
-			this.buttonList.add(new GuiButton(1, (this.width / 6) + ((this.width - (this.width / 6)) / 2) - 40, this.height - 25, 80, 20, "Done"));			
-		}
-		ownUiData.clear();
-		Integer y_count = 0;
-		for (Entry<String, Class<? extends PlexUIBase>> uiData : PlexCore.getUiTabList()) {
-			Class<? extends PlexUIBase> uiClass = uiData.getValue();
-			String tabName = uiData.getKey();
-			ownUiData.add(uiClass);
-			GuiButton button = new GuiButton(200 + y_count, 10, 35 + (y_count * 25), this.width / 6 - 20, 20, tabName);
-			if (uiClass.equals(this.baseUiScreen.getClass())) {
-				button.enabled = false;
-			}
-			this.buttonList.add(button);
+		this.internalButtonList.add(new GuiButton(1, (this.width / 6) + ((this.width - (this.width / 6)) / 2) - 40, this.height - 25, 80, 20, "Done"));			
+		this.uiTabs.clear();
+		int y_count = 0;
+		int tabID = -1;
+		for (PlexUITabContainer tab : PlexCore.getUiTabList()) {
+			uiTabs.add(tab.getShallowCopy().setID(tabID));
+			GuiButton button = new GuiButton(tabID, 10, 35 + (y_count * 25), this.width / 6 - 20, 20, tab.getLabel());
+			this.internalButtonList.add(button);
 			y_count += 1;
+			tabID -= 1;
+		}
+	}
+	
+	public void updatePlexUi() {
+		for (GuiButton button : this.internalButtonList) {
+			if (button.id == 1) {
+				button.visible = !(this.baseUiScreen.disableDoneButton() || this.baseUiScreen.disablePlexUi());
+			}
+			else if (button.id < 0) {
+				button.visible = !(this.baseUiScreen.disableSidebar() || this.baseUiScreen.disablePlexUi());
+				for (PlexUITabContainer tab : this.uiTabs) {
+					if (button.id == tab.getID()) {
+						button.enabled = !(tab.uiClass.equals(this.baseUiScreen.getClass()));
+					}
+				}
+			}
 		}
 	}
 	
@@ -155,10 +163,6 @@ public class PlexUIModMenuScreen extends GuiScreen {
 		this.buttonList.add(slider);
 	}
 
-	public void addOtherElement(Gui item) {
-		this.otherGuiItems.add(item);
-	}
-	
 	public List<GuiButton> getButtonList() {
 		return this.buttonList;
 	}
@@ -169,23 +173,26 @@ public class PlexUIModMenuScreen extends GuiScreen {
 	
 	@Override
 	public void actionPerformed(GuiButton button) {
+		this.baseUiScreen.uiButtonClicked(button);
+	}
+	
+	public void internalActionPerformed (GuiButton button) {
 		if (button.id == 1) {
 			PlexCore.saveAllConfig();
 			this.mc.displayGuiScreen((GuiScreen) null);
 		}
-		else if ((button.id >= 200) && (button.id <= 299)) {
-			if (!(button.id-200 < ownUiData.size())) {
-				return;
+		else if (button.id < 0 && !this.baseUiScreen.disablePlexUi()) {
+			for (PlexUITabContainer tab : this.uiTabs) {
+				if (button.id == tab.getID()) {
+					PlexCore.saveAllConfig();
+					try {
+						this.mc.displayGuiScreen(new PlexUIModMenuScreen(tab.uiClass.newInstance(), this.colourState));
+						return;
+					} 
+					catch (InstantiationException e) {} 
+					catch (IllegalAccessException e) {}
+				}
 			}
-			PlexCore.saveAllConfig();
-			try {
-				this.mc.displayGuiScreen(new PlexUIModMenuScreen(ownUiData.get(button.id-200).newInstance(), this));
-			} 
-			catch (InstantiationException e) {} 
-			catch (IllegalAccessException e) {}
-		}
-		else {
-			this.baseUiScreen.uiButtonClicked(button);
 		}
 	}
 	
@@ -201,6 +208,15 @@ public class PlexUIModMenuScreen extends GuiScreen {
 	
 	@Override
 	protected void mouseClicked(int par1, int par2, int btn) throws IOException {
+		if (btn == 0) {
+			for (GuiButton button : this.internalButtonList) {
+				if (button.mousePressed(this.mc, par1, par2)) {
+					button.playPressSound(this.mc.getSoundHandler());
+					this.internalActionPerformed(button);
+				}
+			}
+		}		
+
 		clickSocialMedia(par1, par2);
 		super.mouseClicked(par1, par2, btn);
 		this.baseUiScreen.mouseClicked(par1, par2, btn);
@@ -237,70 +253,20 @@ public class PlexUIModMenuScreen extends GuiScreen {
 		this.baseUiScreen.uiClosed();
 	}
 	
-//    public void drawHorizontalLine(int startX, int endX, int y, int color) {
-//        if (endX < startX) {
-//            int i = startX;
-//            startX = endX;
-//            endX = i;
-//        }
-//
-//        drawRect(startX, y, endX + 1, y + 1, color);
-//    }
-//
-//    public void drawVerticalLine(int x, int startY, int endY, int color) {
-//        if (endY < startY) {
-//            int i = startY;
-//            startY = endY;
-//            endY = i;
-//        }
-//
-//        drawRect(x, startY + 1, x + 1, endY, color);
-//    }
-//
-//    public void drawGradientRect(int left, int top, int right, int bottom, int startColor, int endColor) {
-//    	super.drawGradientRect(left, top, right, bottom, startColor, endColor);
-//    }
-	
-	//public Integer globalChroma() {
-	//	Integer[] chromaRGB = PlexCoreUtils.getChromaRGB((Minecraft.getSystemTime() / 100.0D * 20.0D));
-	//	return PlexCoreUtils.colourCodeFrom(chromaRGB[0], chromaRGB[1], chromaRGB[2], 255);
-	//}
+	public void updateColourState() {
+		this.colourState.setColour("foreground", this.baseUiScreen.pageForegroundColour());
+		this.colourState.setColour("background", this.baseUiScreen.pageBackgroundColour());
+		this.colourState.setColour("background_transparency", PlexCoreUtils.colourCodeFrom(0, 0, 0, this.baseUiScreen.pageBackgroundTransparency()));
+	}
 	
 	public Integer getForeground() {
-		Integer ownForeground = this.baseUiScreen.pageForegroundColour();
-		if (ownForeground.equals(-1)) {
-			ownForeground = PlexCoreUtils.globalChromaCycle();
-		}
-		Integer foregroundColour = ownForeground;
-		if (this.colourFade != null) {
-			Double fadeMultiplier = (Minecraft.getSystemTime() - this.colourFade) / ((double) this.colourFadeTime);
-			if (oldForeground == null) {
-				oldForeground = this.oldUiScreen.getForeground();
-			}
-			if (fadeMultiplier < 1) {
-				foregroundColour = PlexCoreUtils.betweenColours(oldForeground, ownForeground, fadeMultiplier);
-			}
-		}
-		return foregroundColour;
+		float fadeTime = PlexCoreUtils.floatRange((float) ((Minecraft.getSystemTime() - this.initializationTime) / ((double) this.colourFadeTime)), 0.0F, 1.0F);
+		return this.colourState.colourBetweenStates("foreground", this.oldColourState, this.colourState, fadeTime);
 	}
 	
 	public Integer getBackground() {
-		Integer ownBackground = this.baseUiScreen.pageBackgroundColour();
-		if (ownBackground.equals(-1)) {
-			ownBackground = PlexCoreUtils.globalChromaCycle();
-		}
-		ownBackground = PlexCoreUtils.replaceColour(ownBackground, null, null, null, this.baseUiScreen.pageBackgroundTransparency());
-		Integer backgroundColour = ownBackground;
-		if (this.colourFade != null) {
-			Double fadeMultiplier = (Minecraft.getSystemTime() - this.colourFade) / ((double) this.colourFadeTime);
-			if (oldBackground == null) {
-				oldBackground = this.oldUiScreen.getBackground();
-			}
-			if (fadeMultiplier < 1) {
-				backgroundColour = PlexCoreUtils.betweenColours(oldBackground, ownBackground, fadeMultiplier);
-			}
-		}
-		return backgroundColour;
+		float fadeTime = PlexCoreUtils.floatRange((float) ((Minecraft.getSystemTime() - this.initializationTime) / ((double) this.colourFadeTime)), 0.0F, 1.0F);
+		return PlexCoreUtils.replaceColour(this.colourState.colourBetweenStates("background", this.oldColourState, this.colourState, fadeTime), null, null, null, PlexCoreUtils.rgbCodeFrom(this.colourState.colourBetweenStates("background_transparency", this.oldColourState, this.colourState, fadeTime))[3]);
 	}
 	
 	public void clickSocialMedia(int mouseX, int mouseY) {
@@ -356,24 +322,49 @@ public class PlexUIModMenuScreen extends GuiScreen {
 
 	@Override
 	public void drawScreen(int par1, int par2, float par3) {
-		//Double timeSin = (Math.sin(Minecraft.getSystemTime() * 0.0075) + 1) / 2;
-		//Integer titleColour = PlexCoreUtils.betweenColours(this.baseUiScreen.titleFadeColour1(), this.baseUiScreen.titleFadeColour2(), timeSin);
+		
+		this.updatePlexUi();
+		this.updateColourState();
+
 		Integer foregroundColour = getForeground();
 		Integer backgroundColour = getBackground();
-		drawGradientRect(0, 0, this.width, this.height, -1072689136, -804253680); // fill	
-		drawRect(this.zoneStartX(), this.zoneStartY(), this.zoneEndX(), this.zoneEndY(), backgroundColour);
+		
+		if (!this.baseUiScreen.disablePlexUi()) {
+			drawGradientRect(0, 0, this.width, this.height, -1072689136, -804253680); // screen fill	
+			drawRect(this.zoneStartX(), this.zoneStartY(), this.zoneEndX(), this.zoneEndY(), backgroundColour); // zone fill			
+		}
+
 		this.baseUiScreen.drawScreen(par1, par2, par3);
-		drawGradientRect(0, 0, this.width, 25, 0xaa10100f, 0xaa10100f); // top bar
-		drawGradientRect(0, 25, this.width / 6, this.height, 0xaa10100f, 0xaa10100f); // side bar
-		//GuiScreen.drawScaledCustomSizeModalRect((int) (20 / scale), (int) (0 / scale), 0.0F, 0.0F, 920, 170, 920, 170, 920.0F, 170.0F);		
-		//GuiScreen.drawModalRectWithCustomSizedTexture((int) (20 / scale), (int) (5 / scale), 0.0F, 0.0F, 110, 25, 880.0F, 200.0F);
-		drawHorizontalLine(0, this.width, 25, foregroundColour); // top bar border
-		drawVerticalLine(this.width / 6, 25, this.height, foregroundColour); // side bar border
-		//drawVerticalLine(25, this.height, this.width / 6, 0xffffffff); // side bar border
-		//drawCenteredString(this.fontRendererObj, this.baseUiScreen.customGlobalTitle(), this.width / 2, 8, titleColour); // Global title
-		drawCenteredString(this.fontRendererObj, this.baseUiScreen.uiGetTitle(), this.zoneCenterX(), 35, 16777215); // Local title
-		drawHeaderImage();
-		drawSocialMedia();
+		
+		if (!this.baseUiScreen.disablePlexUi()) {
+			drawGradientRect(0, 0, this.width, 25, 0xaa10100f, 0xaa10100f); // top bar
+			
+			if (!this.baseUiScreen.disableSidebar()) {
+				drawGradientRect(0, 25, this.width / 6, this.height, 0xaa10100f, 0xaa10100f); // side bar
+			}
+			
+			drawHorizontalLine(0, this.width, 25, foregroundColour); // top bar border
+			
+			if (!this.baseUiScreen.disableSidebar()) {
+				drawVerticalLine(this.width / 6, 25, this.height, foregroundColour); // side bar border
+			}
+			
+			drawRect(this.zoneStartX(), 25, this.zoneEndX(), this.zoneStartX(), 0x7710100f); // local title bar background 
+			
+			if (!this.baseUiScreen.disableDoneButton()) {
+				drawRect(this.zoneStartX(), this.zoneEndY(), this.zoneEndX(), this.height, 0x7710100f); // done button bar background
+			}
+
+			drawCenteredString(this.fontRendererObj, this.baseUiScreen.uiGetTitle(), this.zoneCenterX(), 35, 16777215); // Local title
+			drawHeaderImage();
+			drawSocialMedia();			
+		}
+
+		
+		for (GuiButton button : this.internalButtonList) {
+			button.drawButton(Plex.minecraft, par1, par2);
+		}
+     
 		super.drawScreen(par1, par2, par3);
 	}
 }

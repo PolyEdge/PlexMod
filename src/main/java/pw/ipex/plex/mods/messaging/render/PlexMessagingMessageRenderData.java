@@ -1,4 +1,4 @@
-package pw.ipex.plex.mods.messaging;
+package pw.ipex.plex.mods.messaging.render;
 
 import java.util.ArrayList;
 import java.util.List;

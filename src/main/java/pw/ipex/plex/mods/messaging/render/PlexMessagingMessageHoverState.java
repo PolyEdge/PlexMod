@@ -1,4 +1,6 @@
-package pw.ipex.plex.mods.messaging;
+package pw.ipex.plex.mods.messaging.render;
+
+import pw.ipex.plex.mods.messaging.PlexMessagingMessage;
 
 public class PlexMessagingMessageHoverState {
 	public boolean IS_SELECTED = false;

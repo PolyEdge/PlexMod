@@ -5,6 +5,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import pw.ipex.plex.mods.messaging.channel.PlexMessagingChannelBase;
+import pw.ipex.plex.mods.messaging.channel.PlexMessagingPartyChatChannel;
+import pw.ipex.plex.mods.messaging.channel.PlexMessagingPrivateMessagesChannel;
+import pw.ipex.plex.mods.messaging.channel.PlexMessagingTeamChatChannel;
+
 public class PlexMessagingChatMessageConstructor {
 	public static List<PlexMessagingChatMessageAdapter> messageHandlers = new ArrayList<PlexMessagingChatMessageAdapter>();
 	public static Map<String, Class<? extends PlexMessagingChannelBase>> groupClassMapping = new HashMap<String, Class<? extends PlexMessagingChannelBase>>();

@@ -8,9 +8,14 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
 import pw.ipex.plex.Plex;
 import pw.ipex.plex.core.PlexCoreRenderUtils;
+import pw.ipex.plex.mods.messaging.channel.PlexMessagingChannelBase;
+import pw.ipex.plex.mods.messaging.render.PlexMessagingMessageHoverState;
+import pw.ipex.plex.mods.messaging.render.PlexMessagingMessageRenderData;
+import pw.ipex.plex.mods.messaging.render.PlexMessagingMessageRenderState;
+import pw.ipex.plex.mods.messaging.render.PlexMessagingMessageTextData;
 import pw.ipex.plex.ui.PlexUIScrollbar;
 
-public final class PlexMessagingMessageWindow extends GuiScreen {
+public final class PlexMessagingUIMessageWindow extends GuiScreen {
 	public int startX;
 	public int startY;
 	public int endX;
@@ -49,7 +54,7 @@ public final class PlexMessagingMessageWindow extends GuiScreen {
 	
 	public PlexMessagingChannelBase displayedChannel = null;
 	
-	public PlexMessagingMessageWindow(int startX, int startY, int endX, int endY) {
+	public PlexMessagingUIMessageWindow(int startX, int startY, int endX, int endY) {
 		this.scrollbar = new PlexUIScrollbar(startY, endY, endX - 7, 6);
 		this.setPosition(startX, startY, endX, endY);
 		this.updateScrollbarPosition();

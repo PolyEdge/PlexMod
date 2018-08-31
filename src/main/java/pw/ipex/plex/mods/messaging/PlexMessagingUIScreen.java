@@ -13,26 +13,28 @@ import pw.ipex.plex.Plex;
 import pw.ipex.plex.core.PlexCore;
 import pw.ipex.plex.core.PlexCoreRenderUtils;
 import pw.ipex.plex.core.PlexCoreUtils;
+import pw.ipex.plex.mods.messaging.render.PlexMessagingMessageHoverState;
 import pw.ipex.plex.ui.PlexUIBase;
 import pw.ipex.plex.ui.PlexUIModMenuScreen;
 import pw.ipex.plex.ui.PlexUIProgressBar;
+import pw.ipex.plex.ui.PlexUIScaledButton;
 import pw.ipex.plex.ui.PlexUIScrolledItemList;
 import pw.ipex.plex.ui.PlexUISlider;
 import pw.ipex.plex.ui.PlexUIStaticLabel;
 import pw.ipex.plex.ui.PlexUITextField;
 
-public class PlexMessagingUI extends PlexUIBase {
+public class PlexMessagingUIScreen extends PlexUIBase {
 	public static String lastTextInBox = "";
 	public static String lastSearchText = "";
 	public static Float lastContactsScroll = 0.0F;
 	public PlexUITextField textField;
 	public PlexUITextField searchBox;
 	public PlexUIScrolledItemList contactsList;
-	public PlexMessagingMessageWindow chatWindow;
+	public PlexMessagingUIMessageWindow chatWindow;
 	public PlexUIProgressBar channelProgressBar;
 	public PlexUIStaticLabel channelStatusLabel;
 	public GuiButton sendButton;
-	public GuiButton newConversationButton;
+	public PlexUIScaledButton newConversationButton;
 	//public Character lastKeyTyped = null;
 	//public Integer lastKeyCodeTyped = null;
 	//public Long lastTypedTime = null;
@@ -72,7 +74,7 @@ public class PlexMessagingUI extends PlexUIBase {
 		if (!Plex.minecraft.currentScreen.getClass().equals(PlexUIModMenuScreen.class)) {
 			return false;
 		}
-		if (!((PlexUIModMenuScreen) Plex.minecraft.currentScreen).baseUiScreen.getClass().equals(PlexMessagingUI.class)) {
+		if (!((PlexUIModMenuScreen) Plex.minecraft.currentScreen).baseUiScreen.getClass().equals(PlexMessagingUIScreen.class)) {
 			return false;
 		}
 		return true;
@@ -90,21 +92,21 @@ public class PlexMessagingUI extends PlexUIBase {
 		this.textField.text.setMaxStringLength(100);
 		this.textField.text.setFocused(true);
 		this.textField.text.setCanLoseFocus(false);
-		this.textField.text.setText(PlexMessagingUI.lastTextInBox);
+		this.textField.text.setText(PlexMessagingUIScreen.lastTextInBox);
 		
 		this.searchBox = new PlexUITextField(7, this.parentUI.getFontRenderer(), ui.zoneEndX() - this.getContactsPaneSize() + 4, ui.zoneStartY() + 4, (ui.zoneEndX() - 2) - (ui.zoneEndX() - this.getContactsPaneSize() + 2) - 22, 14);
 		this.searchBox.text.setFocused(false);
 		this.searchBox.text.setCanLoseFocus(true);
-		this.searchBox.text.setText(PlexMessagingUI.lastSearchText);
+		this.searchBox.text.setText(PlexMessagingUIScreen.lastSearchText);
 		
-		this.newConversationButton = new GuiButton(11, (ui.zoneEndX() - 16), ui.zoneStartY() + 4, 14, 14, "+");
+		this.newConversationButton = new PlexUIScaledButton(11, (ui.zoneEndX() - 16), ui.zoneStartY() + 4, 14, 14, null, "+", false);
 		this.parentUI.addElement(this.newConversationButton);
 		
 		this.contactsList = new PlexUIScrolledItemList(PlexMessagingMod.channelManager.channels, this.parentUI.zoneEndX() - this.getContactsPaneSize(), this.parentUI.zoneStartY() + 22, this.parentUI.zoneEndX(), this.parentUI.zoneEndY() - 22);
 		this.contactsList.setPadding(10, 0);
-		this.contactsList.scrollbar.setScroll(lastContactsScroll);
+		this.contactsList.scrollbar.setScroll(lastContactsScroll, true);
 		
-		this.chatWindow = new PlexMessagingMessageWindow(this.parentUI.zoneStartX(), this.parentUI.zoneStartY(), this.parentUI.zoneEndX() - this.getContactsPaneSize(), this.parentUI.zoneEndY() - 30);
+		this.chatWindow = new PlexMessagingUIMessageWindow(this.parentUI.zoneStartX(), this.parentUI.zoneStartY(), this.parentUI.zoneEndX() - this.getContactsPaneSize(), this.parentUI.zoneEndY() - 30);
 		this.chatWindow.paddingLeft = 2;
 		this.chatWindow.paddingRight = 2;
 		this.chatWindow.paddingRightWithScrollbar = 1;
@@ -120,7 +122,7 @@ public class PlexMessagingUI extends PlexUIBase {
 		this.channelStatusLabel = new PlexUIStaticLabel(this.parentUI.zoneStartX() + 2, this.parentUI.zoneStartY() - 12, 12);
 		this.channelStatusLabel.setText("", true);
 		
-		this.sendButton = new GuiButton(10, startX + sizeX + 3, bottom - 22, 20, 20, "->");
+		this.sendButton = new GuiButton(10, startX + sizeX + 3, bottom - 22, 20, 20, ">");
 		this.parentUI.addElement(this.sendButton); //String.valueOf((char) 8594))
 		
 		//for (int i = 0; i < 8; i++) {
@@ -147,6 +149,9 @@ public class PlexMessagingUI extends PlexUIBase {
 	public void uiButtonClicked(GuiButton button) {
 		if (button.id == 10 && PlexMessagingMod.channelManager.selectedChannel != null) {
 			this.sendMessage();
+		}
+		if (button.id == 11 && PlexMessagingMod.channelManager.selectedChannel != null) {
+			PlexMessagingMod.channelManager.setSelectedChannel(null);
 		}
 	}
 
@@ -188,11 +193,6 @@ public class PlexMessagingUI extends PlexUIBase {
 	
 	@Override
 	public void keyTyped(char par1, int par2) {
-		//Plex.logger.info("" + par1 + " " + par2);
-//		lastKeyTyped = par1;
-//		lastKeyCodeTyped = par2;
-//		lastTypedTime = Minecraft.getSystemTime();
-//		lastRepetition = Minecraft.getSystemTime();
 		if (((Integer) par2).equals(PlexMessagingMod.toggleChatUI.getKeyCode())) {
 			this.uiClosed();
 			PlexCore.displayUIScreen(null);
@@ -222,6 +222,7 @@ public class PlexMessagingUI extends PlexUIBase {
 		this.contactsList.searchText = this.searchBox.text.getText();
 		
 		if (PlexMessagingMod.channelManager.selectedChannel != null) {
+			this.newConversationButton.enabled = true;
 			PlexMessagingMod.channelManager.selectedChannel.readingChannel();
 			if (!isSelectedChannelReady()) { //&& PlexMessagingMod.channelManager.selectedChannel.awaitingReady) {
 				if (Minecraft.getSystemTime() > PlexMessagingMod.channelManager.selectedChannel.selectTime + 5000L) {
@@ -260,6 +261,7 @@ public class PlexMessagingUI extends PlexUIBase {
 
 		}
 		else {
+			this.newConversationButton.enabled = false;
 			this.contactsList.setEnabled(true);
 			this.channelStatusLabel.setPosition(this.parentUI.zoneStartX() + 2, this.parentUI.zoneStartY() - 12, false);
 			this.channelStatusLabel.setText("");
@@ -272,7 +274,7 @@ public class PlexMessagingUI extends PlexUIBase {
 			this.lastChannelChange = PlexMessagingMod.channelManager.lastChannelChange;
 			if (PlexMessagingMod.channelManager.selectedChannel != null) {
 				this.textField.text.setText(PlexMessagingMod.channelManager.selectedChannel.lastTextTyped);
-				this.chatWindow.scrollbar.setScroll(PlexMessagingMod.channelManager.selectedChannel.lastChannelScroll);
+				this.chatWindow.scrollbar.setScroll(PlexMessagingMod.channelManager.selectedChannel.lastChannelScroll, true);
 			}
 			else {
 				this.textField.text.setText("");
@@ -282,7 +284,7 @@ public class PlexMessagingUI extends PlexUIBase {
 		
 	
 		//PlexUIScreen.drawRect(this.parentUI.zoneEndX() - (getContactsPaneSize()), this.parentUI.zoneStartY(), this.parentUI.zoneEndX(), this.parentUI.zoneEndY(), 0xaa10100f);
-		PlexUIModMenuScreen.drawRect(this.parentUI.zoneStartX(), this.parentUI.zoneStartY(), this.parentUI.zoneEndX() - (getContactsPaneSize()), this.parentUI.zoneEndY() - 30, 0x23ffffff);
+		//PlexUIModMenuScreen.drawRect(this.parentUI.zoneStartX(), this.parentUI.zoneStartY(), this.parentUI.zoneEndX() - (getContactsPaneSize()), this.parentUI.zoneEndY() - 30, 0x23ffffff);
 		PlexUIModMenuScreen.drawRect(this.parentUI.zoneEndX() - getContactsPaneSize(), this.parentUI.zoneStartY(), this.parentUI.zoneEndX(), this.parentUI.zoneEndY(), 0x65000000);
 		
 		this.contactsList.drawScreen(par1, par2, par3);
@@ -325,34 +327,9 @@ public class PlexMessagingUI extends PlexUIBase {
 			}
 		}
 		
-		
-
-		//PlexCoreRenderUtils.drawPlayerHead(PlexCoreUtils.getSkin("cysk"), this.parentUI.zoneCenterX(), this.parentUI.zoneCenterY() - 128, 32);
-		//PlexCoreRenderUtils.drawPlayerHead(PlexCoreUtils.getSkin("qydn"), this.parentUI.zoneCenterX(), this.parentUI.zoneCenterY() - 96, 32);
-		//PlexCoreRenderUtils.drawPlayerHead(PlexCoreUtils.getSkin("arou"), this.parentUI.zoneCenterX(), this.parentUI.zoneCenterY() - 64, 32);
-		//PlexCoreRenderUtils.drawPlayerHead(PlexCoreUtils.getSkin("dysporium"), this.parentUI.zoneCenterX(), this.parentUI.zoneCenterY() - 32, 32);
-
-
-		
-		
-		//this.parentUI.drawHorizontalLine(this.parentUI.zoneStartX() + 5, this.parentUI.zoneStartX() + 5 + Math.round((float)(this.parentUI.horizontalPixelCount() - (getContactsPaneSize()) - 6 - 25) * this.barCurrentPercentage), this.parentUI.zoneEndY() - 6, PlexCoreUtils.replaceColour(this.currentBarColour, null, null, null, 255));
-		
 		//String drawText = "";
 
-		//
-		//drawText = "" + this.channelProgressBar.colour;
-		//drawText = "" + this.channelStatusLabel.displayTextWidth;
-		
-		//if (this.channelStatusLabel.lastPositionUpdate != null) {
-		//	drawText = "" + (Minecraft.getSystemTime() - this.channelStatusLabel.lastPositionUpdate);
-		//}
-		
-		//drawText = "" + PlexDirectMessagingMod.channelManager.selectedChannel;
-		//drawText = "" + this.contactsScrollbar.scrollValue + " " + this.contactsScrollbar.barScale;
 		//PlexCoreRenderUtils.drawScaledString(drawText, (float)this.parentUI.zoneStartX() + 5, (float)this.parentUI.zoneStartY() + 5, 0xffffff, 0.5F, false);
-		//this.parentUI.getFontRenderer().drawString("y: " + sbarTop + ", " + sbarBottom + " x: " + sbarLeft + ", " + sbarRight, this.parentUI.zoneCenterX(), this.parentUI.zoneCenterY(), 0xffffff);
-		//this.parentUI.getFontRenderer().drawString("" + par1 + ", " + par2, this.parentUI.zoneCenterX(), this.parentUI.zoneCenterY() - 8, 0xffffff);
-		//this.parentUI.getFontRenderer().drawString(this.textField.text.getText(), this.parentUI.zoneCenterX(), this.parentUI.zoneCenterY(), 0xffffff);
 		
 		
 		lastContactsScroll = contactsList.scrollbar.realScrollValue;
@@ -382,7 +359,11 @@ public class PlexMessagingUI extends PlexUIBase {
 	
 	@Override
 	public Integer pageBackgroundTransparency() {
-		return 0;
+		return 35;
+	}
+	
+	public Integer pageBackgroundColour() {
+		return 0xffffff;
 	}
 	
 	//@SubscribeEvent

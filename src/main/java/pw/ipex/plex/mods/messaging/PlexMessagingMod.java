@@ -10,6 +10,7 @@ import pw.ipex.plex.core.PlexCore;
 import pw.ipex.plex.core.PlexCoreLobbyType;
 import pw.ipex.plex.core.PlexCoreUtils;
 import pw.ipex.plex.mod.PlexModBase;
+import pw.ipex.plex.mods.messaging.channel.PlexMessagingChannelBase;
 
 public class PlexMessagingMod extends PlexModBase {
 	//private static ResourceLocation sendIcon = new ResourceLocation("PolyEdge_Plex", "chat/send.png");
@@ -27,7 +28,7 @@ public class PlexMessagingMod extends PlexModBase {
 	    toggleChatUI = new KeyBinding("Open Chat UI", 157, "Plex Mod");
 	    ClientRegistry.registerKeyBinding(toggleChatUI);
 	    
-	    PlexCore.registerUiTab("Messaging", PlexMessagingUI.class);
+	    PlexCore.registerUiTab("Messaging", PlexMessagingUIScreen.class);
 	}
 
 	@Override
@@ -92,7 +93,7 @@ public class PlexMessagingMod extends PlexModBase {
 			channelName = "PM." + channelName;
 		}
 		PlexMessagingChannelBase channel = getChannel(channelName, messageAdapter.getChannelClass(), recipientEntityName);
-		if (!messageAdapter.meetsRequirements(PlexMessagingUI.isChatOpen(), PlexMessagingMod.channelManager.selectedChannel, channel)) {
+		if (!messageAdapter.meetsRequirements(PlexMessagingUIScreen.isChatOpen(), PlexMessagingMod.channelManager.selectedChannel, channel)) {
 			return null;
 		}
 		PlexMessagingMessage message = messageAdapter.getIncompleteMessageFromText(chatMessage).setNow().setHead(messageAdapter.formatStringWithGroups("{author}", chatMessage));
@@ -127,7 +128,7 @@ public class PlexMessagingMod extends PlexModBase {
 	@SubscribeEvent
 	public void onKeyInput(KeyInputEvent event) {
 		if (Plex.minecraft.inGameHasFocus && toggleChatUI.isPressed()) {
-			PlexCore.displayUIScreen(new PlexMessagingUI());
+			PlexCore.displayUIScreen(new PlexMessagingUIScreen());
 		}
 	}
 	

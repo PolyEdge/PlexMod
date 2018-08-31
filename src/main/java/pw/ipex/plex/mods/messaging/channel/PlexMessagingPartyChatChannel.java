@@ -1,17 +1,12 @@
-package pw.ipex.plex.mods.messaging;
+package pw.ipex.plex.mods.messaging.channel;
 
 import net.minecraft.util.IChatComponent;
 import pw.ipex.plex.Plex;
 
-public class PlexMessagingTeamChatChannel extends PlexMessagingChannelBase {
+public class PlexMessagingPartyChatChannel extends PlexMessagingChannelBase {
 
 	@Override
 	public void channelInit() {
-	}
-	
-	@Override
-	public String getDisplayName() {
-		return "Team";
 	}
 	
 	@Override
@@ -19,8 +14,13 @@ public class PlexMessagingTeamChatChannel extends PlexMessagingChannelBase {
 	}
 	
 	@Override
+	public String getDisplayName() {
+		return "Party";
+	}
+	
+	@Override
 	public Integer getDisplayColour() {
-		return 0xff4286f4;
+		return 0xffe820e8;
 	}
 
 	@Override
@@ -30,7 +30,7 @@ public class PlexMessagingTeamChatChannel extends PlexMessagingChannelBase {
 
 	@Override
 	public void sendMessage(String message) {
-		Plex.minecraft.thePlayer.sendChatMessage("#" + message);
+		Plex.minecraft.thePlayer.sendChatMessage("@" + message);
 
 	}
 

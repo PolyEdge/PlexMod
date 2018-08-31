@@ -1,4 +1,4 @@
-package pw.ipex.plex.mods.messaging;
+package pw.ipex.plex.mods.messaging.channel;
 
 import net.minecraft.util.IChatComponent;
 import net.minecraft.util.ResourceLocation;

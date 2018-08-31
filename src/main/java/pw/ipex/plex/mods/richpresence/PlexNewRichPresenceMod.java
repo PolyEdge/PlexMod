@@ -55,7 +55,8 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 	public static Integer MAX_TIMER_MODE = 3;
 	
 	public Long lastRPupdate = 0L;
-
+	public Long lastIPCupdate = 0L;
+	
 	
 	@Override
 	public String getModName() {
@@ -64,7 +65,6 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 	
 	@Override
 	public void modInit() {
-		//LoggerFactory.getLogger(IPCClient.class);
 		ipcClient = new IPCClient(463568324458971147L);
 		ipcClient.setListener(new IPCListener() {
 			@Override
@@ -146,26 +146,29 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 		Plex.plexCommand.addPlexHelpCommand("discord", "Displays discord integration options");
 		
 		PlexCore.registerUiTab("Discord", PlexRichPresenceUI.class);
+		
+		MinecraftForge.EVENT_BUS.register(this);
 	}
 	
 	public void putRichPresence() {
-		if (ipcClient.getStatus() == PipeStatus.CLOSED || ipcClient.getStatus() == PipeStatus.DISCONNECTED) {
-			this.openRP();
+		if (!this.richPresenceOpened) {
 			return;
 		}
 		final RichPresence status = getRichPresence();
 		final PlexNewRichPresenceMod me = this;
-		ipcClient.sendRichPresence(status, new Callback() {
-			@Override
-			public void succeed(Packet packet) {
-				me.currentStatus = status;
-			}
-			@Override
-			public void fail(String message) {
+		try {
+			ipcClient.sendRichPresence(status, new Callback() {
+				@Override
+				public void succeed(Packet packet) {
+					me.currentStatus = status;
+				}
+				@Override
+				public void fail(String message) {
 
-			}
-		});
-		//DiscordRPC.INSTANCE.Discord_UpdatePresence(getRichPresence());
+				}
+			});			
+		}
+		catch (Throwable e) {}
 	}
 	
 	public void updateRichPresence() {
@@ -173,18 +176,15 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 		if (!richPresenceOpened) {
 			return;
 		}
+		handleIPCClientState();
 		if (this.modEnabled.booleanValue && Plex.serverState.onMineplex) {
-			openRP();
 			putRichPresence();
-		}
-		else {
-			closeRP();
 		}
 	}
 	
 	public RichPresence getRichPresence() {
 		String serverIP = getServerIP();
-		String[] gameState = getPresenceStrings(this.displayLobbyName.booleanValue);
+		String[] gameState = getPresenceStrings();
 		RichPresence.Builder presence = new RichPresence.Builder();
 		presence.setDetails(gameState[0]);
 		presence.setState(gameState[1]);
@@ -202,9 +202,6 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 						presence.setSmallImage(gameIcons.get(Plex.serverState.currentGameName.toLowerCase()), gameState[0]);
 					}
 					if (PlexCore.getSharedValue("richPresence_timerMode").integerValue.equals(1) && (Plex.serverState.gameStartDateTime != null)) {
-						//PlexCoreUtils.chatAddMessage("" + PlexCoreListeners.gameStartEpoch);
-						//PlexCoreUtils.chatAddMessage("" + OffsetDateTime.of(LocalDateTime.ofEpochSecond(PlexCoreListeners.gameStartEpoch / 10, 0, ZoneOffset.ofTotalSeconds(0)), ZoneOffset.ofTotalSeconds(0)).toEpochSecond());
-						//presence.setStartTimestamp(OffsetDateTime.of(LocalDateTime.ofEpochSecond(PlexCoreListeners.gameStartEpoch / 1000, 0, ZoneOffset.ofTotalSeconds(0)), ZoneOffset.ofTotalSeconds(0)));
 						presence.setStartTimestamp(Plex.serverState.gameStartDateTime);
 					}
 				}
@@ -214,7 +211,6 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 			}	
 		}
 		if (PlexCore.getSharedValue("richPresence_timerMode").integerValue.equals(2) && Plex.serverState.serverJoinDateTime != null) {
-			//presence.setStartTimestamp(OffsetDateTime.of(LocalDateTime.ofEpochSecond(PlexCoreListeners.serverJoinEpoch / 100, 0, ZoneOffset.ofTotalSeconds(0)), ZoneOffset.ofTotalSeconds(0)));
 			presence.setStartTimestamp(Plex.serverState.serverJoinDateTime);
 		}
 		return presence.build();
@@ -229,11 +225,11 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 		Boolean showLobby = this.displayLobbyName.booleanValue && (Plex.serverState.currentLobbyName != null);
 		Boolean showIGN = this.displayIGN.booleanValue;
 		String output = "";
-		if (showLobby) {
+		if (showLobby && Plex.serverState.currentLobbyName != null) {
 			output += Plex.serverState.currentLobbyName;
 		}
 		if (showIGN) {
-			if (showLobby) {
+			if (!output.equals("")) {
 				output += " | ";
 			}
 			output += "IGN: " + PlexCore.getPlayerIGN();
@@ -241,7 +237,7 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 		return output;
 	}
 	
-	public String[] getPresenceStrings(Boolean showLobby) {
+	public String[] getPresenceStrings() {
 		String state = serverIgn();
 		if (Plex.serverState.currentLobbyType == null) {
 			return new String[] {"Playing on " + getServerIP(), state};
@@ -290,12 +286,7 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 		this.modSetting("richPresence_showIGN", false).set(this.displayIGN.booleanValue);
 		this.modSetting("richPresence_timerMode", 1).set(this.timerMode.integerValue);
 		
-		if (this.modEnabled.booleanValue) {
-			openRP();
-		}
-		else {
-			closeRP();
-		}
+		handleIPCClientState();
 		new Timer().schedule(new TimerTask() {
 			public void run() {
 				if (Plex.serverState.onMineplex) {
@@ -306,17 +297,40 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 	}
 	
 	public void showLibError() {
-		//for (Integer x = 0; x < 2; x++) {
 		PlexCoreUtils.chatAddMessage(PlexCoreUtils.chatPlexPrefix() + PlexCoreUtils.chatStyleText("DARK_RED", "The Discord Rich Presence libraries failed to connect to discord. This error is normal when Discord closes unexpectedly while the mod is already connected. Check the log for details"));
-		//}		
 	}
 	
-	public void openRP() {
+	public void handleIPCClientState() {
+		if (!Plex.serverState.onMineplex || !this.modEnabled.booleanValue) {
+			try {
+				ipcClient.close();
+			}
+			catch (Throwable e) {}
+			richPresenceOpened = false;
+			return;
+		}
+		if ((ipcClient.getStatus().equals(PipeStatus.CLOSED) || ipcClient.getStatus().equals(PipeStatus.DISCONNECTED)) && !richPresenceOpening && richPresenceOpened) {
+			this.richPresenceOpened = false;
+			try {
+				PlexCoreUtils.chatAddMessage(PlexCoreUtils.chatPlexPrefix() + PlexCoreUtils.chatStyleText("DARK_RED", "Discord disconnected!"));
+			}
+			catch (Throwable ee) {}
+		}
 		if (!richPresenceOpened) {
 			richPresenceOpening = true;
 			try {
 				ipcClient.connect(DiscordBuild.ANY);
-				//DiscordRPC.INSTANCE.Discord_Initialize("463568324458971147", new DiscordEventHandlers(), true, null);
+				if (richPresenceErrorShown) {
+					new Timer().schedule(new TimerTask() {
+						public void run() {
+							try {
+								PlexCoreUtils.chatAddMessage(PlexCoreUtils.chatPlexPrefix() + PlexCoreUtils.chatStyleText("GREEN", "Discord reconnected!"));
+							}
+							catch (Throwable ee) {}
+						}
+					}, 1000L);
+				}
+				richPresenceErrorShown = false;
 			}
 			catch (Throwable e) {
 				String error = e.getMessage();
@@ -335,37 +349,26 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 			return;
 		}
 	}
-	
-	public void closeRP() {
-		if (richPresenceOpened) {
-			ipcClient.close();
-			//DiscordRPC.INSTANCE.Discord_Shutdown();
-		}
-		richPresenceOpened = false;
-	}
 
 	@Override
 	public void joinedMineplex() {
-		if (this.modEnabled.booleanValue) {
-			openRP();
-		}
-		MinecraftForge.EVENT_BUS.register(this);
+		handleIPCClientState();
 		lastRPupdate = Minecraft.getSystemTime();
 	}
 
 	@Override
 	public void leftMineplex() {
-		closeRP();
-//		if (richPresenceOpened && richPresenceLoaded) {
-//			DiscordRPC.discordClearPresence();
-//		}
-		MinecraftForge.EVENT_BUS.unregister(this);
+		handleIPCClientState();
 	}
 	
 	@SubscribeEvent
 	public void onClientTick(ClientTickEvent e) {
-		if (Plex.serverState.onMineplex && (Minecraft.getSystemTime() > lastRPupdate + 30000L)) {
+		if (Plex.serverState.onMineplex && (Minecraft.getSystemTime() > lastRPupdate + 15000L)) {
 			updateRichPresence();
+		}
+		if (Minecraft.getSystemTime() > lastIPCupdate + 15000L) {
+			handleIPCClientState();
+			lastIPCupdate = Minecraft.getSystemTime();
 		}
 		if (Plex.serverState.onMineplex && showRichPresenceError && !richPresenceErrorShown) {
 			showRichPresenceError = false;
@@ -394,6 +397,7 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 	public void switchedLobby(PlexCoreLobbyType type) {
 		new Timer().schedule(new TimerTask() {
 			public void run() {
+				handleIPCClientState();
 				updateRichPresence();
 			}
 		}, 3000L);

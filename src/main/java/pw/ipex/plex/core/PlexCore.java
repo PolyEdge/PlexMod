@@ -5,8 +5,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
@@ -17,6 +15,7 @@ import pw.ipex.plex.ci.PlexCommandHandler;
 import pw.ipex.plex.ci.PlexCommandListener;
 import pw.ipex.plex.mod.PlexModBase;
 import pw.ipex.plex.ui.PlexUIBase;
+import pw.ipex.plex.ui.PlexUITabContainer;
 
 /**
  * The core utility class for PlexMod. Use the static methods in this class to
@@ -28,7 +27,7 @@ public class PlexCore {
 	public static Map<String, PlexModBase> plexMods = new HashMap<String, PlexModBase>();
 	public static Map<String, PlexCommandHandler> commandHandlerNamespace = new HashMap<String, PlexCommandHandler>();
 	public static Map<String, PlexCommandListener> commandListenerNamespace = new HashMap<String, PlexCommandListener>();
-	public static List<java.util.Map.Entry<String, Class<? extends PlexUIBase>>> uiTabList = new ArrayList<java.util.Map.Entry<String, Class<? extends PlexUIBase>>>();
+	public static List<PlexUITabContainer> uiTabList = new ArrayList<PlexUITabContainer>();
 	public static Map<String, PlexCoreValue> sharedValues = new HashMap<String, PlexCoreValue>();
 
 	private PlexCore() {
@@ -133,8 +132,10 @@ public class PlexCore {
 	 * @param name   Title of the UI tab
 	 * @param class1 Class of the UI tab
 	 */
-	public static void registerUiTab(String name, Class<? extends PlexUIBase> class1) {
-		uiTabList.add(new java.util.AbstractMap.SimpleEntry<String, Class<? extends PlexUIBase>>(name, class1));
+	public static PlexUITabContainer registerUiTab(String name, Class<? extends PlexUIBase> class1) {
+		PlexUITabContainer tab = new PlexUITabContainer(class1, name);
+		uiTabList.add(tab);
+		return tab;
 	}
 
 	/**
@@ -143,10 +144,10 @@ public class PlexCore {
 	 * @param name Title of the tab
 	 * @return The UI tab
 	 */
-	public static Class<? extends PlexUIBase> getUiTab(String name) {
-		for (java.util.Map.Entry<String, Class<? extends PlexUIBase>> tab : uiTabList) {
-			if (tab.getKey().equals(name)) {
-				return tab.getValue();
+	public static PlexUITabContainer getUiTab(String label) {
+		for (PlexUITabContainer tab : uiTabList) {
+			if (tab.getUiClass().equals(label)) {
+				return tab;
 			}
 		}
 		return null;
@@ -159,34 +160,16 @@ public class PlexCore {
 	 * @return Title of the tab if it exists, null otherwise
 	 * @see PlexUIBase
 	 */
-	public static String getUiTabTitleAt(Integer pos) {
+	public static PlexUITabContainer getUiTabAt(Integer pos) {
 		if (pos >= uiTabList.size()) {
 			return null;
 		}
 
-		Entry<String, Class<? extends PlexUIBase>> tab = uiTabList.get(pos);
+		PlexUITabContainer tab = uiTabList.get(pos);
 		if (tab != null) {
-			return tab.getKey();
-		} else {
-			return null;
-		}
-	}
-
-	/**
-	 * Gets the UI tab class registered at the given index
-	 * 
-	 * @param pos Index of the tab
-	 * @return UI tab class if it exists, null otherwise
-	 */
-	public static Class<? extends PlexUIBase> getUiTabClassAt(Integer pos) {
-		if (!(pos < uiTabList.size())) {
-			return null;
-		}
-
-		Entry<String, Class<? extends PlexUIBase>> tab = uiTabList.get(pos);
-		if (tab != null) {
-			return tab.getValue();
-		} else {
+			return tab;
+		} 
+		else {
 			return null;
 		}
 	}
@@ -197,7 +180,7 @@ public class PlexCore {
 	 * @return the UI tab list
 	 * @see PlexUIBase
 	 */
-	public static List<java.util.Map.Entry<String, Class<? extends PlexUIBase>>> getUiTabList() {
+	public static List<PlexUITabContainer> getUiTabList() {
 		return uiTabList;
 	}
 
@@ -218,11 +201,7 @@ public class PlexCore {
 	 */
 	public static void joinedMineplex() {
 		for (final PlexModBase mod : plexMods.values()) {
-			// new Timer().schedule(new TimerTask() {
-			// public void run() {
 			mod.joinedMineplex();
-			// }
-			// }, 0L);
 		}
 	}
 
@@ -233,11 +212,7 @@ public class PlexCore {
 	 */
 	public static void leftMineplex() {
 		for (final PlexModBase mod : plexMods.values()) {
-			// new Timer().schedule(new TimerTask() {
-			// public void run() {
 			mod.leftMineplex();
-			// }
-			// }, 0L);
 		}
 	}
 
@@ -261,7 +236,8 @@ public class PlexCore {
 	public static String getPlayerIGN() {
 		try {
 			return Plex.minecraft.thePlayer.getDisplayNameString();
-		} catch (NullPointerException e) {
+		} 
+		catch (NullPointerException e) {
 			return null;
 		}
 	}
@@ -286,13 +262,16 @@ public class PlexCore {
 		try {
 			List<String> result = new ArrayList<String>();
 			for (EntityPlayer player : Plex.minecraft.theWorld.playerEntities) {
-				if (lowercase)
+				if (lowercase) {
 					result.add(player.getName().toLowerCase());
-				else
+				}
+				else {
 					result.add(player.getName());
+				}
 			}
 			return result;
-		} catch (NullPointerException e) {
+		} 
+		catch (NullPointerException e) {
 			return null;
 		}
 	}
@@ -389,7 +368,7 @@ public class PlexCore {
 	 * @param sender - command sender
 	 * @param args   - command arguments
 	 * @param pos    - block position
-	 * @return
+	 * @return A list of completions for the current typed command
 	 */
 	public static List<String> commandTabCompletion(ICommandSender sender, String[] args, BlockPos pos) {
 		String namespace = PlexCommandHandler.getCommandNamespace(args);
@@ -403,6 +382,15 @@ public class PlexCore {
 		}
 		return commandHandlerNamespace.get(namespace).tabCompletion(sender, namespace, commandArgs, pos);
 	}
+	
+	
+	/**
+	 * Handles a client command
+	 * 
+	 * @param sender - command sender
+	 * @param args   - command arguments
+	 * @return 
+	 */
 
 	public static void processModCommand(ICommandSender sender, String[] args) throws CommandException {
 		String namespace = PlexCommandHandler.getCommandNamespace(args);
