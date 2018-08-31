@@ -343,16 +343,16 @@ public class PlexUIModMenuScreen extends GuiScreen {
 				drawGradientRect(0, 25, this.width / 6, this.height, 0xaa10100f, 0xaa10100f); // side bar
 			}
 			
+			drawRect(this.zoneStartX(), 25, this.zoneEndX(), this.zoneStartY(), 0x7710100f); // local title bar background 
+			
+			if (!this.baseUiScreen.disableDoneButton()) {
+				drawRect(this.zoneStartX(), this.zoneEndY(), this.zoneEndX(), this.height, 0x7710100f); // done button bar background
+			}
+			
 			drawHorizontalLine(0, this.width, 25, foregroundColour); // top bar border
 			
 			if (!this.baseUiScreen.disableSidebar()) {
 				drawVerticalLine(this.width / 6, 25, this.height, foregroundColour); // side bar border
-			}
-			
-			drawRect(this.zoneStartX(), 25, this.zoneEndX(), this.zoneStartX(), 0x7710100f); // local title bar background 
-			
-			if (!this.baseUiScreen.disableDoneButton()) {
-				drawRect(this.zoneStartX(), this.zoneEndY(), this.zoneEndX(), this.height, 0x7710100f); // done button bar background
 			}
 
 			drawCenteredString(this.fontRendererObj, this.baseUiScreen.uiGetTitle(), this.zoneCenterX(), 35, 16777215); // Local title
