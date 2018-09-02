@@ -16,7 +16,8 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
 import pw.ipex.plex.Plex;
 import pw.ipex.plex.ci.PlexCommandListener;
-import pw.ipex.plex.commandqueue.PlexQueueCommand;
+import pw.ipex.plex.commandqueue.PlexCommandQueue;
+import pw.ipex.plex.commandqueue.PlexCommandQueueCommand;
 import pw.ipex.plex.core.PlexCore;
 import pw.ipex.plex.core.PlexCoreLobbyType;
 import pw.ipex.plex.core.PlexCoreUtils;
@@ -32,7 +33,7 @@ public class PlexAutoThankMod extends PlexModBase {
 	
 	public PlexCoreValue modEnabled = new PlexCoreValue("autoThank_enabled", false);
 	public Map<String, String> gameNames = new HashMap<String, String>();
-	public List<PlexQueueCommand> thankQueue = new ArrayList<PlexQueueCommand>();
+	public PlexCommandQueue thankQueue = new PlexCommandQueue("autoThank", Plex.plexCommandQueue);
 	public Long lastThankWave = 0L;
 	public Boolean thankingInProgress = false;
 	public Boolean cooldownWait = false;
@@ -78,28 +79,25 @@ public class PlexAutoThankMod extends PlexModBase {
 	public void onClientTick(ClientTickEvent e) {
 		if (!this.modEnabled.booleanValue) {
 			lastThankWave = 0L; // remove this in release
-			Plex.plexCommandQueue.cancelAll(thankQueue);
-			Plex.plexCommandQueue.cancelAllFromLowPriorityQueueMatchingGroup("autothank");
+			this.thankQueue.cancelAll();
 			return;
 		}
 		if (Plex.serverState.currentLobbyType.equals(PlexCoreLobbyType.CLANS_SERVER)) {
 			lastThankWave = 0L;
-			Plex.plexCommandQueue.cancelAll(thankQueue);
-			Plex.plexCommandQueue.cancelAllFromLowPriorityQueueMatchingGroup("autothank");
+			this.thankQueue.cancelAll();
 			return;
 		}
-		Plex.plexCommandQueue.removeCompleted(thankQueue);
-		if (thankQueue.size() > 0) {
-			if (thankQueue.get(0).isCommandSent()) {
-				if (Minecraft.getSystemTime() > thankQueue.get(0).latestCommandSentTimestamp + thankResponseTimeout) {
-					thankQueue.get(0).markComplete();
+		if (this.thankQueue.hasItems()) {
+			if (thankQueue.getItem(0).isCommandSent()) {
+				if (Minecraft.getSystemTime() > thankQueue.getItem(0).latestCommandSentTimestamp + thankResponseTimeout) {
+					thankQueue.getItem(0).markComplete();
 				}				
 			}
 		}
 		if (Plex.serverState.onMineplex && this.modEnabled.booleanValue) {
 			if (Minecraft.getSystemTime() > (lastThankWave + thankWaveInterval)) {
 				for (String game : gameNames.values()) {
-					thankQueue.add(Plex.plexCommandQueue.addLowPriorityCommand("autothank", "/amplifier thank " + game));
+					thankQueue.addCommand("/amplifier thank " + game);
 				}
 				lastThankWave = Minecraft.getSystemTime();
 			}			
@@ -112,31 +110,31 @@ public class PlexAutoThankMod extends PlexModBase {
 			return;
 		}
 		String minified = PlexCoreUtils.minimalize(e.message.getFormattedText());
-		if (thankQueue.size() > 0) {
-			if (thankQueue.get(0).isCommandSent()) {
+		if (thankQueue.hasItems()) {
+			if (thankQueue.getItem(0).isCommandSent()) {
 				if (minified.matches(MATCH_SUCCESSFUL_TIP)) {
-					thankQueue.remove(0).markComplete();
+					thankQueue.getItem(0).markComplete();
 					cooldownWait = false;
 				}
-				if (minified.toLowerCase().startsWith("amplifier> you have already thanked this amplifier")) {
+				else if (minified.toLowerCase().startsWith("amplifier> you have already thanked this amplifier")) {
 					e.setCanceled(true);
 					cooldownWait = false;
-					thankQueue.remove(0).markComplete();		
+					thankQueue.getItem(0).markComplete();
 				}
-				if (minified.toLowerCase().startsWith("thanks> you have already thanked this amplifier")) {
+				else if (minified.toLowerCase().startsWith("thanks> you have already thanked this amplifier")) {
 					e.setCanceled(true);
 					cooldownWait = false;
-					thankQueue.remove(0).markComplete();
+					thankQueue.getItem(0).markComplete();
 				}
-				if (minified.toLowerCase().startsWith("amplifier> there was an error handling your request")) {
+				else if (minified.toLowerCase().startsWith("amplifier> there was an error handling your request")) {
 					e.setCanceled(true);
 					cooldownWait = false;
-					thankQueue.remove(0).markComplete();
+					thankQueue.getItem(0).markComplete();
 				}
-				if (minified.toLowerCase().startsWith("amplifier> please wait before trying that again")) {
+				else if (minified.toLowerCase().startsWith("amplifier> please wait before trying that again")) {
 					e.setCanceled(true);
 					cooldownWait = true;
-					thankQueue.get(0).resendCommandIn(cooldownBackoffDelay);
+					thankQueue.getItem(0).resendCommandIn(cooldownBackoffDelay);
 				}
 			}
 		}
@@ -148,7 +146,7 @@ public class PlexAutoThankMod extends PlexModBase {
 				PlexCoreUtils.chatAddMessage(PlexCoreUtils.chatPlexPrefix() + PlexCoreUtils.chatStyleText("GRAY", "The game \"" + gameName + "\" isn't recognized by AutoThank, try thanking it manually."));
 			}
 			else {
-				thankQueue.add(Plex.plexCommandQueue.addLowPriorityCommand("autothank", "/amplifier thank " + gameNames.get(gameName)));
+				thankQueue.addCommand("/amplifier thank " + gameNames.get(gameName));
 			}
 		}
 	}
@@ -158,12 +156,16 @@ public class PlexAutoThankMod extends PlexModBase {
 		this.modSetting("autoThank_enabled", false).set(this.modEnabled.booleanValue);
 	}
 
-
+	@Override
+	public void joinedMineplex() {
+		MinecraftForge.EVENT_BUS.register(this);
+		thankQueue.cancelAll();
+	}
 
 	@Override
 	public void leftMineplex() {
 		MinecraftForge.EVENT_BUS.unregister(this);
-		thankQueue.clear();
+		thankQueue.cancelAll();
 	}
 
 	@Override

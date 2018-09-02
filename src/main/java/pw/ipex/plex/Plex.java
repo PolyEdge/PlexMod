@@ -8,7 +8,7 @@ import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 //import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import pw.ipex.plex.commandqueue.PlexCommandQueue;
+import pw.ipex.plex.commandqueue.PlexCommandQueueManager;
 import pw.ipex.plex.core.PlexCore;
 import pw.ipex.plex.core.PlexCoreListeners;
 import pw.ipex.plex.core.PlexCoreServerState;
@@ -17,7 +17,6 @@ import pw.ipex.plex.mods.autogg.PlexAutoGGMod;
 import pw.ipex.plex.mods.autothank.PlexAutoThankMod;
 import pw.ipex.plex.mods.betterreply.PlexBetterReplyMod;
 import pw.ipex.plex.mods.developmentmod.PlexDevelopmentMod;
-import pw.ipex.plex.mods.friendslistenhancements.PlexFriendsListEnhancementsMod;
 import pw.ipex.plex.mods.hidestream.PlexHideStreamMod;
 import pw.ipex.plex.mods.messaging.PlexMessagingMod;
 import pw.ipex.plex.mods.plexmod.PlexPlexCommand;
@@ -39,8 +38,8 @@ public class Plex {
 	public static Logger logger;
 
 	public static PlexCoreServerState serverState = new PlexCoreServerState();
+	public static PlexCommandQueueManager plexCommandQueue = new PlexCommandQueueManager();
 	public static PlexCoreListeners plexListeners = new PlexCoreListeners();
-	public static PlexCommandQueue plexCommandQueue = new PlexCommandQueue();
 	public static PlexPlexCommand plexCommand = new PlexPlexCommand();
 
 	@EventHandler
@@ -60,7 +59,7 @@ public class Plex {
 		
 		PlexCoreTextures.loadTextures();
 		PlexCore.registerMod(new PlexPlexMod());
-		PlexCore.registerMod(new PlexFriendsListEnhancementsMod());
+		//PlexCore.registerMod(new PlexFriendsListEnhancementsMod());
 		PlexCore.registerMod(new PlexBetterReplyMod());
 		PlexCore.registerMod(new PlexMessagingMod());
 		PlexCore.registerMod(new PlexHideStreamMod());

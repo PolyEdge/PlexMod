@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import pw.ipex.plex.core.PlexCoreChatRegex;
 import pw.ipex.plex.core.PlexCoreChatRegexEntry;
@@ -23,8 +25,11 @@ public class PlexMessagingChatMessageAdapter {
 	public boolean requiresChatOpen = false;
 	public boolean sendToSelectedChannel = false;
 	public List<PlexMessagingMessageClickCallback> callbacks = new ArrayList<PlexMessagingMessageClickCallback>();
+	public List<String> conditions = new ArrayList<String>();
 	public int defaultMessageType = 1;
 	public int defaultMessageSide = 0;
+	public String MATCH_CONDITION = "(.+?) (!?)(startswith|endswith|startswithcase|endswithcase|equals|equalscase|contains(?:\\.[0-9]+)?|char\\.[0-9]+|regex) (.+)";
+	public Pattern PATTERN_CONDITION = Pattern.compile(MATCH_CONDITION);
 	
 	public PlexMessagingChatMessageAdapter(String group, String regexEntryName, String formatString) {
 		this.chatGroup = group;
@@ -97,6 +102,11 @@ public class PlexMessagingChatMessageAdapter {
 		this.requiresChatOpen = required;
 		return this;
 	}
+	
+	public PlexMessagingChatMessageAdapter condition(String condition) {
+		this.conditions.add(condition);
+		return this;
+	}
 
 	public Class<? extends PlexMessagingChannelBase> getChannelClass() {
 		return this.channelClass;
@@ -139,6 +149,89 @@ public class PlexMessagingChatMessageAdapter {
 		return this.regexEntry.hasTag(tag);
 	}
 	
+	public boolean meetsCondition(String condition, String text) {
+		condition = this.formatStringWithGroups(condition, text);
+		Matcher matcher = PATTERN_CONDITION.matcher(condition);
+		matcher.find();
+		Boolean meetsCondition = null;
+		String item1 = matcher.group(1).trim();
+		String item2 = matcher.group(4).trim();
+		String operator = matcher.group(3);
+		if (operator.equals("startswith")) {
+			meetsCondition = item1.toLowerCase().startsWith(item2.toLowerCase());
+		}
+		else if (operator.equals("startswithcase")) {
+			meetsCondition = item1.startsWith(item2);
+		}
+		else if (operator.equals("endswith")) {
+			meetsCondition = item1.toLowerCase().endsWith(item2.toLowerCase());
+		}
+		else if (operator.equals("endsswithcase")) {
+			meetsCondition = item1.endsWith(item2);
+		}
+		else if (operator.equals("equals")) {
+			meetsCondition = item1.toLowerCase().equals(item2.toLowerCase());
+		}
+		else if (operator.equals("equalscase")) {
+			meetsCondition = item1.equals(item2);
+		}
+		else if (operator.split("\\.")[0].equals("contains") || operator.split("\\.")[0].equals("containscase")) {
+			String[] localArgs = operator.split("\\.");
+			boolean caseSensitive = localArgs[0].equals("containscase");
+			int amount = 0;
+			String op = ">";
+			if (localArgs.length == 2) {
+				if ("<>=".contains(String.valueOf(localArgs[1].charAt(0)))) {
+					amount = Integer.parseInt(localArgs[1].substring(1));
+					op = String.valueOf(localArgs[1].charAt(0));
+				}
+				else {
+					amount = Integer.parseInt(localArgs[1]);
+				}
+			}
+			
+			String item1Case = caseSensitive ? item1 : item1.toLowerCase();
+			String item2Case = caseSensitive ? item2 : item2.toLowerCase();
+			int occurrences = 0;
+			int lastOccurrenceIndex = 0;
+			
+			while (lastOccurrenceIndex != -1) {
+				lastOccurrenceIndex = item1Case.indexOf(item2Case, lastOccurrenceIndex);
+			    if (lastOccurrenceIndex != -1) {
+			    	occurrences++;
+			    	lastOccurrenceIndex += item2Case.length();
+			    }
+			}
+			
+			if (op.equals(">")) {
+				meetsCondition = occurrences > amount;
+			}
+			if (op.equals("<")) {
+				meetsCondition = occurrences < amount;
+			}
+			if (op.equals("=")) {
+				meetsCondition = occurrences == amount;
+			}
+		}
+		else if (operator.split("\\.")[0].equals("char") || operator.split("\\.")[0].equals("charcase")) {
+			String[] localArgs = operator.split("\\.");
+			boolean caseSensitive = localArgs[0].equals("charcase");
+			int position = Integer.parseInt(localArgs[1]);
+			
+			String item1Case = caseSensitive ? item1 : item1.toLowerCase();
+			String item2Case = caseSensitive ? item2 : item2.toLowerCase();
+			
+			if (position >= item1Case.length()) {
+				meetsCondition = false;
+			}
+			else {
+				meetsCondition = String.valueOf(item1Case.charAt(position)).equals(item2Case);
+			}
+		}
+		
+		return meetsCondition == null ? false : (matcher.group(2).equals("!") ? !meetsCondition : meetsCondition);
+	}
+	
 	public PlexMessagingMessage getIncompleteMessageFromText(String text) {
 		if (!this.matchesMessage(text)) {
 			return null;
@@ -176,6 +269,15 @@ public class PlexMessagingChatMessageAdapter {
 		}
 		if (this.requiresChannelOpen && !requiredChannelOpen) {
 			return false;
+		}
+		return true;
+	}
+	
+	public boolean meetsConditions(String message) {
+		for (String condition : this.conditions) {
+			if (!this.meetsCondition(condition, message)) {
+				return false;
+			}
 		}
 		return true;
 	}

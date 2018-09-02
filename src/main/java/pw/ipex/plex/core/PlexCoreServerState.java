@@ -1,6 +1,7 @@
 package pw.ipex.plex.core;
 
 import java.time.OffsetDateTime;
+import java.util.HashMap;
 
 import net.minecraft.client.Minecraft;
 
@@ -11,6 +12,7 @@ public class PlexCoreServerState {
 	public Long lastServerJoin = 0L;
 	public OffsetDateTime serverJoinDateTime = null;
 	public String serverIP = "";
+	public String serverHostname = "";
 	
 	public PlexCoreLobbyType currentLobbyType = PlexCoreLobbyType.OFFLINE;
 	public Long lastLobbySwitch = 0L;
@@ -23,6 +25,8 @@ public class PlexCoreServerState {
 	
 	public Long lastControlInput = null;
 	public Long lastChatOpen = 0L;
+
+	public HashMap<String, String> emotesList = new HashMap<>();
 	
 	
 	public void setToOnline() {
@@ -47,5 +51,7 @@ public class PlexCoreServerState {
 		this.gameStartDateTime = null;
 		this.isGameSpectator = false;
 		this.lastLobbySwitch = 0L;
+		this.serverIP = "";
+		this.serverHostname = "";
 	}
 }

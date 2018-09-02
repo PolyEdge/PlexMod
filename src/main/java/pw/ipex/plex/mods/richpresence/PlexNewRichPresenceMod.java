@@ -138,6 +138,7 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 		lobbyNames.put("dom", "Dominate");
 		lobbyNames.put("ctf", "CTF");
 		lobbyNames.put("retro", "Retro");
+		lobbyNames.put("nano", "Nano Games");
 		lobbyNames.put("event", "$In an Event");
 		lobbyNames.put("staff", "$In a Staff Server");
 		
@@ -218,10 +219,10 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 	
 
 	public String getServerIP() {
-		return Plex.serverState.serverIP.startsWith("us") ? "us.mineplex.com" : (Plex.serverState.serverIP.startsWith("eu") ? "eu.mineplex.com" : "mineplex.com");
+		return Plex.serverState.serverHostname.startsWith("us") ? "us.mineplex.com" : (Plex.serverState.serverHostname.startsWith("eu") ? "eu.mineplex.com" : "mineplex.com");
 	}
 	
-	public String serverIgn() {
+	public String serverIgn(boolean addIP) {
 		Boolean showLobby = this.displayLobbyName.booleanValue && (Plex.serverState.currentLobbyName != null);
 		Boolean showIGN = this.displayIGN.booleanValue;
 		String output = "";
@@ -234,16 +235,22 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 			}
 			output += "IGN: " + PlexCore.getPlayerIGN();
 		}
+		if (output.equals("") && addIP) {
+			output = getServerIP();
+		}
+		else if (output.equals("")) {
+			output = "No information available";
+		}
 		return output;
 	}
 	
 	public String[] getPresenceStrings() {
-		String state = serverIgn();
+		String state = serverIgn(true);
 		if (Plex.serverState.currentLobbyType == null) {
-			return new String[] {"Playing on " + getServerIP(), state};
+			return new String[] {"Playing on " + getServerIP(), serverIgn(false)};
 		}
 		if (Plex.serverState.currentLobbyType.equals(PlexCoreLobbyType.SERVER_UNDETERMINED) || Plex.serverState.currentLobbyType.equals(PlexCoreLobbyType.SERVER_UNKNOWN)) {
-			return new String[] {"Playing on " + getServerIP(), state};
+			return new String[] {"Playing on " + getServerIP(), serverIgn(false)};
 		}
 		if (Plex.serverState.currentLobbyType.equals(PlexCoreLobbyType.SERVER_HUB)) {
 			return new String[] {"In a Main Lobby", state};
@@ -276,7 +283,7 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 			}
 			return new String[] {(Plex.serverState.isGameSpectator ? "Spectating " : "Playing ") + Plex.serverState.currentGameName, state};
 		}
-		return new String[] {"Playing on " + getServerIP(), state};
+		return new String[] {"Playing on " + getServerIP(), serverIgn(false)};
 	}
 
 	@Override
@@ -346,7 +353,6 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 			}
 			
 			richPresenceOpened = true;
-			return;
 		}
 	}
 

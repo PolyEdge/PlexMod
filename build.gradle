@@ -99,3 +99,7 @@ shadowJar {
 reobf {
     shadowJar {}
 }
+
+task getHomeDir {
+    println gradle.gradleHomeDir
+}

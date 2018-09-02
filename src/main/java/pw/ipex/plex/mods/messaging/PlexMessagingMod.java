@@ -75,6 +75,9 @@ public class PlexMessagingMod extends PlexModBase {
 		}
 		String channelName = messageAdapter.getChannelName(chatMessage);
 		String recipientEntityName = messageAdapter.getRecipientEntityName(chatMessage);
+		if (!messageAdapter.meetsConditions(chatMessage)) {
+			return null;
+		}
 		if (channelName == null) {
 			if (PlexMessagingMod.channelManager.selectedChannel == null) {
 				return null;

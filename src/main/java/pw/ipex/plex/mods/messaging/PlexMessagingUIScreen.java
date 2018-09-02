@@ -285,7 +285,7 @@ public class PlexMessagingUIScreen extends PlexUIBase {
 	
 		//PlexUIScreen.drawRect(this.parentUI.zoneEndX() - (getContactsPaneSize()), this.parentUI.zoneStartY(), this.parentUI.zoneEndX(), this.parentUI.zoneEndY(), 0xaa10100f);
 		//PlexUIModMenuScreen.drawRect(this.parentUI.zoneStartX(), this.parentUI.zoneStartY(), this.parentUI.zoneEndX() - (getContactsPaneSize()), this.parentUI.zoneEndY() - 30, 0x23ffffff);
-		PlexUIModMenuScreen.drawRect(this.parentUI.zoneEndX() - getContactsPaneSize(), this.parentUI.zoneStartY(), this.parentUI.zoneEndX(), this.parentUI.zoneEndY(), 0x65000000);
+		GuiScreen.drawRect(this.parentUI.zoneEndX() - getContactsPaneSize(), this.parentUI.zoneStartY(), this.parentUI.zoneEndX(), this.parentUI.zoneEndY(), 0x65000000);
 		
 		this.contactsList.drawScreen(par1, par2, par3);
 		this.chatWindow.drawScreen(par1, par2, par3);
@@ -328,7 +328,6 @@ public class PlexMessagingUIScreen extends PlexUIBase {
 		}
 		
 		//String drawText = "";
-
 		//PlexCoreRenderUtils.drawScaledString(drawText, (float)this.parentUI.zoneStartX() + 5, (float)this.parentUI.zoneStartY() + 5, 0xffffff, 0.5F, false);
 		
 		

@@ -8,15 +8,17 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class PlexCoreChatRegexEntry {
-	public String entryName = "";
-	public String regexString = "";
-	public Pattern regexPattern = null;
-	public Map<String, Integer> patternNames = new HashMap<String, Integer>();
-	public List<String> identifierTags = new ArrayList<String>();
+	public String entryName;
+	public String regexString;
+	public Pattern regexPattern;
+	public Map<String, Integer> patternNames = new HashMap<>();
+	public List<String> identifierTags = new ArrayList<>();
+	public char FORMAT_SYMBOL_CHAR = (char) 167;
+	public String FORMAT_SYMBOL = String.valueOf(FORMAT_SYMBOL_CHAR);
 	
 	public String formatInput(String input) {
 		if (input.indexOf((char) 167) == -1) {
-			input = input.replace('&', (char) 167);
+			input = input.replace('&', FORMAT_SYMBOL_CHAR);
 		}
 		return input;
 	}
@@ -68,7 +70,7 @@ public class PlexCoreChatRegexEntry {
 	}
 	
 	public Map<String, String> getAllFields(String input) {
-		Map<String, String> output = new HashMap<String, String>();
+		Map<String, String> output = new HashMap<>();
 		Matcher matcher = this.regexPattern.matcher(input);
 		matcher.find();
 		for (String groupName : patternNames.keySet()) {
@@ -88,6 +90,7 @@ public class PlexCoreChatRegexEntry {
 		Map<String, String> groups = this.getAllFields(messageInput);
 		for (String groupName : groups.keySet()) {
 			formattingString = formattingString.replace("{" + groupName + "}", groups.get(groupName) != null ? groups.get(groupName) : "");
+			formattingString = formattingString.replace("{$" + groupName + "}", groups.get(groupName) != null ? groups.get(groupName).replaceAll(FORMAT_SYMBOL + "[0-9a-fA-Fklmor]", "") : "");
 		}
 		return formattingString;
 	}
