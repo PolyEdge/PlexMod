@@ -1,12 +1,15 @@
 package pw.ipex.plex.mods.messaging.channel;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 //import java.util.ListIterator;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.IChatComponent;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import pw.ipex.plex.Plex;
 import pw.ipex.plex.core.PlexCoreRenderUtils;
 import pw.ipex.plex.core.PlexCoreUtils;
@@ -19,11 +22,13 @@ public abstract class PlexMessagingChannelBase implements PlexUIScrolledItem {
 	public Long lastAgressiveActivity = 0L;
 	public Long lastChannelRead = 0L;
 	public String name = "channel" + Minecraft.getSystemTime();
+	public Map<String, String> channelTags = new HashMap<>();
 	public String recipientEntityName = "";
 	public String lastTextTyped = "";
 	public Float lastMessagesScroll = 1.0F;
 	public Boolean awaitingReady = false;
 	public Boolean channelReady = false;
+	public Boolean connectFailed = false;
 	public Long selectTime = null;
 	public Long deselectTime = null;
 	public Long readyTime;
@@ -42,7 +47,7 @@ public abstract class PlexMessagingChannelBase implements PlexUIScrolledItem {
 	
 	public abstract void channelInit();
 	
-	public abstract void chatMessage(IChatComponent message);
+	public abstract void chatMessage(ClientChatReceivedEvent event);
 	
 	public abstract void readyChannel();
 	
@@ -74,11 +79,12 @@ public abstract class PlexMessagingChannelBase implements PlexUIScrolledItem {
 		this.selectTime = Minecraft.getSystemTime();
 		this.awaitingReady = false;
 		this.channelReady = false;
+		this.connectFailed = false;
 		this.channelSelected();
 	}
 	
 	public void deselected() {
-		this.selectTime = Minecraft.getSystemTime();
+		this.selectTime = null;
 		this.awaitingReady = false;
 		this.channelReady = false;
 		this.channelDeselected();
@@ -87,6 +93,7 @@ public abstract class PlexMessagingChannelBase implements PlexUIScrolledItem {
 	public void getChannelReady() {
 		this.awaitingReady = true;
 		this.channelReady = false;
+		this.connectFailed = false;
 		this.readyChannel();
 	}
 	
@@ -96,6 +103,19 @@ public abstract class PlexMessagingChannelBase implements PlexUIScrolledItem {
 		}
 		this.awaitingReady = false;
 		this.channelReady = true;
+	}
+
+	public void setError() {
+		this.readyTime = null;
+		this.connectFailed = true;
+		this.awaitingReady = false;
+	}
+
+	public long getSelectTime() {
+		if (this.selectTime == null) {
+			this.selectTime = Minecraft.getSystemTime();
+		}
+		return this.selectTime;
 	}
 	
 	public void addPassiveMessage(PlexMessagingMessage message) {
@@ -111,6 +131,9 @@ public abstract class PlexMessagingChannelBase implements PlexUIScrolledItem {
 	}
 	
 	public void readingChannel() {
+		if (!this.awaitingReady && !this.channelReady) {
+			this.getChannelReady();
+		}
 		this.lastChannelRead = Minecraft.getSystemTime();
 	}
 	
@@ -135,6 +158,14 @@ public abstract class PlexMessagingChannelBase implements PlexUIScrolledItem {
 //			break;
 //		}
 		return messages;
+	}
+
+	public void addTag(String key, String val) {
+		this.channelTags.put(key, val);
+	}
+
+	public String getTag(String key) {
+		return this.channelTags.get(key);
 	}
 
 	@Override

@@ -2,6 +2,7 @@ package pw.ipex.plex.mods.messaging.channel;
 
 import net.minecraft.util.IChatComponent;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import pw.ipex.plex.Plex;
 import pw.ipex.plex.core.PlexCoreUtils;
 
@@ -12,7 +13,7 @@ public class PlexMessagingPrivateMessagesChannel extends PlexMessagingChannelBas
 	}
 	
 	@Override
-	public void chatMessage(IChatComponent message) {
+	public void chatMessage(ClientChatReceivedEvent event) {
 	}
 	
 	@Override

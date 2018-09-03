@@ -11,6 +11,10 @@ import pw.ipex.plex.core.PlexCoreLobbyType;
 import pw.ipex.plex.core.PlexCoreUtils;
 import pw.ipex.plex.mod.PlexModBase;
 import pw.ipex.plex.mods.messaging.channel.PlexMessagingChannelBase;
+import pw.ipex.plex.mods.messaging.channel.PlexMessagingCommunityChatChannel;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class PlexMessagingMod extends PlexModBase {
 	//private static ResourceLocation sendIcon = new ResourceLocation("PolyEdge_Plex", "chat/send.png");
@@ -38,6 +42,9 @@ public class PlexMessagingMod extends PlexModBase {
 	@SubscribeEvent
 	public void onChat(ClientChatReceivedEvent event) {
 		String chatMessageContent = PlexCoreUtils.condenseChatFilter(event.message.getFormattedText());
+		if (PlexCoreUtils.minimalize(event.message.getFormattedText()).startsWith("communities> you are now chatting to")) {
+			channelManager.unreadyChannelsByClass(PlexMessagingCommunityChatChannel.class);
+		}
 		this.handleMessage(chatMessageContent);
 	}
 	
@@ -96,6 +103,7 @@ public class PlexMessagingMod extends PlexModBase {
 			channelName = "PM." + channelName;
 		}
 		PlexMessagingChannelBase channel = getChannel(channelName, messageAdapter.getChannelClass(), recipientEntityName);
+		messageAdapter.applyChannelTags(chatMessage, channel);
 		if (!messageAdapter.meetsRequirements(PlexMessagingUIScreen.isChatOpen(), PlexMessagingMod.channelManager.selectedChannel, channel)) {
 			return null;
 		}
@@ -137,6 +145,16 @@ public class PlexMessagingMod extends PlexModBase {
 	
 	@Override
 	public void switchedLobby(PlexCoreLobbyType type) {
-	}
+		if (type.equals(PlexCoreLobbyType.SWITCHED_SERVERS)) {
+			channelManager.unreadyChannelsByClass(PlexMessagingCommunityChatChannel.class);
+			final PlexMessagingChannelManager finalManager = channelManager;
+			if (finalManager.selectedChannel != null) {
+				if (!finalManager.selectedChannel.awaitingReady && !finalManager.selectedChannel.channelReady) {
+					finalManager.selectedChannel.getChannelReady();
+				}
+			}
+
+		}
+ 	}
 
 }

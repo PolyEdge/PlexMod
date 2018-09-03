@@ -4,13 +4,8 @@ import java.awt.Desktop;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 //import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.StringJoiner;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.google.gson.JsonElement;
@@ -36,8 +31,29 @@ public class PlexCoreUtils {
 	public static ConcurrentHashMap<String, ResourceLocation> uuidToTexture = new ConcurrentHashMap<String, ResourceLocation>();
 	public static ConcurrentHashMap<String, ResourceLocation> nameDefaultSkins = new ConcurrentHashMap<String, ResourceLocation>();
 	public static ConcurrentHashMap<String, ResourceLocation> uuidDefaultSkins = new ConcurrentHashMap<String, ResourceLocation>();
+	public static Map<String, Integer> colourCode = new HashMap<>();
 	
 	public static String FORMAT_CHARACTER = Character.toString ((char) 167);
+
+	static {
+		colourCode.put("0", 0x000000);
+		colourCode.put("1", 0x0000aa);
+		colourCode.put("2", 0x00aa00);
+		colourCode.put("3", 0x00aaaa);
+		colourCode.put("4", 0xaa0000);
+		colourCode.put("5", 0xaa00aa);
+		colourCode.put("6", 0xffaa00);
+		colourCode.put("7", 0xaaaaaa);
+		colourCode.put("8", 0x555555);
+		colourCode.put("9", 0x5555ff);
+		colourCode.put("a", 0x55ff55);
+		colourCode.put("b", 0x55ffff);
+		colourCode.put("c", 0xff5555);
+		colourCode.put("d", 0xff55ff);
+		colourCode.put("e", 0xffff55);
+		colourCode.put("f", 0xffffff);
+	}
+
 
 	public static void chatAddMessage(String message, ICommandSender sender) {
 		try {

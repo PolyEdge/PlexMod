@@ -27,7 +27,7 @@ public class PlexMessagingChannelManager {
 			return;
 		}
 		if (selectedChannel.awaitingReady) {
-			selectedChannel.chatMessage(e.message);
+			selectedChannel.chatMessage(e);
 		}
 	}
 	
@@ -85,4 +85,13 @@ public class PlexMessagingChannelManager {
 		channel.addAgressiveMessage(message);
 	}
 
+	public void unreadyChannelsByClass(Class<? extends PlexMessagingChannelBase> channelClass) {
+		for (PlexMessagingChannelBase channel : this.channels) {
+			if (channel.getClass().equals(channelClass)) {
+				channel.awaitingReady = false;
+				channel.channelReady = false;
+				channel.selectTime = null;
+			}
+		}
+	}
 }

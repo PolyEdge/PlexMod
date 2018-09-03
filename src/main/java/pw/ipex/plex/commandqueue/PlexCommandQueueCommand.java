@@ -15,6 +15,7 @@ public class PlexCommandQueueCommand {
 	public PlexCommandQueueDelaySet delaySet;
 	
 	public Boolean markedComplete = false;
+	public Boolean completeOnSend = false;
 	public Boolean commandSent = false;
 	public Boolean commandCanceled = false;
 	public Long latestCommandSentTimestamp = null;
@@ -62,7 +63,7 @@ public class PlexCommandQueueCommand {
 	}
 	
 	public Boolean isMarkedComplete() {
-		return this.markedComplete;
+		return this.markedComplete || (this.isSent() && this.completeOnSend);
 	}
 	
 	public Boolean isResent() {

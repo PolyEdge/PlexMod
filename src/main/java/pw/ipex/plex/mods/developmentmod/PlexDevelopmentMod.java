@@ -10,10 +10,14 @@ import pw.ipex.plex.core.PlexCoreUtils;
 import pw.ipex.plex.core.PlexCoreValue;
 import pw.ipex.plex.mod.PlexModBase;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 public class PlexDevelopmentMod extends PlexModBase {
 	
 	public PlexCoreValue chatStream = new PlexCoreValue("_plexDev_chatStream", false);
 	public PlexCoreValue soundStream = new PlexCoreValue("_plexDev_soundStream", false);
+	public PlexCoreValue lobbySwitchStream = new PlexCoreValue("_plexDev_lobbyStream", false);
 
 	@Override
 	public String getModName() {
@@ -55,6 +59,16 @@ public class PlexDevelopmentMod extends PlexModBase {
 
 	@Override
 	public void switchedLobby(PlexCoreLobbyType type) {
+		if (this.lobbySwitchStream.booleanValue) {
+			new Timer().schedule(new TimerTask() {
+				public void run() {
+					try {
+						PlexCoreUtils.chatAddMessage(PlexCoreUtils.chatPlexPrefix() + PlexCoreUtils.chatStyleText("GREEN", "lobby -> " + type.toString()));
+					}
+					catch (Throwable ee) {}
+				}
+			}, 2000L);
+		}
 	}
 
 }

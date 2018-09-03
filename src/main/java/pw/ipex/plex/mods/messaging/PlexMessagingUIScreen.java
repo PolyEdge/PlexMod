@@ -224,8 +224,8 @@ public class PlexMessagingUIScreen extends PlexUIBase {
 		if (PlexMessagingMod.channelManager.selectedChannel != null) {
 			this.newConversationButton.enabled = true;
 			PlexMessagingMod.channelManager.selectedChannel.readingChannel();
-			if (!isSelectedChannelReady()) { //&& PlexMessagingMod.channelManager.selectedChannel.awaitingReady) {
-				if (Minecraft.getSystemTime() > PlexMessagingMod.channelManager.selectedChannel.selectTime + 5000L) {
+			if (!this.isSelectedChannelReady()) { //&& PlexMessagingMod.channelManager.selectedChannel.awaitingReady) {
+				if (Minecraft.getSystemTime() > PlexMessagingMod.channelManager.selectedChannel.getSelectTime() + 5000L) {
 					this.channelProgressBar.setColour(this.progressColourUnresponsive);
 					this.channelStatusLabel.setText("Connection to " + PlexMessagingMod.channelManager.selectedChannel.getDisplayName() + " taking too long...");
 					this.channelStatusLabel.setPosition(this.parentUI.zoneStartX() + 2, this.parentUI.zoneStartY() + 2, false);
@@ -240,7 +240,14 @@ public class PlexMessagingUIScreen extends PlexUIBase {
 					this.contactsList.setEnabled(false);
 				}
 			}
-			else if (isSelectedChannelReady()) {
+			else if (this.isSelectedChannelErrored()) {
+				this.channelProgressBar.setColour(this.progressColourFailed);
+				this.channelStatusLabel.setText("Connection to " + PlexMessagingMod.channelManager.selectedChannel.getDisplayName() + " failed.");
+				this.channelStatusLabel.setPosition(this.parentUI.zoneStartX() + 2, this.parentUI.zoneStartY() + 2, false);
+				this.channelStatusLabel.setTextColour(this.progressColourUnresponsive, true);
+				this.contactsList.setEnabled(true);
+			}
+			else if (this.isSelectedChannelReady()) {
 				this.contactsList.setEnabled(true);
 				this.channelProgressBar.setColour(progressColourReady);
 				this.channelStatusLabel.setText("Channel Ready!");
@@ -352,6 +359,13 @@ public class PlexMessagingUIScreen extends PlexUIBase {
 	public Boolean isSelectedChannelReady() {
 		if (PlexMessagingMod.channelManager.selectedChannel != null) {
 			return PlexMessagingMod.channelManager.selectedChannel.channelReady;
+		}
+		return false;
+	}
+
+	public Boolean isSelectedChannelErrored() {
+		if (PlexMessagingMod.channelManager.selectedChannel != null) {
+			return PlexMessagingMod.channelManager.selectedChannel.connectFailed;
 		}
 		return false;
 	}

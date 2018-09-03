@@ -27,6 +27,9 @@ public class PlexDevelopmentCommand extends PlexCommandHandler {
 		if (args[0].equalsIgnoreCase("chat")) {
 			PlexCore.getSharedValue("_plexDev_chatStream").set(!PlexCore.getSharedValue("_plexDev_chatStream").booleanValue);
 		}
+		if (args[0].equalsIgnoreCase("server") || args[0].equalsIgnoreCase("lobby")) {
+			PlexCore.getSharedValue("_plexDev_lobbyStream").set(!PlexCore.getSharedValue("_plexDev_lobbyStream").booleanValue);
+		}
 	}
 
 }

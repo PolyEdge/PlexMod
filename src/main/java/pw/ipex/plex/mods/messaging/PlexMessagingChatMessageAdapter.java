@@ -13,6 +13,7 @@ import pw.ipex.plex.mods.messaging.channel.PlexMessagingChannelBase;
 
 public class PlexMessagingChatMessageAdapter {
 	public Map<String, String> messageTags = new HashMap<String, String>();
+	public Map<String, String> channelFields = new HashMap<String, String>();
 	public String regexEntryName = "";
 	public Class<? extends PlexMessagingChannelBase> channelClass;
 	public PlexCoreChatRegexEntry regexEntry;
@@ -102,10 +103,21 @@ public class PlexMessagingChatMessageAdapter {
 		this.requiresChatOpen = required;
 		return this;
 	}
+
+	public PlexMessagingChatMessageAdapter setChannelTag(String tag, String value) {
+		this.channelFields.put(tag, value);
+		return this;
+	}
 	
 	public PlexMessagingChatMessageAdapter condition(String condition) {
 		this.conditions.add(condition);
 		return this;
+	}
+
+	public void applyChannelTags(String text, PlexMessagingChannelBase channel) {
+		for (String tagKey : this.channelFields.keySet()) {
+			channel.addTag(tagKey, this.formatStringWithGroups(this.channelFields.get(tagKey), text));
+		}
 	}
 
 	public Class<? extends PlexMessagingChannelBase> getChannelClass() {

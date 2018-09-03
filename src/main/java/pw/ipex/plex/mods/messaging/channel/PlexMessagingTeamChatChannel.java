@@ -1,6 +1,7 @@
 package pw.ipex.plex.mods.messaging.channel;
 
 import net.minecraft.util.IChatComponent;
+import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import pw.ipex.plex.Plex;
 
 public class PlexMessagingTeamChatChannel extends PlexMessagingChannelBase {
@@ -15,7 +16,7 @@ public class PlexMessagingTeamChatChannel extends PlexMessagingChannelBase {
 	}
 	
 	@Override
-	public void chatMessage(IChatComponent message) {
+	public void chatMessage(ClientChatReceivedEvent event) {
 	}
 	
 	@Override

@@ -41,6 +41,7 @@ public class PlexCommandQueue {
         command.priority = this.priority;
         command.waitForPrevious = this.requiresPreviousCompletion;
         command.delaySet = this.delaySet;
+        command.group = this.group;
         this.queueItems.add(command);
         this.manager.addCommandToQueue(command);
         return command;

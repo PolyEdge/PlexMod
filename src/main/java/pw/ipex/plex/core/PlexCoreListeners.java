@@ -3,10 +3,7 @@ package pw.ipex.plex.core;
 import java.lang.reflect.Field;
 import java.net.InetSocketAddress;
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -37,6 +34,9 @@ public class PlexCoreListeners {
 	public Boolean resetUI = false;
 	public Boolean lobbyUpdateRequired = false;
 	public Boolean awaitingLoad = false;
+	public Map<Integer, Integer> lobbyLoadCounter = new HashMap<Integer, Integer>();
+	public Map<Integer, List<Long>> lobbyLoadTimes = new HashMap<Integer, List<Long>>();
+	public List<Integer> dispatchedLobbyChanges = new ArrayList<>();
 
 	public Integer lobbyDeterminationAttempts = 0;
 	public Integer maxLobbyDeterminationRetries = 2;
@@ -54,6 +54,12 @@ public class PlexCoreListeners {
 		mineplexIPs.add("96.45.82.193");
 
 		hostnameBlacklist.add("build.mineplex.com");
+
+		this.lobbyDeterminationQueue.setPriority(0);
+		this.lobbyDeterminationQueue.delaySet.chatOpenDelay = 0L;
+		this.lobbyDeterminationQueue.delaySet.lobbySwitchDelay = 0L;
+		this.lobbyDeterminationQueue.delaySet.joinServerDelay = 500L;
+		this.lobbyDeterminationQueue.delaySet.commandDelay = 900L;
 	}
 	
 	@SubscribeEvent
@@ -145,9 +151,20 @@ public class PlexCoreListeners {
 	
 	@SubscribeEvent
 	public void worldUnload(WorldEvent.Unload e) {
-		if (Plex.serverState.onMineplex) {
-			this.awaitingLoad = true;
+		if (!Plex.serverState.onMineplex) {
+			return;
 		}
+		if (!this.lobbyLoadTimes.containsKey(e.world.hashCode())) {
+			this.lobbyLoadTimes.put(e.world.hashCode(), new ArrayList<>());
+		}
+		if (this.lobbyLoadTimes.get(e.world.hashCode()).size() == 0) {
+			return;
+		}
+		List<Long> times = this.lobbyLoadTimes.get(e.world.hashCode());
+		//if (Minecraft.getSystemTime() > times.get(times.size() - 1) + 200L) {
+			//this.lobbySwitched();
+		//}
+		this.lobbyLoadTimes.get(e.world.hashCode()).remove(times.size() - 1);
 	}
 	
 	@SubscribeEvent
@@ -155,11 +172,15 @@ public class PlexCoreListeners {
 		if (!Plex.serverState.onMineplex) {
 			return;
 		}
+		if (!this.lobbyLoadTimes.containsKey(e.world.hashCode())) {
+			this.lobbyLoadTimes.put(e.world.hashCode(), new ArrayList<>());
+		}
+		this.lobbyLoadTimes.get(e.world.hashCode()).add(Minecraft.getSystemTime());
 		if (!this.awaitingLoad) {
 			return;
 		}
 		this.awaitingLoad = false;
-		this.lobbySwitched();
+		//this.lobbySwitched();
 	}
 	
 	@SubscribeEvent
@@ -173,6 +194,26 @@ public class PlexCoreListeners {
 			Plex.serverState.lastChatOpen = Minecraft.getSystemTime();
 		}
 		if (Plex.serverState.onMineplex) {
+			for (Integer worldHash : this.lobbyLoadTimes.keySet()) {
+				if (this.lobbyLoadTimes.get(worldHash).size() != 0) {
+					boolean found = false;
+					for (Long loadTime : this.lobbyLoadTimes.get(worldHash)) {
+						if (Minecraft.getSystemTime() > loadTime + 200L) {
+							found = true;
+						}
+						if (Minecraft.getSystemTime() > loadTime + 200L && !this.dispatchedLobbyChanges.contains(worldHash)) {
+							this.lobbySwitched();
+							this.dispatchedLobbyChanges.add(worldHash);
+						}
+					}
+					if (!found) {
+						this.dispatchedLobbyChanges.remove(worldHash);
+					}
+				}
+				else {
+					this.dispatchedLobbyChanges.remove(worldHash);
+				}
+			}
 			this.updateLobbyType(getScoreboardTitle());
 			if (this.lobbyDeterminationQueue.hasItems()) {
 				if (this.lobbyDeterminationQueue.getItem(0).isSent()) {
@@ -261,8 +302,9 @@ public class PlexCoreListeners {
 				catch (Throwable e) {}
 				if (tabHeaderText != null) {
 					String headerText = PlexCoreUtils.condenseChatAmpersandFilter(tabHeaderText.getFormattedText());
-					if (!headerText.toLowerCase().contains("mineplex network"))
-					PlexCore.updateGameName(PlexCoreUtils.removeFormatting(headerText));
+					if (!headerText.toLowerCase().contains("mineplex network")) {
+						PlexCore.updateGameName(PlexCoreUtils.removeFormatting(headerText));
+					}
 				}
 			}
 		}

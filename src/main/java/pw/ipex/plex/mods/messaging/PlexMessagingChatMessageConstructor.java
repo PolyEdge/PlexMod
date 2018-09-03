@@ -6,10 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import pw.ipex.plex.core.PlexCore;
-import pw.ipex.plex.mods.messaging.channel.PlexMessagingChannelBase;
-import pw.ipex.plex.mods.messaging.channel.PlexMessagingPartyChatChannel;
-import pw.ipex.plex.mods.messaging.channel.PlexMessagingPrivateMessagesChannel;
-import pw.ipex.plex.mods.messaging.channel.PlexMessagingTeamChatChannel;
+import pw.ipex.plex.mods.messaging.channel.*;
 
 public class PlexMessagingChatMessageConstructor {
 	public static List<PlexMessagingChatMessageAdapter> messageHandlers = new ArrayList<PlexMessagingChatMessageAdapter>();
@@ -18,13 +15,13 @@ public class PlexMessagingChatMessageConstructor {
 	static {
 		addGroupChannelClass("party", PlexMessagingPartyChatChannel.class);
 		addGroupChannelClass("team", PlexMessagingTeamChatChannel.class);
-		// ooOOOOoooooooOOOO
+		addGroupChannelClass("community", PlexMessagingCommunityChatChannel.class);
 		addGroupChannelClass("direct_message", PlexMessagingPrivateMessagesChannel.class);
 		
-		addAdapter("chatMessage", "party_chat", "{message}", "@Party").setChannelClass(getGroupChannelClass("party")).setDefaultMessageType(0).setAuthor("{author}");
-		addAdapter("chatMessage", "team_chat", "{message}", "#Team").setChannelClass(getGroupChannelClass("team")).setDefaultMessageType(0).setAuthor("{author}");
-		addAdapter("chatMessage", "community_chat", "{message}", "!{community}").setChannelClass(getGroupChannelClass("community")).setDefaultMessageType(0).setAuthor("{author}").setRecipientEntityName("{community}");
-		addAdapter("chatMessage", "direct_message", "{message}", "PM.{author}").setChannelClass(getGroupChannelClass("direct_message")).setDefaultMessageType(0).setAuthor("{author}");
+		addAdapter("chatMessage", "party_chat", "{$message}", "@Party").setChannelClass(getGroupChannelClass("party")).setDefaultMessageType(0).setAuthor("{author}");
+		addAdapter("chatMessage", "team_chat", "{$message}", "#Team").setChannelClass(getGroupChannelClass("team")).setDefaultMessageType(0).setAuthor("{author}");
+		addAdapter("chatMessage", "community_chat", "{$message}", "!{community}").setChannelClass(getGroupChannelClass("community")).setDefaultMessageType(0).setAuthor("{author}").setRecipientEntityName("{community}").setChannelTag("comColour", "{com_name_colour}");
+		addAdapter("chatMessage", "direct_message", "{$message}", "PM.{author}").setChannelClass(getGroupChannelClass("direct_message")).setDefaultMessageType(0).setAuthor("{author}");
 		
 		addAdapter("party", "party_invite", "&7Party invite from {sender}\n&a&lACCEPT  &c&lDENY", "@Party").addMessageTag("invitation_sender_ign", "{ign}");
 		addAdapter("party", "party_invited", "&e{sender} &7has invited &e{invited_player} &7to the party.", "@Party");
