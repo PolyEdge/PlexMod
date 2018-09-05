@@ -35,6 +35,8 @@ public class PlexMessagingUIScreen extends PlexUIBase {
 	public PlexUIStaticLabel channelStatusLabel;
 	public GuiButton sendButton;
 	public PlexUIScaledButton newConversationButton;
+
+	public Boolean isQuickChat = false;
 	//public Character lastKeyTyped = null;
 	//public Integer lastKeyCodeTyped = null;
 	//public Long lastTypedTime = null;
@@ -193,13 +195,20 @@ public class PlexMessagingUIScreen extends PlexUIBase {
 	
 	@Override
 	public void keyTyped(char par1, int par2) {
-		if (((Integer) par2).equals(PlexMessagingMod.toggleChatUI.getKeyCode())) {
+		if (((Integer) par2).equals(PlexMessagingMod.toggleChatUI.getKeyCode()) && !Character.isLetterOrDigit(par1)) {
+			this.uiClosed();
+			PlexCore.displayUIScreen(null);
+		}
+		if (((Integer) par2).equals(PlexMessagingMod.quickChat.getKeyCode()) && !Character.isLetterOrDigit(par1)) {
 			this.uiClosed();
 			PlexCore.displayUIScreen(null);
 		}
 		if (((Integer) par2).equals(28)) {
 			this.sendMessage();
 			this.searchBox.text.setFocused(false);
+			if (this.isQuickChat) {
+				PlexCore.displayUIScreen(null);
+			}
 			return;
 		}
 		this.textField.keyTyped(par1, par2);
@@ -345,6 +354,11 @@ public class PlexMessagingUIScreen extends PlexUIBase {
 			PlexMessagingMod.channelManager.selectedChannel.lastChannelScroll = this.chatWindow.scrollbar.realScrollValue;
 		}
 	}
+
+	public PlexMessagingUIScreen setQuickChat() {
+		this.isQuickChat = true;
+		return this;
+	}
 	
 	public void sendMessage() {
 		if (PlexMessagingMod.channelManager.selectedChannel != null) {
@@ -353,7 +367,6 @@ public class PlexMessagingUIScreen extends PlexUIBase {
 				this.textField.text.setText("");				
 			}
 		}
-
 	}
 	
 	public Boolean isSelectedChannelReady() {

@@ -21,6 +21,7 @@ public class PlexMessagingMod extends PlexModBase {
 
 	public static PlexMessagingChannelManager channelManager = new PlexMessagingChannelManager();
 	public static KeyBinding toggleChatUI;
+	public static KeyBinding quickChat;
 	
 	@Override
 	public String getModName() {
@@ -30,7 +31,9 @@ public class PlexMessagingMod extends PlexModBase {
 	@Override
 	public void modInit() {
 	    toggleChatUI = new KeyBinding("Open Chat UI", 157, "Plex Mod");
+		quickChat = new KeyBinding("Quick Chat UI", 21, "Plex Mod");
 	    ClientRegistry.registerKeyBinding(toggleChatUI);
+		ClientRegistry.registerKeyBinding(quickChat);
 	    
 	    PlexCore.registerUiTab("Messaging", PlexMessagingUIScreen.class);
 	}
@@ -140,6 +143,9 @@ public class PlexMessagingMod extends PlexModBase {
 	public void onKeyInput(KeyInputEvent event) {
 		if (Plex.minecraft.inGameHasFocus && toggleChatUI.isPressed()) {
 			PlexCore.displayUIScreen(new PlexMessagingUIScreen());
+		}
+		if (Plex.minecraft.inGameHasFocus && quickChat.isPressed()) {
+			PlexCore.displayUIScreen(new PlexMessagingUIScreen().setQuickChat());
 		}
 	}
 	

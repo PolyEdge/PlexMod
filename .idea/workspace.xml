@@ -2,24 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="6ce1a131-a8c5-4525-a913-2a63c964dcea" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/messaging/channel/PlexMessagingCommunityChatChannel.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/commandqueue/PlexCommandQueue.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/commandqueue/PlexCommandQueue.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/commandqueue/PlexCommandQueueCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/commandqueue/PlexCommandQueueCommand.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/core/PlexCoreChatRegex.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/core/PlexCoreChatRegex.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/core/PlexCoreListeners.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/core/PlexCoreListeners.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/core/PlexCoreUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/core/PlexCoreUtils.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/developmentmod/PlexDevelopmentCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/developmentmod/PlexDevelopmentCommand.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/developmentmod/PlexDevelopmentMod.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/developmentmod/PlexDevelopmentMod.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/messaging/PlexMessagingChannelManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/messaging/PlexMessagingChannelManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/messaging/PlexMessagingChatMessageAdapter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/messaging/PlexMessagingChatMessageAdapter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/messaging/PlexMessagingChatMessageConstructor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/messaging/PlexMessagingChatMessageConstructor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/autogg/PlexAutoGGMod.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/autogg/PlexAutoGGMod.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/messaging/PlexMessagingMod.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/messaging/PlexMessagingMod.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/messaging/PlexMessagingUIScreen.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/messaging/PlexMessagingUIScreen.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/messaging/channel/PlexMessagingChannelBase.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/messaging/channel/PlexMessagingChannelBase.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/messaging/channel/PlexMessagingPartyChatChannel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/messaging/channel/PlexMessagingPartyChatChannel.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/messaging/channel/PlexMessagingPrivateMessagesChannel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/messaging/channel/PlexMessagingPrivateMessagesChannel.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/messaging/channel/PlexMessagingTeamChatChannel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/messaging/channel/PlexMessagingTeamChatChannel.java" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/.gradle/" />
     <ignored path="$PROJECT_DIR$/build/" />
@@ -64,23 +50,23 @@
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
-          <entry key="java" value="49" />
+          <entry key="java" value="53" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
-          <entry key="JAVA" value="49" />
+          <entry key="JAVA" value="53" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="dummy" value="31" />
-          <entry key="java" value="9986" />
+          <entry key="java" value="11081" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="JAVA" value="9986" />
+          <entry key="JAVA" value="11081" />
           <entry key="PLAIN_TEXT" value="31" />
         </counts>
       </usages-collector>
@@ -89,19 +75,19 @@
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/messaging/channel/PlexMessagingCommunityChatChannel.java">
+        <entry file="file://$PROJECT_DIR$/src/main/java/pw/ipex/plex/Plex.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="289">
-              <caret line="34" column="59" lean-forward="true" selection-start-line="34" selection-start-column="59" selection-end-line="34" selection-end-column="59" />
+            <state relative-caret-position="132">
+              <caret line="32" column="49" lean-forward="true" selection-start-line="32" selection-start-column="49" selection-end-line="32" selection-end-column="49" />
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/pw/ipex/plex/core/PlexCoreListeners.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="24">
-              <caret line="223" column="25" lean-forward="true" selection-start-line="223" selection-start-column="25" selection-end-line="223" selection-end-column="25" />
+            <state relative-caret-position="238">
+              <caret line="110" column="74" lean-forward="true" selection-start-line="110" selection-start-column="74" selection-end-line="110" selection-end-column="74" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="e#1593#1611#0" expanded="true" />
@@ -111,27 +97,20 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/messaging/channel/PlexMessagingChannelBase.java">
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/autogg/PlexAutoGGMod.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="448">
-              <caret line="137" column="5" lean-forward="true" selection-start-line="137" selection-start-column="5" selection-end-line="137" selection-end-column="5" />
-              <folding>
-                <element signature="e#4319#4320#0" expanded="true" />
-                <element signature="e#4356#4357#0" expanded="true" />
-                <element signature="e#4393#4394#0" expanded="true" />
-                <element signature="e#4432#4433#0" expanded="true" />
-                <element signature="e#4483#4484#0" expanded="true" />
-                <element signature="e#4552#4553#0" expanded="true" />
-                <element signature="e#4819#4820#0" expanded="true" />
-                <element signature="e#4835#4836#0" expanded="true" />
-                <element signature="e#4882#4883#0" expanded="true" />
-                <element signature="e#4900#4901#0" expanded="true" />
-                <element signature="e#4954#4955#0" expanded="true" />
-                <element signature="e#4977#4978#0" expanded="true" />
-                <element signature="e#6940#6941#0" expanded="true" />
-                <element signature="e#6955#6956#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="245">
+              <caret line="143" column="9" lean-forward="true" selection-start-line="143" selection-start-column="9" selection-end-line="143" selection-end-column="9" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/messaging/PlexMessagingMod.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="571">
+              <caret line="143" column="72" lean-forward="true" selection-start-line="143" selection-start-column="72" selection-end-line="143" selection-end-column="72" />
             </state>
           </provider>
         </entry>
@@ -139,8 +118,14 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/messaging/PlexMessagingUIScreen.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="176">
-              <caret line="228" column="87" lean-forward="true" selection-start-line="228" selection-start-column="87" selection-end-line="228" selection-end-column="87" />
+            <state relative-caret-position="374">
+              <caret line="195" column="13" lean-forward="true" selection-start-line="195" selection-start-column="13" selection-end-line="195" selection-end-column="13" />
+              <folding>
+                <element signature="e#17193#17194#0" expanded="true" />
+                <element signature="e#17209#17210#0" expanded="true" />
+                <element signature="e#17252#17253#0" expanded="true" />
+                <element signature="e#17274#17275#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -148,8 +133,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/richpresence/PlexNewRichPresenceMod.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="204">
-              <caret line="317" column="9" lean-forward="true" selection-start-line="317" selection-start-column="9" selection-end-line="317" selection-end-column="9" />
+            <state relative-caret-position="425">
+              <caret line="330" selection-start-line="330" selection-end-line="337" selection-end-column="30" />
             </state>
           </provider>
         </entry>
@@ -164,28 +149,10 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/messaging/PlexMessagingChannelManager.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="619">
-              <caret line="87" column="22" selection-start-line="87" selection-start-column="22" selection-end-line="87" selection-end-column="22" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/messaging/PlexMessagingChatMessageConstructor.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="-554">
               <caret line="20" column="62" selection-start-line="20" selection-start-column="62" selection-end-line="20" selection-end-column="62" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/messaging/PlexMessagingMod.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="585">
-              <caret line="149" column="36" lean-forward="true" selection-start-line="149" selection-start-column="36" selection-end-line="149" selection-end-column="36" />
             </state>
           </provider>
         </entry>
@@ -221,6 +188,7 @@
       <find>selectTime</find>
       <find>reading</find>
       <find>lobbySwitched</find>
+      <find>subtitleText =</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -848,12 +816,13 @@
         <option value="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/messaging/channel/PlexMessagingPrivateMessagesChannel.java" />
         <option value="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/messaging/channel/PlexMessagingTeamChatChannel.java" />
         <option value="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/messaging/PlexMessagingChannelManager.java" />
-        <option value="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/messaging/PlexMessagingUIScreen.java" />
         <option value="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/messaging/channel/PlexMessagingChannelBase.java" />
-        <option value="$PROJECT_DIR$/src/main/java/pw/ipex/plex/core/PlexCoreListeners.java" />
-        <option value="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/messaging/PlexMessagingMod.java" />
         <option value="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/developmentmod/PlexDevelopmentCommand.java" />
         <option value="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/developmentmod/PlexDevelopmentMod.java" />
+        <option value="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/messaging/PlexMessagingMod.java" />
+        <option value="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/messaging/PlexMessagingUIScreen.java" />
+        <option value="$PROJECT_DIR$/src/main/java/pw/ipex/plex/core/PlexCoreListeners.java" />
+        <option value="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/autogg/PlexAutoGGMod.java" />
       </list>
     </option>
   </component>
@@ -960,6 +929,16 @@
               <item name="java" type="462c0819:PsiDirectoryNode" />
               <item name="plex" type="462c0819:PsiDirectoryNode" />
               <item name="mods" type="462c0819:PsiDirectoryNode" />
+              <item name="autogg" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Plex" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Plex" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="plex" type="462c0819:PsiDirectoryNode" />
+              <item name="mods" type="462c0819:PsiDirectoryNode" />
               <item name="autothank" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
@@ -1017,7 +996,7 @@
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1536013906790" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1536123621148" />
     <property name="project.structure.last.edited" value="SDKs" />
     <property name="project.structure.proportion" value="0.0" />
     <property name="project.structure.side.proportion" value="0.2" />
@@ -1134,13 +1113,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-6621">
           <caret line="17" column="19" selection-start-line="17" selection-start-column="19" selection-end-line="17" selection-end-column="19" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/pw/ipex/plex/Plex.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="738">
-          <caret line="68" column="59" lean-forward="true" selection-start-line="68" selection-start-column="59" selection-end-line="68" selection-end-column="59" />
         </state>
       </provider>
     </entry>
@@ -1323,13 +1295,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/richpresence/PlexNewRichPresenceMod.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="204">
-          <caret line="317" column="9" lean-forward="true" selection-start-line="317" selection-start-column="9" selection-end-line="317" selection-end-column="9" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/richpresence/PlexRichPresenceCommand.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="68">
@@ -1351,13 +1316,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/messaging/PlexMessagingUIScreen.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="176">
-          <caret line="228" column="87" lean-forward="true" selection-start-line="228" selection-start-column="87" selection-end-line="228" selection-end-column="87" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/messaging/PlexMessagingChatMessageConstructor.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-554">
@@ -1365,22 +1323,74 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/pw/ipex/plex/Plex.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="132">
+          <caret line="32" column="49" lean-forward="true" selection-start-line="32" selection-start-column="49" selection-end-line="32" selection-end-column="49" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/messaging/PlexMessagingMod.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="585">
-          <caret line="149" column="36" lean-forward="true" selection-start-line="149" selection-start-column="36" selection-end-line="149" selection-end-column="36" />
+        <state relative-caret-position="571">
+          <caret line="143" column="72" lean-forward="true" selection-start-line="143" selection-start-column="72" selection-end-line="143" selection-end-column="72" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/messaging/PlexMessagingUIScreen.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="374">
+          <caret line="195" column="13" lean-forward="true" selection-start-line="195" selection-start-column="13" selection-end-line="195" selection-end-column="13" />
+          <folding>
+            <element signature="e#17193#17194#0" expanded="true" />
+            <element signature="e#17209#17210#0" expanded="true" />
+            <element signature="e#17252#17253#0" expanded="true" />
+            <element signature="e#17274#17275#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/pw/ipex/plex/core/PlexCoreListeners.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="24">
-          <caret line="223" column="25" lean-forward="true" selection-start-line="223" selection-start-column="25" selection-end-line="223" selection-end-column="25" />
+        <state relative-caret-position="238">
+          <caret line="110" column="74" lean-forward="true" selection-start-line="110" selection-start-column="74" selection-end-line="110" selection-end-column="74" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="e#1593#1611#0" expanded="true" />
             <element signature="e#1676#1697#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/richpresence/PlexNewRichPresenceMod.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="425">
+          <caret line="330" selection-start-line="330" selection-end-line="337" selection-end-column="30" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.gradle/caches/minecraft/net/minecraftforge/forge/1.8.9-11.15.1.2318-1.8.9/stable/20/forgeSrc-1.8.9-11.15.1.2318-1.8.9-sources.jar!/net/minecraft/client/Minecraft.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-2533">
+          <caret line="246" column="21" selection-start-line="246" selection-start-column="21" selection-end-line="246" selection-end-column="21" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://C:/Program Files/Java/jdk1.8.0_181/src.zip!/java/lang/String.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="46311">
+          <caret line="2992" column="25" selection-start-line="2992" selection-start-column="25" selection-end-line="2992" selection-end-column="25" />
+          <folding>
+            <element signature="e#117893#117894#0" expanded="true" />
+            <element signature="e#117955#117956#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/autogg/PlexAutoGGMod.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="245">
+          <caret line="143" column="9" lean-forward="true" selection-start-line="143" selection-start-column="9" selection-end-line="143" selection-end-column="9" />
         </state>
       </provider>
     </entry>

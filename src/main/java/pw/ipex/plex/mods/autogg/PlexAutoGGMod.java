@@ -1,17 +1,19 @@
 package pw.ipex.plex.mods.autogg;
 
 import java.lang.reflect.Field;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiIngame;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
+import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
 import pw.ipex.plex.Plex;
-import pw.ipex.plex.core.PlexCore;
-import pw.ipex.plex.core.PlexCoreLobbyType;
-import pw.ipex.plex.core.PlexCoreUtils;
-import pw.ipex.plex.core.PlexCoreValue;
+import pw.ipex.plex.core.*;
 import pw.ipex.plex.mod.PlexModBase;
+import scala.collection.parallel.ParIterableLike;
 
 public class PlexAutoGGMod extends PlexModBase {
 	public PlexCoreValue modEnabled = new PlexCoreValue("autoGG_enabled", false);
@@ -44,8 +46,6 @@ public class PlexAutoGGMod extends PlexModBase {
 		Plex.plexCommand.addPlexHelpCommand("autogg", "Displays AutoGG options");
 		
 		PlexCore.registerUiTab("AutoGG", PlexAutoGGUI.class);
-		
-		
 	}
 	
 	@Override
@@ -64,20 +64,29 @@ public class PlexAutoGGMod extends PlexModBase {
 			this.subtitleText = (String) subtitleField.get(Plex.minecraft.ingameGUI);
 		}
 		catch (Throwable e1) {
-			this.subtitleText = "";
+			try {
+				Field subtitleField = Plex.minecraft.ingameGUI.getClass().getDeclaredField("displayedSubTitle");
+				subtitleField.setAccessible(true);
+				this.subtitleText = (String) subtitleField.get(Plex.minecraft.ingameGUI);
+			}
+			catch (Throwable e2) {
+				this.subtitleText = null;
+			}
 		}
 		
 		if (this.sentGG) {
 			this.sentGG = false;
 			this.ggSendTime = null;
 			this.scheduleGGatChatUnsilence = false; 
-		}		
-		
-		if (this.subtitleText.contains("won the game") && this.gameOverTime == null) {
-			this.gameOverTime = Minecraft.getSystemTime();
 		}
-		else {
-			this.gameOverTime = null;
+
+		if (this.subtitleText != null) {
+			if (this.subtitleText.contains("won the game") && this.gameOverTime == null) {
+				this.gameOverTime = Minecraft.getSystemTime();
+			}
+			else {
+				this.gameOverTime = null;
+			}
 		}
 		
 		if (this.isGameOver()) {
@@ -86,6 +95,12 @@ public class PlexAutoGGMod extends PlexModBase {
 			}
 			else if (this.ggWaitUntilSilenceEnd.booleanValue) {
 				scheduleGGatChatUnsilence = true;
+			}
+		}
+
+		if (this.gameOverTime != null) {
+			if (Minecraft.getSystemTime() > this.gameOverTime + 12000L) {
+				this.gameOverTime = null;
 			}
 		}
 		
@@ -102,6 +117,14 @@ public class PlexAutoGGMod extends PlexModBase {
 			return;
 		}
 		String minified = PlexCoreUtils.minimalize(e.message.getFormattedText());
+		if (this.gameOverTime == null) {
+			if (minified.matches("^1st place - (.*)$")) {
+				this.gameOverTime = Minecraft.getSystemTime();
+			}
+			else if (minified.matches("^([a-z]+) (.* )+won the game!$")) {
+				this.gameOverTime = Minecraft.getSystemTime();
+			}
+		}
 		if (minified.contains("chat> chat is no longer silenced")) {
 			if (this.scheduleGGatChatUnsilence) {
 				scheduleGGatChatUnsilence = false;
@@ -109,6 +132,19 @@ public class PlexAutoGGMod extends PlexModBase {
 			}
 		}
 	}
+
+	/*
+	@SubscribeEvent
+	public void onOverlay(RenderGameOverlayEvent event) {
+		if (this.subtitleText != null) {
+			PlexCoreRenderUtils.drawScaledString("\"" + this.subtitleText + "\"", 25, 45, 0xffffffff, 0.5F, false);
+		}
+		else {
+			PlexCoreRenderUtils.drawScaledString("\"\"", 25, 45, 0xffffffff, 0.5F, false);
+		}
+
+	}
+	*/
 	
 	public boolean isGameOver() {
 		if (this.gameOverTime == null) {

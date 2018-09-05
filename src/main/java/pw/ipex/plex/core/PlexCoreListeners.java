@@ -49,9 +49,10 @@ public class PlexCoreListeners {
 
 
 	public PlexCoreListeners() {
-		mineplexIPs.add("173.236.67.30");
+		mineplexIPs.add("173.236.67.11");
 		mineplexIPs.add("96.45.82.193");
-		mineplexIPs.add("96.45.82.193");
+		mineplexIPs.add("96.45.82.216");
+		mineplexIPs.add("107.6.176.138");
 
 		hostnameBlacklist.add("build.mineplex.com");
 
@@ -112,7 +113,7 @@ public class PlexCoreListeners {
 			}
 		}
 
-		if (Plex.serverState.serverHostname.endsWith("mineplex.com") || mineplexIPs.contains(Plex.serverState.serverIP)) {
+		if (Plex.serverState.serverHostname.endsWith("mineplex.com") || Plex.serverState.serverHostname.equals("mineplex.com") || mineplexIPs.contains(Plex.serverState.serverIP)) {
 			Plex.serverState.onMineplex = true;
 		}
 
