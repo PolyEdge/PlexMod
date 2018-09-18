@@ -14,7 +14,8 @@ public class PlexCoreChatRegex {
 	public static String MATCH_PARTY_CHAT = "^(?:(?:&[0-9a-fA-Fklmnor]){1,3}([0-9]{1,3}) )? ?(?:&5&l(?:Party|PARTY)) ()?(?:&[0-9a-fA-Fklmnor]){0,4}([a-zA-Z0-9_-]{1,16}) ?&d(.*)$";
 	public static String MATCH_TEAM_CHAT = "^&l(?:Team|TEAM) (?:&7Dead )?(?:(?:&[0-9a-fA-Fklmnor]){1,3}([0-9]{1,3}) )?(?:&[0-9a-fA-Fklmnor]){0,4}(ULTRA|HERO|LEGEND|TITAN|ETERNAL|YT|YOUTUBE|ARTIST|TRAINEE|SUPPORT|MOD|SR\\.MOD|MAPPER|BUILDER|MAPLEAD|JR\\.DEV|DEV|ADMIN|LEADER|OWNER)? ?(?:&[0-9a-fA-Fklmnor]){0,4}([a-zA-Z0-9_-]{1,16}) ?(?:&[0-9a-fA-Fklmnor]){0,4} ?(.*)$";
 	public static String MATCH_DIRECT_MESSAGE = "^&6&l([a-zA-Z0-9 _]+) > ([a-zA-Z0-9 _]+)&e &e&l(.*)$";
-	public static String MATCH_COMMUNITY_CHAT = "^&([0-9a-f])&l([a-zA-Z0-9_]+) &([0-9a-f])&l([a-zA-Z0-9_]+) &([0-9a-f])(.+)$";
+	public static String MATCH_COMMUNITY_CHAT = "^&([0-9a-f]?)&l([a-zA-Z0-9_]+) &([0-9a-f]?)&l([a-zA-Z0-9_]+) &([0-9a-f]?)(.+)$";
+	public static String MATCH_COMMUNITY_CHAT_FIX = "^(?:&([0-9a-f]))?&l([a-zA-Z0-9_]+) (?:&([0-9a-f]))?&l([a-zA-Z0-9_]+) (?:&([0-9a-f]?))?(.+)$";
 
 	public static String MATCH_PARTY_INVITE = "^&9Party> &7You have been invited to &e([a-zA-Z0-9_]+)&7's party! (.*)$";
 	public static String MATCH_PARTY_INVITED = "^&9Party> &e([a-zA-Z0-9_]+)&7 has invited &e([a-zA-Z0-9_]+)&7 to the party\\.$";
@@ -36,7 +37,7 @@ public class PlexCoreChatRegex {
 		addEntry("party_chat", MATCH_PARTY_CHAT, "party").addField(1, "level").addField(2, "rank").addField(3, "author").addField(4, "message").tag("chatMessage");
 		addEntry("team_chat", MATCH_TEAM_CHAT).addField(1, "level").addField(2, "rank").addField(3, "author").addField(4, "message").tag("chatMessage");
 		addEntry("direct_message", MATCH_DIRECT_MESSAGE).addField(1, "author").addField(2, "destination").addField(3, "message").tag("chatMessage");
-		addEntry("community_chat", MATCH_COMMUNITY_CHAT).addField(1, "com_name_colour").addField(2, "community").addField(3, "author_colour").addField(4, "author").addField(5, "message_colour").addField(6, "message").tag("chatMessage");
+		addEntry("community_chat", MATCH_COMMUNITY_CHAT_FIX).addField(1, "com_name_colour").addField(2, "community").addField(3, "author_colour").addField(4, "author").addField(5, "message_colour").addField(6, "message").tag("chatMessage");
 		
 		addEntry("party_invite", MATCH_PARTY_INVITE, "party").addField(1, "sender").addField(2, "extra");
 		addEntry("party_invited", MATCH_PARTY_INVITED, "party").addField(1, "sender").addField(2, "invited_player");

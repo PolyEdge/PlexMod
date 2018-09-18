@@ -5,6 +5,8 @@ public interface PlexUIScrolledItem {
 	public boolean listItemIsSelected();
 	
 	public void listItemSelect();
+
+	public void listItemClick();
 	
 	public int listItemGetHeight();
 	

@@ -5,14 +5,20 @@ import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent.KeyInputEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 import pw.ipex.plex.Plex;
 import pw.ipex.plex.core.PlexCore;
 import pw.ipex.plex.core.PlexCoreLobbyType;
+import pw.ipex.plex.core.PlexCoreServerState;
 import pw.ipex.plex.core.PlexCoreUtils;
 import pw.ipex.plex.mod.PlexModBase;
 import pw.ipex.plex.mods.messaging.channel.PlexMessagingChannelBase;
 import pw.ipex.plex.mods.messaging.channel.PlexMessagingCommunityChatChannel;
+import pw.ipex.plex.ui.PlexUIAutoCompleteContainer;
+import pw.ipex.plex.ui.PlexUIAutoCompleteItem;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -22,6 +28,7 @@ public class PlexMessagingMod extends PlexModBase {
 	public static PlexMessagingChannelManager channelManager = new PlexMessagingChannelManager();
 	public static KeyBinding toggleChatUI;
 	public static KeyBinding quickChat;
+	public static PlexUIAutoCompleteContainer autoCompleteContainer = new PlexUIAutoCompleteContainer();
 	
 	@Override
 	public String getModName() {
@@ -49,6 +56,19 @@ public class PlexMessagingMod extends PlexModBase {
 			channelManager.unreadyChannelsByClass(PlexMessagingCommunityChatChannel.class);
 		}
 		this.handleMessage(chatMessageContent);
+	}
+
+	public void refreshAutoCompleteList() {
+		for (String emoteName : Plex.serverState.emotesList.keySet()) {
+			if (autoCompleteContainer.getItemById("emote." + emoteName) == null) {
+				PlexUIAutoCompleteItem item = new PlexUIAutoCompleteItem();
+				item.autoCompleteText = ":" + emoteName + ":";
+				item.id = "emote." + emoteName;
+				item.searchText = ":" + emoteName + ":";
+				item.displayText = PlexCoreUtils.ampersandToFormatCharacter("&7:" + emoteName + ": &e" + Plex.serverState.emotesList.get(emoteName));
+				autoCompleteContainer.addItem(item);
+			}
+		}
 	}
 	
 	public void handleMessage(String message) {
@@ -146,6 +166,13 @@ public class PlexMessagingMod extends PlexModBase {
 		}
 		if (Plex.minecraft.inGameHasFocus && quickChat.isPressed()) {
 			PlexCore.displayUIScreen(new PlexMessagingUIScreen().setQuickChat());
+		}
+	}
+
+	@SubscribeEvent
+	public void onClientTick(TickEvent.ClientTickEvent event) {
+		if (PlexMessagingUIScreen.isChatOpen()) {
+			this.refreshAutoCompleteList();
 		}
 	}
 	

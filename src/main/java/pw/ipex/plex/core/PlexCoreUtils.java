@@ -8,6 +8,7 @@ import java.util.*;
 //import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.google.gson.stream.JsonReader;
@@ -26,7 +27,9 @@ import pw.ipex.plex.Plex;
 
 public class PlexCoreUtils {
 	public static ConcurrentHashMap<String, String> nameToUuid = new ConcurrentHashMap<String, String>();
+	public static ConcurrentHashMap<String, String> uuidToName = new ConcurrentHashMap<String, String>();
 	public static ConcurrentHashMap<String, Long> uuidLookupTimes = new ConcurrentHashMap<String, Long>();
+	public static ConcurrentHashMap<String, Long> nameLookupTimes = new ConcurrentHashMap<String, Long>();
 	public static ConcurrentHashMap<String, Long> skinLookupTimes = new ConcurrentHashMap<String, Long>();
 	public static ConcurrentHashMap<String, ResourceLocation> uuidToTexture = new ConcurrentHashMap<String, ResourceLocation>();
 	public static ConcurrentHashMap<String, ResourceLocation> nameDefaultSkins = new ConcurrentHashMap<String, ResourceLocation>();
@@ -36,6 +39,7 @@ public class PlexCoreUtils {
 	public static String FORMAT_CHARACTER = Character.toString ((char) 167);
 
 	static {
+		colourCode.put(null, 0xffffff);
 		colourCode.put("0", 0x000000);
 		colourCode.put("1", 0x0000aa);
 		colourCode.put("2", 0x00aa00);
@@ -373,32 +377,73 @@ public class PlexCoreUtils {
 		uuidDefaultSkins.put(profile.getId().toString(), getDefaultSkin(profile.getId().toString()));
 		return uuidDefaultSkins.get(profile.getId().toString());
 	}
+
+	public static String getUUID(String ign) {
+		return getUUID(ign, true);
+	}
 	
 	public static String getUUID(String ign, boolean requestIfNeeded) {
-		if (nameToUuid.get(ign) == null) {
+		String friendlyIgn = ign.toLowerCase();
+		if (nameToUuid.get(friendlyIgn) == null) {
 			NetworkPlayerInfo playerInfo = Plex.minecraft.getNetHandler().getPlayerInfo(ign);
 			if (playerInfo != null) {
 				if (playerInfo.getGameProfile().getId() != null) {
-					nameToUuid.put(ign, playerInfo.getGameProfile().getId().toString());
+					nameToUuid.put(friendlyIgn, playerInfo.getGameProfile().getId().toString());
+					uuidToName.put(playerInfo.getGameProfile().getId().toString(), friendlyIgn);
 				}
 			}
 		}
-		if (nameToUuid.get(ign) != null) {
-			return nameToUuid.get(ign);
+		if (nameToUuid.get(friendlyIgn) != null) {
+			return nameToUuid.get(friendlyIgn);
 		}
-		if (uuidLookupTimes.get(ign) == null) {
-			uuidLookupTimes.put(ign, 0L);
+		if (uuidLookupTimes.get(friendlyIgn) == null) {
+			uuidLookupTimes.put(friendlyIgn, 0L);
 		}
-		if (Minecraft.getSystemTime() > uuidLookupTimes.get(ign) + 30000L && requestIfNeeded) {
-			uuidLookupTimes.put(ign, Minecraft.getSystemTime());
+		if (Minecraft.getSystemTime() > uuidLookupTimes.get(friendlyIgn) + 30000L && requestIfNeeded) {
+			uuidLookupTimes.put(friendlyIgn, Minecraft.getSystemTime());
 			new Thread(new Runnable() {
 				public void run() {
 					PlexCoreUtils.fetchUUID(ign);
 				}
 			}).start();
 		}
-		if (nameToUuid.containsKey(ign)) {
-			return nameToUuid.get(ign);
+		if (nameToUuid.containsKey(friendlyIgn)) {
+			return nameToUuid.get(friendlyIgn);
+		}
+		return null;
+	}
+
+	public static String getName(String playerUuid) {
+		return getName(playerUuid, true);
+	}
+
+	public static String getName(String playerUuid, boolean requestIfNeeded) {
+		final String uuid = toFormattedUUID(playerUuid);
+		if (uuidToName.get(uuid) == null) {
+			NetworkPlayerInfo playerInfo = Plex.minecraft.getNetHandler().getPlayerInfo(UUID.fromString(uuid));
+			if (playerInfo != null) {
+				if (playerInfo.getGameProfile().getName() != null) {
+					nameToUuid.put(playerInfo.getGameProfile().getName(), uuid);
+					uuidToName.put(uuid, playerInfo.getGameProfile().getName());
+				}
+			}
+		}
+		if (uuidToName.get(uuid) != null) {
+			return nameToUuid.get(uuid);
+		}
+		if (nameLookupTimes.get(uuid) == null) {
+			nameLookupTimes.put(uuid, 0L);
+		}
+		if (Minecraft.getSystemTime() > nameLookupTimes.get(uuid) + 30000L && requestIfNeeded) {
+			nameLookupTimes.put(uuid, Minecraft.getSystemTime());
+			new Thread(new Runnable() {
+				public void run() {
+					PlexCoreUtils.fetchIGN(uuid);
+				}
+			}).start();
+		}
+		if (uuidToName.containsKey(uuid)) {
+			return uuidToName.get(uuid);
 		}
 		return null;
 	}
@@ -460,10 +505,37 @@ public class PlexCoreUtils {
 			final String playerUUID = apiResponse.getAsJsonObject().get("id").getAsString();
 			final String formattedPlayerUUID = toFormattedUUID(playerUUID);
 			nameToUuid.put(ign.toLowerCase(), formattedPlayerUUID);
+			uuidToName.put(formattedPlayerUUID, ign);
 			return playerUUID;
 		}
 		catch (Throwable e) {
 			Plex.logger.info("[PlexCoreUtils] exception getting player uuid for " + ign);
+			Plex.logger.info(org.apache.commons.lang3.exception.ExceptionUtils.getStackTrace(e));
+		}
+		return null;
+	}
+
+	public static String fetchIGN(String uuid) {
+		uuid = toFormattedUUID(uuid);
+		if (uuidToName.containsKey(uuid)) {
+			return uuidToName.get(uuid);
+		}
+		//PlexCoreUtils.chatAddMessage("fetching uuid for " + ign);
+		try {
+			URL nameAPI = new URL("https://api.mojang.com/user/profiles/" + toUnformattedUUID(uuid) + "/names");
+			InputStreamReader uuidInputReader = new InputStreamReader(nameAPI.openStream());
+			JsonReader jsonReader = new JsonReader(uuidInputReader);
+			JsonParser jsonParser = new com.google.gson.JsonParser();
+			JsonElement apiResponse = jsonParser.parse(jsonReader);
+			uuidInputReader.close();
+			JsonArray names = apiResponse.getAsJsonArray();
+			final String playerName = names.get(names.size() - 1).getAsJsonObject().get("name").getAsString();
+			nameToUuid.put(playerName, uuid);
+			uuidToName.put(uuid, playerName);
+			return playerName;
+		}
+		catch (Throwable e) {
+			Plex.logger.info("[PlexCoreUtils] exception getting player name for " + uuid);
 			Plex.logger.info(org.apache.commons.lang3.exception.ExceptionUtils.getStackTrace(e));
 		}
 		return null;
@@ -519,5 +591,9 @@ public class PlexCoreUtils {
 //         node                   = 6*<hexOctet>
 //         hexOctet               = <hexDigit><hexDigit>
 		return null;
+	}
+
+	public static String toUnformattedUUID(String uuid) {
+		return uuid.replace("-", "");
 	}
 }

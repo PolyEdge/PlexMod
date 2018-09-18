@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
 import pw.ipex.plex.Plex;
@@ -24,8 +25,8 @@ public class PlexCommandQueueManager {
 	public void sendCommand(PlexCommandQueueCommand command) {
 		if (command.sendCommand()) {
 			lastCommandSent = Minecraft.getSystemTime();
+			showDebug(command);
 		}
-		showDebug();
 	}
 
 	public PlexCommandQueueCommand addCommandToQueue(PlexCommandQueueCommand command) {
@@ -44,15 +45,17 @@ public class PlexCommandQueueManager {
 		}
 	}
 
-	public void showDebug() {
-		String debug = PlexCoreUtils.chatStyleText("DARK_RED", "BOLD", "HP");
+	public void showDebug(PlexCommandQueueCommand command) {
+		String debug = PlexCoreUtils.chatStyleText("DARK_RED", "BOLD", "== Queued Commands ==");
 		for (PlexCommandQueueCommand com : queuedCommands) {
-			debug += " " + PlexCoreUtils.chatStyleText("BLUE", com.group) + ": " + PlexCoreUtils.chatStyleText("DARK_GRAY", com.toString());
+			debug += " " + PlexCoreUtils.chatStyleText("BLUE", com.group) + ": " + PlexCoreUtils.chatStyleText("DARK_GRAY", com.toString()) + " " + PlexCoreUtils.chatStyleText("GOLD", "" + com.priority);
 		}
+		//PlexCoreUtils.chatAddMessage(PlexCoreUtils.chatStyleText("GREEN", " >") + " " + PlexCoreUtils.chatStyleText("BLUE", command.group) + ": " + PlexCoreUtils.chatStyleText("DARK_GRAY", command.command) + " " + PlexCoreUtils.chatStyleText("GOLD", "" + command.priority));
 	}
 
+
 	public Boolean canSendCommandWithDelays(PlexCommandQueueCommand command) {
-		return canSendCommandWithDelays(command.delaySet.commandDelay, command.delaySet.lobbySwitchDelay, command.delaySet.joinServerDelay, command.delaySet.chatOpenDelay);
+		return this.canSendCommandWithDelays(command.delaySet.commandDelay, command.delaySet.lobbySwitchDelay, command.delaySet.joinServerDelay, command.delaySet.chatOpenDelay);
 	}
 
 	public Boolean canSendCommandWithDelays(Long commandDelay, Long lobbySwitchDelay, Long joinServerDelay, Long chatOpenDelay) {
@@ -114,11 +117,13 @@ public class PlexCommandQueueManager {
 	public void removeCompleted(List<PlexCommandQueueCommand> commandList) {
 		List<PlexCommandQueueCommand> completed = new ArrayList<PlexCommandQueueCommand>();
 		for (PlexCommandQueueCommand command : commandList) {
-			if (command.isMarkedComplete()) {
+			if (command.isComplete()) {
 				completed.add(command);
+				//PlexCoreUtils.chatAddMessage(PlexCoreUtils.chatStyleText("GREEN", "[completed]") + " " + command.getDebug());
 			}
 			else if (command.isCanceled()) {
 				completed.add(command);
+				//PlexCoreUtils.chatAddMessage(PlexCoreUtils.chatStyleText("RED", "[canceled]") + " " + command.getDebug());
 			}
 		}
 		commandList.removeAll(completed);
@@ -240,7 +245,7 @@ public class PlexCommandQueueManager {
 		}
 
 		for (PlexCommandQueueCommand command : potentialCommands) {
-			if (canSendCommandWithDelays(command) && !command.isSent() && command.isSendable()) {
+			if (this.canSendCommandWithDelays(command) && !command.isSent() && command.isSendable()) {
 				sendCommand(command);
 				break;
 			}

@@ -32,6 +32,8 @@ public class PlexPlexMod extends PlexModBase {
 	
 	@Override
 	public void modInit() {
+		Plex.logger.info(":: Plex Mod Version " + Plex.VERSION + (Plex.PATCHID == null ? "" : "-" + Plex.PATCHID) + (Plex.RELEASENOTICE == null ? "" : " [" + Plex.PATCHID + "]") );
+
 		PlexCore.registerCommandListener(new PlexCommandListener("plex").setGlobal(true));
 		PlexCore.registerCommandHandler("plex", Plex.plexCommand);
 		

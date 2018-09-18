@@ -80,17 +80,19 @@ public class PlexAutoGGMod extends PlexModBase {
 			this.scheduleGGatChatUnsilence = false; 
 		}
 
-		if (this.subtitleText != null) {
-			if (this.subtitleText.contains("won the game") && this.gameOverTime == null) {
+		if (this.subtitleText != null && this.gameOverTime == null) {
+			if (this.subtitleText.contains("won the game")) {
 				this.gameOverTime = Minecraft.getSystemTime();
 			}
 			else {
-				this.gameOverTime = null;
+				//this.gameOverTime = null;
 			}
 		}
-		
 		if (this.isGameOver()) {
 			if (!this.ggWaitUntilSilenceEnd.booleanValue && Minecraft.getSystemTime() < this.gameOverTime + 1000L) {
+				this.scheduleGG((long) (this.ggDelay.doubleValue * 1000.0D));
+			}
+			else if (Minecraft.getSystemTime() < this.gameOverTime + 1000L && Plex.serverState.currentLobbyName != null && Plex.serverState.currentLobbyName.startsWith("NANO")) {
 				this.scheduleGG((long) (this.ggDelay.doubleValue * 1000.0D));
 			}
 			else if (this.ggWaitUntilSilenceEnd.booleanValue) {
@@ -118,11 +120,13 @@ public class PlexAutoGGMod extends PlexModBase {
 		}
 		String minified = PlexCoreUtils.minimalize(e.message.getFormattedText());
 		if (this.gameOverTime == null) {
-			if (minified.matches("^1st place - (.*)$")) {
+			if (minified.matches("^1st place -? ?(.*)$")) {
 				this.gameOverTime = Minecraft.getSystemTime();
+				Plex.logger.info("autoggmatch");
 			}
-			else if (minified.matches("^([a-z]+) (.* )+won the game!$")) {
+			else if (minified.matches("^([a-z]+) (.* )?won the game!$")) {
 				this.gameOverTime = Minecraft.getSystemTime();
+				Plex.logger.info("autoggmatch");
 			}
 		}
 		if (minified.contains("chat> chat is no longer silenced")) {

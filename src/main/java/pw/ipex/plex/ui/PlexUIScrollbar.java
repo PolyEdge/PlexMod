@@ -24,6 +24,8 @@ public class PlexUIScrollbar {
 	public boolean isEnabled = true;
 	public boolean isHeld = false;
 	public int heldOffsetY;
+
+	public Float hiddenForcedScroll = null;
 	
 	public boolean velocityEnabled = true;
 	private boolean velocityWasEnabled = true;
@@ -31,7 +33,8 @@ public class PlexUIScrollbar {
 	public float targetPos = 0.0F;
 	public int velocityCurve = 4;
 	public int velocityUpdateSpeed = 25;
-	
+
+	public int updateMethod = 0; // 0 - drawScreen;  1 - updateScreen
 	
 	public PlexUIScrollbar(int top, int bottom, int x, int width) {
 		this.barTop = top;
@@ -180,11 +183,26 @@ public class PlexUIScrollbar {
 		return new Integer[] {barTopY, barBottomY, this.barXPosition, this.barXPosition + this.barWidth};
 	}
 
+	public void update() {
+		this.updateVelocity();
+		if (!this.barVisible() && this.hiddenForcedScroll != null) {
+			this.setScroll(this.hiddenForcedScroll, true);
+		}
+	}
+
+	public void updateScreen() {
+		if (this.updateMethod == 1) {
+			this.update();
+		}
+	}
+
 	public void drawScreen(int par1, int par2, float par3) {
+		if (this.updateMethod == 0) {
+			this.update();
+		}
 		if (!barVisible()) {
 			return;
 		}
-
 		//Tessellator tessellator = Tessellator.getInstance();
 		//WorldRenderer worldrenderer = tessellator.getWorldRenderer();
 		

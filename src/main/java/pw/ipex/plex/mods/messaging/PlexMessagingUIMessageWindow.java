@@ -56,6 +56,7 @@ public final class PlexMessagingUIMessageWindow extends GuiScreen {
 	
 	public PlexMessagingUIMessageWindow(int startX, int startY, int endX, int endY) {
 		this.scrollbar = new PlexUIScrollbar(startY, endY, endX - 7, 6);
+		this.scrollbar.hiddenForcedScroll = 1.0F;
 		this.setPosition(startX, startY, endX, endY);
 		this.updateScrollbarPosition();
 	}
@@ -627,6 +628,11 @@ public final class PlexMessagingUIMessageWindow extends GuiScreen {
 				this.scrollbar.scrollByPixels((0 - (scrollWheel / Math.abs(scrollWheel))) * this.mouseWheelScrollPixelAmount, this.getTotalChatHeight(), this.getChatAreaHeight());
 			}
 		}
+	}
+
+	@Override
+	public void updateScreen() {
+		this.scrollbar.updateScreen();
 	}
 
 }

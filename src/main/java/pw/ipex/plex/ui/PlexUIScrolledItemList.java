@@ -19,6 +19,7 @@ public class PlexUIScrolledItemList extends GuiScreen {
 	public int paddingY;
 	
 	public boolean isEnabled = true;
+	public boolean isVisible = true;
 	
 	public int renderBorderTop = 5;
 	public int renderBorderBottom = 5;
@@ -27,6 +28,7 @@ public class PlexUIScrolledItemList extends GuiScreen {
 	
 	public List<? extends PlexUIScrolledItem> items;
 	public String searchText = "";
+	public int searchMode = 0; // 0 - contains 1 - starts with
 	
 	public PlexUIScrollbar scrollbar;
 	
@@ -62,6 +64,10 @@ public class PlexUIScrolledItemList extends GuiScreen {
 		this.isEnabled = enabled;
 		this.scrollbar.setEnabled(enabled);
 	}
+
+	public void setVisible(boolean visible) {
+		this.isVisible = visible;
+	}
 	
 	public int getSizeX() {
 		return this.endX - this.startX;
@@ -92,26 +98,37 @@ public class PlexUIScrolledItemList extends GuiScreen {
 	}
 	
 	public List<? extends PlexUIScrolledItem> getItemsMatchingSearchTerm(String searchTerm) {
+		return this.getItemsMatchingSearchTerm(this.items, searchTerm, this.searchMode);
+ 	}
+
+	public <T> List<T> getItemsMatchingSearchTerm(List<T> items, String searchTerm, int searchMode) {
 		if (searchTerm == null) {
-			return this.items;
+			return items;
 		}
 		if (searchTerm.equals("")) {
-			return this.items;
+			return items;
 		}
-		List<PlexUIScrolledItem> searchItems = new ArrayList<PlexUIScrolledItem>();
-		for (PlexUIScrolledItem item : this.items) {
-			if (item.listItemGetSearchText() == null) {
-				continue;
+		List<T> searchItems = new ArrayList<>();
+		for (int index = 0; index < items.size(); index++) {
+			try {
+				PlexUIScrolledItem item = ((PlexUIScrolledItem) items.get(index));
+				if (item.listItemGetSearchText() == null) {
+					continue;
+				}
+				if (item.listItemGetSearchText() == "") {
+					continue;
+				}
+				if (item.listItemGetSearchText().toLowerCase().contains(searchTerm.toLowerCase()) && searchMode == 0) {
+					searchItems.add(items.get(index));
+				}
+				if (item.listItemGetSearchText().toLowerCase().startsWith(searchTerm.toLowerCase()) && searchMode == 1) {
+					searchItems.add(items.get(index));
+				}
 			}
-			if (item.listItemGetSearchText() == "") {
-				continue;
-			}
-			if (item.listItemGetSearchText().toLowerCase().contains(searchTerm)) {
-				searchItems.add((PlexUIScrolledItem) item);
-			}
+			catch (Throwable e) {}
 		}
 		return searchItems;
- 	}
+	}
 	
 	public int getTotalListPixels() {
 		int height = 0;
@@ -123,6 +140,9 @@ public class PlexUIScrolledItemList extends GuiScreen {
 	}	
 	
 	public PlexUIScrolledItem getMouseOverItem(int mouseX, int mouseY) {
+		if (!this.isVisible) {
+			return null;
+		}
 		int scrollRange = this.getTotalListPixels() - this.getSizeY();
 		int viewportTop = (int)(scrollRange * this.scrollbar.scrollValue + 0);
 		int viewportBottom = (int)(scrollRange * this.scrollbar.scrollValue + this.getSizeY());
@@ -149,12 +169,18 @@ public class PlexUIScrolledItemList extends GuiScreen {
 		}
 		return null;
 	}
+
+	public void updateScreen() {
+		this.scrollbar.updateScreen();
+	}
 	
 	public void drawScreen(int mouseX, int mouseY, float par3) {
+		if (!this.isVisible) {
+			return;
+		}
 		if (!this.isEnabled) {
 			GlStateManager.color(0.75F, 0.75F, 0.75F, 1.0F);
 		}
-		this.scrollbar.updateVelocity();
 		this.scrollbar.setContentScale((float)this.getSizeY() / (float) this.getTotalListPixels());
 		int scrollRange = this.getTotalListPixels() - this.getSizeY();
 		int viewportTop = (int)(scrollRange * this.scrollbar.scrollValue + 0);
@@ -176,7 +202,7 @@ public class PlexUIScrolledItemList extends GuiScreen {
 			
 			boolean isMouseOver = false;
 			boolean isSelected = false;
-			if (mouseX > this.startX && mouseX < this.endX && mouseY > itemYposition && mouseY < itemYposition + heightOrDefault(item) && this.isEnabled) {
+			if (mouseX > this.startX && mouseX < this.getEndXWithScrollbar() && mouseY > itemYposition && mouseY < itemYposition + heightOrDefault(item) && this.isEnabled) {
 				isMouseOver = true;
 			}
 			if (item.listItemIsSelected()) {
@@ -215,7 +241,7 @@ public class PlexUIScrolledItemList extends GuiScreen {
 	
 	@Override
 	public void mouseClicked(int par1, int par2, int btn) {
-		if (!this.isEnabled) {
+		if (!this.isEnabled || !this.isVisible) {
 			return;
 		}
 		this.scrollbar.mousePressed(par1, par2, btn);
@@ -223,11 +249,12 @@ public class PlexUIScrolledItemList extends GuiScreen {
 		PlexUIScrolledItem hoverItem = this.getMouseOverItem(par1, par2);
 		if (hoverItem != null) {
 			hoverItem.listItemSelect();
+			hoverItem.listItemClick();
 		}
 	}
 	
 	public void mouseDragged(int mouseX, int mouseY, int clickedMouseButton, long timeSinceLastClick) {
-		if (!this.isEnabled) {
+		if (!this.isEnabled || !this.isVisible) {
 			return;
 		}
 		this.scrollbar.mouseDragged(mouseX, mouseY, clickedMouseButton, timeSinceLastClick);
@@ -239,7 +266,7 @@ public class PlexUIScrolledItemList extends GuiScreen {
 	}
 	
 	public void handleMouseInput(int x, int y) {
-		if (!this.isEnabled) {
+		if (!this.isEnabled || !this.isVisible) {
 			return;
 		}
 		int scrollWheel = Mouse.getEventDWheel();

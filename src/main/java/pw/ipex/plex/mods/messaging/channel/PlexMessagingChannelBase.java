@@ -174,6 +174,10 @@ public abstract class PlexMessagingChannelBase implements PlexUIScrolledItem {
 	}
 
 	@Override
+	public void listItemClick() {
+	}
+
+	@Override
 	public void listItemSelect() {
 		if (this.listItemIsSelected()) {
 			PlexMessagingMod.channelManager.setSelectedChannel(null);

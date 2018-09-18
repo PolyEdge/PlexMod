@@ -16,6 +16,7 @@ public class PlexCommandQueueCommand {
 	
 	public Boolean markedComplete = false;
 	public Boolean completeOnSend = false;
+	public Long completeAfter = null;
 	public Boolean commandSent = false;
 	public Boolean commandCanceled = false;
 	public Long latestCommandSentTimestamp = null;
@@ -36,7 +37,7 @@ public class PlexCommandQueueCommand {
 	public PlexCommandQueueCommand(String group, String command, Long delay) {
 		this.group = group;
 		this.command = command;
-		this.sendCommandAt = delay;
+		this.sendCommandAt = Minecraft.getSystemTime() + delay;
 	}
 	
 	public Boolean sendCommand() {
@@ -62,8 +63,8 @@ public class PlexCommandQueueCommand {
 		return this.commandSent;
 	}
 	
-	public Boolean isMarkedComplete() {
-		return this.markedComplete || (this.isSent() && this.completeOnSend);
+	public Boolean isComplete() {
+		return this.markedComplete || (this.isSent() && this.completeOnSend) || (this.isSent() && this.completeAfter != null ? Minecraft.getSystemTime() > this.latestCommandSentTimestamp + this.completeAfter : false);
 	}
 	
 	public Boolean isResent() {

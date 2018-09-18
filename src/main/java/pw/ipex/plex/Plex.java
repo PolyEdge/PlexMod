@@ -9,10 +9,7 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 //import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import pw.ipex.plex.commandqueue.PlexCommandQueueManager;
-import pw.ipex.plex.core.PlexCore;
-import pw.ipex.plex.core.PlexCoreListeners;
-import pw.ipex.plex.core.PlexCoreServerState;
-import pw.ipex.plex.core.PlexCoreTextures;
+import pw.ipex.plex.core.*;
 import pw.ipex.plex.mods.autogg.PlexAutoGGMod;
 import pw.ipex.plex.mods.autothank.PlexAutoThankMod;
 import pw.ipex.plex.mods.betterreply.PlexBetterReplyMod;
@@ -30,7 +27,7 @@ import org.apache.logging.log4j.Logger;
 public class Plex {
 	public static final String MODID = "PolyEdge_Plex";
 	public static final String VERSION = "0.4-pre1";
-	public static final String PATCHID = "UPD_2";
+	public static final String PATCHID = "UPD_3";
 	public static final String RELEASENOTICE = "Unreleased test version **UNSTABLE**";
 
 	public static Minecraft minecraft = Minecraft.getMinecraft();
@@ -41,6 +38,7 @@ public class Plex {
 	public static PlexCommandQueueManager plexCommandQueue = new PlexCommandQueueManager();
 	public static PlexCoreListeners plexListeners = new PlexCoreListeners();
 	public static PlexPlexCommand plexCommand = new PlexPlexCommand();
+	public static PlexCorePersistentPlayerManager playerManager = new PlexCorePersistentPlayerManager();
 
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {

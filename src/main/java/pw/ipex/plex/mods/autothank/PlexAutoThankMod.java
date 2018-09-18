@@ -45,6 +45,8 @@ public class PlexAutoThankMod extends PlexModBase {
 	@Override
 	public void modInit() {
 		this.modEnabled.set(this.modSetting("autoThank_enabled", false).getBoolean(false));
+
+		this.thankQueue.setPriority(2);
 		
 		gameNames.put("master builders", "Master_Builders");
 		gameNames.put("draw my thing", "Draw_My_Thing");
@@ -68,6 +70,8 @@ public class PlexAutoThankMod extends PlexModBase {
 		Plex.plexCommand.addPlexHelpCommand("thank", "ath", "Displays AutoThank options");
 		
 		PlexCore.registerUiTab("AutoThank", PlexAutoThankUI.class);
+
+		this.thankQueue.setPriority(1);
 	}
 	
 	@Override

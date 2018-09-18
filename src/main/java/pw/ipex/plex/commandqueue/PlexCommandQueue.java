@@ -57,6 +57,7 @@ public class PlexCommandQueue {
     }
 
     public PlexCommandQueueCommand getItem(int item) {
+        this.removeCompleted();
         if (item >= this.queueItems.size()) {
             return null;
         }
