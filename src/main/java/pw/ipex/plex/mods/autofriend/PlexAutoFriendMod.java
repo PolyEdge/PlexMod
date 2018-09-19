@@ -24,7 +24,7 @@ public class PlexAutoFriendMod extends PlexModBase {
 
 	public Pattern PATTERN_REQUEST = Pattern.compile(MATCH_REQUEST);
 
-	public PlexCoreValue modEnabled = new PlexCoreValue("autofriend_enabled", false);
+	public PlexCoreValue modEnabled = new PlexCoreValue("autoFriend_enabled", false);
 	public static List<String> blacklist = new ArrayList<>();
 
 	public Property blacklistSetting;

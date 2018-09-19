@@ -9,7 +9,11 @@ import java.util.TimerTask;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import net.minecraft.client.Minecraft;
+import net.minecraft.util.IChatComponent;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -56,7 +60,7 @@ public class PlexAutoThankMod extends PlexModBase {
 		gameNames.put("cake wars", "Cake_Wars");
 		gameNames.put("survival games", "Survival_Games");
 		gameNames.put("skywars", "Skywars");
-		gameNames.put("the bridges", "Bridges");
+		gameNames.put("bridges", "Bridges");
 		gameNames.put("minestrike", "MineStrike");
 		gameNames.put("smash mobs", "Smash_Mobs");
 		gameNames.put("dominate", "Dominate");
@@ -142,16 +146,12 @@ public class PlexAutoThankMod extends PlexModBase {
 				}
 			}
 		}
-		if (minified.matches(MATCH_AMPLIFIER_MESSAGE)) {
-			Matcher gameMatcher = PATTERN_AMPLIFIER_MESSAGE.matcher(minified);
-			gameMatcher.find();
-			String gameName = gameMatcher.group(1);
-			if (!(gameNames.containsKey(gameName))) {
-				PlexCoreUtils.chatAddMessage(PlexCoreUtils.chatPlexPrefix() + PlexCoreUtils.chatStyleText("GRAY", "The game \"" + gameName + "\" isn't recognized by AutoThank, try thanking it manually."));
-			}
-			else {
-				thankQueue.addCommand("/amplifier thank " + gameNames.get(gameName));
-			}
+		if (minified.startsWith("amplifier> click here to thank")) {
+			JsonParser messageParser = new JsonParser();
+			JsonElement messageJson = messageParser.parse(IChatComponent.Serializer.componentToJson(e.message));
+			String command = messageJson.getAsJsonObject().get("clickEvent").getAsJsonObject().get("value").getAsString();
+
+			thankQueue.addCommand(command);
 		}
 	}
 
