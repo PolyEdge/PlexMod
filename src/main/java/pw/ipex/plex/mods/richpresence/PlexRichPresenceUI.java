@@ -22,6 +22,7 @@ public class PlexRichPresenceUI extends PlexUIBase {
 		ui.addElement(new GuiButton(6, pane1Pos + 5, top + 23, paneSize - 10, 20, shownHidden("Current Server", PlexCore.getSharedValue("richPresence_showLobbies").booleanValue)));
 		ui.addElement(new GuiButton(7, pane1Pos + 5, top + 46, paneSize - 10, 20, shownHidden("IGN", PlexCore.getSharedValue("richPresence_showIGN").booleanValue)));
 		ui.addElement(new GuiButton(8, pane1Pos + 5, top + 69, paneSize - 10, 20, timerMode()));
+		ui.addElement(new GuiButton(9, pane1Pos + 5, top + 69, paneSize - 10, 20, enabledDisabled("AFK Status", PlexCore.getSharedValue("richPresence_showAFK").booleanValue)));
 
 	}
 
@@ -69,6 +70,10 @@ public class PlexRichPresenceUI extends PlexUIBase {
 		if (button.id == 8) {
 			PlexCore.getSharedValue("richPresence_timerMode").set((Integer)((PlexCore.getSharedValue("richPresence_timerMode").integerValue) + 1) % PlexNewRichPresenceMod.MAX_TIMER_MODE);
 			button.displayString = timerMode();
+		}
+		if (button.id == 9) {
+			PlexCore.getSharedValue("richPresence_showAFK").set(!PlexCore.getSharedValue("richPresence_showAFK").booleanValue);
+			button.displayString = enabledDisabled("AFK Status", PlexCore.getSharedValue("richPresence_showAFK").booleanValue);
 		}
 	}
 

@@ -19,13 +19,20 @@ import pw.ipex.plex.core.PlexCoreUtils;
 public class PlexCommandQueueManager {
 	public List<PlexCommandQueue> knownQueues = new ArrayList<>();
 	public List<PlexCommandQueueCommand> queuedCommands = new ArrayList<>();
+	public boolean errored = false;
 
 	public long lastCommandSent = 0L;
 
-	public void sendCommand(PlexCommandQueueCommand command) {
+	public boolean sendCommand(PlexCommandQueueCommand command) {
 		if (command.sendCommand()) {
 			lastCommandSent = Minecraft.getSystemTime();
 			showDebug(command);
+			//Plex.logger.info("sent " + command.command);
+			return true;
+		}
+		else {
+			//Plex.logger.error("failed to send " + command.command);
+			return false;
 		}
 	}
 
@@ -46,11 +53,12 @@ public class PlexCommandQueueManager {
 	}
 
 	public void showDebug(PlexCommandQueueCommand command) {
-		String debug = PlexCoreUtils.chatStyleText("DARK_RED", "BOLD", "== Queued Commands ==");
+		String debug = "";//PlexCoreUtils.chatStyleText("DARK_RED", "BOLD", "== Queued Commands ==");
 		for (PlexCommandQueueCommand com : queuedCommands) {
-			debug += " " + PlexCoreUtils.chatStyleText("BLUE", com.group) + ": " + PlexCoreUtils.chatStyleText("DARK_GRAY", com.toString()) + " " + PlexCoreUtils.chatStyleText("GOLD", "" + com.priority);
+			debug += PlexCoreUtils.chatStyleText(com.isSent() ? "GREEN" : "BLUE", com.command) + " "; //PlexCoreUtils.chatStyleText("BLUE", com.group) + ": " + PlexCoreUtils.chatStyleText("DARK_GRAY", com.toString()) + " " + PlexCoreUtils.chatStyleText("GOLD", "" + com.priority);
 		}
 		//PlexCoreUtils.chatAddMessage(PlexCoreUtils.chatStyleText("GREEN", " >") + " " + PlexCoreUtils.chatStyleText("BLUE", command.group) + ": " + PlexCoreUtils.chatStyleText("DARK_GRAY", command.command) + " " + PlexCoreUtils.chatStyleText("GOLD", "" + command.priority));
+		//PlexCoreUtils.chatAddMessage(debug);
 	}
 
 
@@ -246,7 +254,7 @@ public class PlexCommandQueueManager {
 
 		for (PlexCommandQueueCommand command : potentialCommands) {
 			if (this.canSendCommandWithDelays(command) && !command.isSent() && command.isSendable()) {
-				sendCommand(command);
+				this.errored = sendCommand(command);
 				break;
 			}
 		}
@@ -257,11 +265,15 @@ public class PlexCommandQueueManager {
 	@SubscribeEvent
 	public void onClientTick(ClientTickEvent e) {
 		removeCompleted(queuedCommands);
+		this.errored = false;
 		List<String> ignore = new ArrayList<>();
 		List<Integer> priorities = getPrioritySet(queuedCommands);
 		for (int priority : priorities) {
 			List<PlexCommandQueueCommand> commands = getCommandsWithPriority(queuedCommands, priority);
 			ignore = processQueueList(commands, ignore);
+			if (this.errored) {
+				break;
+			}
 		}
 	}
 }

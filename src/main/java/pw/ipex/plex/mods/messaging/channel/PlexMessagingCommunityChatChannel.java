@@ -14,7 +14,7 @@ public class PlexMessagingCommunityChatChannel extends PlexMessagingChannelBase 
 
 	@Override
 	public void channelInit() {
-		this.commandQueue.delaySet.chatOpenDelay = 0L;
+		this.commandQueue.delaySet.chatOpenDelay = -1000L;
 		this.commandQueue.delaySet.lobbySwitchDelay = 0L;
 		this.commandQueue.delaySet.joinServerDelay = 500L;
 		this.commandQueue.delaySet.commandDelay = 900L;

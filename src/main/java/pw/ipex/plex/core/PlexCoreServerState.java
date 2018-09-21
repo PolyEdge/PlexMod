@@ -17,6 +17,7 @@ public class PlexCoreServerState {
 	public PlexCoreLobbyType currentLobbyType = PlexCoreLobbyType.OFFLINE;
 	public Long lastLobbySwitch = 0L;
 	public String currentLobbyName = null;
+	public String updatedLobbyName = null;
 	
 	public String currentGameName = null;
 	public Long gameStartEpoch = null;

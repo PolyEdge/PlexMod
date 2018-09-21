@@ -20,6 +20,7 @@ import net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientDisconnection
 import pw.ipex.plex.Plex;
 import pw.ipex.plex.commandqueue.PlexCommandQueue;
 import pw.ipex.plex.commandqueue.PlexCommandQueueCommand;
+import pw.ipex.plex.mods.messaging.PlexMessagingUIScreen;
 import pw.ipex.plex.ui.PlexUIBase;
 import pw.ipex.plex.ui.PlexUIModMenuScreen;
 
@@ -61,12 +62,12 @@ public class PlexCoreListeners {
 		hostnameBlacklist.add("build.mineplex.com");
 
 		this.serverCommandQueue.setPriority(0);
-		this.serverCommandQueue.delaySet.chatOpenDelay = 0L;
-		this.serverCommandQueue.delaySet.lobbySwitchDelay = 0L;
-		this.serverCommandQueue.delaySet.joinServerDelay = 500L;
-		this.serverCommandQueue.delaySet.commandDelay = 900L;
+		this.serverCommandQueue.delaySet.chatOpenDelay = -1000L;
+		this.serverCommandQueue.delaySet.lobbySwitchDelay = -1000L;
+		this.serverCommandQueue.delaySet.joinServerDelay = -1000L;
+		this.serverCommandQueue.delaySet.commandDelay = 600L;
 
-		this.otherCommandsQueue.setPriority(0);
+		this.otherCommandsQueue.setPriority(1);
 		this.otherCommandsQueue.delaySet.chatOpenDelay = 0L;
 		this.otherCommandsQueue.delaySet.lobbySwitchDelay = 0L;
 		this.otherCommandsQueue.delaySet.joinServerDelay = 500L;
@@ -94,16 +95,20 @@ public class PlexCoreListeners {
 				return;
 			}
 		}
-		if (this.serverCommandQueue.hasItems()) {
-			if (this.serverCommandQueue.getItem(0).isSent()) {
-				if (min.matches(this.MATCH_SERVER_MESSAGE)) {
+		if (min.matches(this.MATCH_SERVER_MESSAGE)) {
+			Plex.logger.info("test");
+			if (this.serverCommandQueue.hasItems()) {
+				if (this.serverCommandQueue.getItem(0).isSent()) {
 					this.serverCommandQueue.getItem(0).markComplete();
-					Matcher lobbyName = this.PATTERN_SERVER_MESSAGE.matcher(min);
-					lobbyName.find();
-					PlexCore.updateServerName(lobbyName.group(1));
 					e.setCanceled(true);
-				}				
+				}
 			}
+
+			Matcher lobbyName = this.PATTERN_SERVER_MESSAGE.matcher(min);
+			lobbyName.find();
+			String lobbyServerName = lobbyName.group(1);
+			PlexCore.updateServerName(lobbyServerName);
+			Plex.serverState.updatedLobbyName = lobbyServerName;
 		}
 		if (min.matches("Chat> Emotes List:")) {
 			if (otherCommandsQueue.hasItems()) {
@@ -164,6 +169,8 @@ public class PlexCoreListeners {
 			Plex.serverState.lastControlInput = Minecraft.getSystemTime();
 			//Plex.logger.info("[plex mod] registering mod to event bus");
 			PlexCore.joinedMineplex();
+			this.sendServerCommand();
+
 			try {
 				Plex.serverState.serverJoinTime = Minecraft.getSystemTime();
 				Plex.serverState.serverJoinDateTime = OffsetDateTime.now();
@@ -234,7 +241,7 @@ public class PlexCoreListeners {
 	
 	@SubscribeEvent
 	public void onClientTick(ClientTickEvent event) {
-		if (Plex.minecraft.ingameGUI.getChatGUI().getChatOpen()) {
+		if (Plex.minecraft.ingameGUI.getChatGUI().getChatOpen() || PlexMessagingUIScreen.isChatOpen()) {
 			Plex.serverState.lastChatOpen = Minecraft.getSystemTime();
 		}
 		if (Plex.serverState.onMineplex) {
@@ -293,6 +300,8 @@ public class PlexCoreListeners {
 		this.lobbyUpdateRequired = true;
 		this.lobbyDeterminationAttempts = 0;
 		Plex.serverState.isGameSpectator = false;
+		this.serverCommandQueue.cancelAllUnsent();
+		this.sendServerCommand();
 		PlexCore.setLobbyType(PlexCoreLobbyType.SERVER_UNDETERMINED);
 		PlexCore.dispatchLobbyChanged(PlexCoreLobbyType.SWITCHED_SERVERS);
 		//PlexCore.updateLobby(PlexCoreLobbyType.SERVER_UNDETERMINED, true);
@@ -300,12 +309,11 @@ public class PlexCoreListeners {
 		Plex.serverState.lastLobbySwitch = Minecraft.getSystemTime();
 		Plex.serverState.gameStartEpoch = null;
 		Plex.serverState.gameStartDateTime = null;
-		this.serverCommandQueue.cancelAllUnsent();
-		this.sendServerCommand();
+		Plex.serverState.updatedLobbyName = null;
 	}
 	
 	public void sendServerCommand() {
-		this.serverCommandQueue.addCommand("/server", 800L);
+		this.serverCommandQueue.addCommand("/server");
 	}
 	
 	public void updateLobbyType(String scoreboardText) {

@@ -55,7 +55,7 @@ public class PlexUIAutoCompleteItem implements PlexUIScrolledItem {
 
         if (this.attachedPlayerHead != null) {
             playerHead = true;
-            startX = (int) (x + playerHeadSize * 0.45F);
+            startX = (int) (x + playerHeadSize + playerHeadSize * 0.45F);
         }
 
         String finalText = Plex.minecraft.fontRendererObj.trimStringToWidth(this.displayText, (x + cellWidth) - startX);

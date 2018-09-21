@@ -25,7 +25,7 @@ plugins {
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-version = "0.3"
+version = "0.4"
 group = "pw.ipex.plex"
 archivesBaseName = "Plex"
 

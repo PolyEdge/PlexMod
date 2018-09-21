@@ -1,6 +1,7 @@
 package pw.ipex.plex.ui;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class PlexUIAutoCompleteContainer {
@@ -18,5 +19,9 @@ public class PlexUIAutoCompleteContainer {
             }
         }
         return null;
+    }
+
+    public void sortItemsById() {
+        Collections.sort(this.autoCompleteItems, (item1, item2) -> item1.id.compareTo(item2.id));
     }
 }

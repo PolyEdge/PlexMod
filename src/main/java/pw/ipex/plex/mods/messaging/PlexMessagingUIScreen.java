@@ -16,10 +16,14 @@ import pw.ipex.plex.core.PlexCoreUtils;
 import pw.ipex.plex.mods.messaging.render.PlexMessagingMessageHoverState;
 import pw.ipex.plex.ui.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class PlexMessagingUIScreen extends PlexUIBase {
 	public static String lastTextInBox = "";
 	public static String lastSearchText = "";
 	public static Float lastContactsScroll = 0.0F;
+	public static List<String> previousSentMessages = new ArrayList<>();
 	public PlexUIAutoCompleteTextField messageField;
 	public PlexUITextField searchBox;
 	public PlexUIScrolledItemList contactsList;
@@ -91,6 +95,7 @@ public class PlexMessagingUIScreen extends PlexUIBase {
 		this.messageField.text.setCanLoseFocus(false);
 		this.messageField.text.setText(PlexMessagingUIScreen.lastTextInBox);
 		this.messageField.listBackgroundColour = 0xff454545;
+		this.messageField.setPreviousSentMessages(previousSentMessages);
 		
 		this.searchBox = new PlexUITextField(7, this.parentUI.getFontRenderer(), ui.zoneEndX() - this.getContactsPaneSize() + 4, ui.zoneStartY() + 4, (ui.zoneEndX() - 2) - (ui.zoneEndX() - this.getContactsPaneSize() + 2) - 22, 14);
 		this.searchBox.text.setFocused(false);
@@ -206,12 +211,10 @@ public class PlexMessagingUIScreen extends PlexUIBase {
 			this.uiClosed();
 			PlexCore.displayUIScreen(null);
 		}
-		Plex.logger.info("" + par1);
 		if (this.messageField.keyTyped(par1, par2)) {
 			return;
 		}
 		if (par1 == ':') {
-			Plex.logger.info("test1");
 			if (this.messageField.getLastWordInBox().equals(":")) {
 				this.messageField.setAutoCompleteListVisible(true);
 			}
@@ -301,6 +304,7 @@ public class PlexMessagingUIScreen extends PlexUIBase {
 		
 		if (PlexMessagingMod.channelManager.lastChannelChange != this.lastChannelChange) {
 			this.lastChannelChange = PlexMessagingMod.channelManager.lastChannelChange;
+			this.messageField.resetSentMessagesIndex();
 			if (PlexMessagingMod.channelManager.selectedChannel != null) {
 				this.messageField.text.setText(PlexMessagingMod.channelManager.selectedChannel.lastTextTyped);
 				this.chatWindow.scrollbar.setScroll(PlexMessagingMod.channelManager.selectedChannel.lastChannelScroll, true);
@@ -311,7 +315,6 @@ public class PlexMessagingUIScreen extends PlexUIBase {
 		}
 
 		if (this.messageField.autoCompleteListVisible && this.messageField.getLastWordInBox().startsWith(":") && !Plex.serverState.canUseEmotes) {
-
 			this.emoteTooltip.setText("Upgrade to TITAN rank to use chat emotes.");
 			this.emoteTooltip.setHeight(12, false);
 		}
@@ -367,9 +370,9 @@ public class PlexMessagingUIScreen extends PlexUIBase {
 		
 		//String drawText = "";
 		//PlexCoreRenderUtils.drawScaledString(drawText, (float)this.parentUI.zoneStartX() + 5, (float)this.parentUI.zoneStartY() + 5, 0xffffff, 0.5F, false);
-		
-		
-		lastContactsScroll = contactsList.scrollbar.realScrollValue;
+
+		previousSentMessages = this.messageField.getPreviousSentMessages();
+		lastContactsScroll = this.contactsList.scrollbar.realScrollValue;
 		
 		if (PlexMessagingMod.channelManager.selectedChannel != null) {
 			PlexMessagingMod.channelManager.selectedChannel.lastTextTyped = this.messageField.text.getText();
@@ -386,7 +389,9 @@ public class PlexMessagingUIScreen extends PlexUIBase {
 		if (PlexMessagingMod.channelManager.selectedChannel != null) {
 			if (PlexMessagingMod.channelManager.selectedChannel.channelReady) {
 				PlexMessagingMod.channelManager.selectedChannel.sendMessage(this.messageField.text.getText());
+				this.messageField.addToSentMessages(this.messageField.text.getText());
 				this.messageField.text.setText("");
+				this.messageField.resetSentMessagesIndex();
 				PlexMessagingMod.channelManager.selectedChannel.lastTextTyped = "";
 			}
 		}

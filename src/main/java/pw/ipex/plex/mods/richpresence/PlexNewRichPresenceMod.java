@@ -49,9 +49,10 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 	
 	public Boolean isAfk = false;
 	public PlexCoreValue modEnabled = new PlexCoreValue("richPresence_enabled", false);
-	public PlexCoreValue displayLobbyName = new PlexCoreValue("richPresence_showLobbies", false);
-	public PlexCoreValue displayIGN = new PlexCoreValue("richPresence_showIGN", false);
+	public PlexCoreValue displayLobbyName = new PlexCoreValue("richPresence_showLobbies", true);
+	public PlexCoreValue displayIGN = new PlexCoreValue("richPresence_showIGN", true);
 	public PlexCoreValue timerMode = new PlexCoreValue("richPresence_timerMode", 1);
+	public PlexCoreValue showAfk = new PlexCoreValue("richPresence_showAFK", true);
 	
 	public static Integer MAX_TIMER_MODE = 3;
 	
@@ -76,9 +77,10 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 		});
 		
 		this.modEnabled.set(this.modSetting("rich_presence_enabled", false).getBoolean(false));
-		this.displayLobbyName.set(this.modSetting("richPresence_showLobbies", false).getBoolean(false));
-		this.displayIGN.set(this.modSetting("richPresence_showIGN", false).getBoolean(false));
+		this.displayLobbyName.set(this.modSetting("richPresence_showLobbies", true).getBoolean(true));
+		this.displayIGN.set(this.modSetting("richPresence_showIGN", true).getBoolean(true));
 		this.timerMode.set(this.modSetting("richPresence_timerMode", 1).getInt());
+		this.showAfk.set(this.modSetting("richPresence_showAFK", true).getBoolean(true));
 		
 		gameIcons.put("bacon brawl", "raw_porkchop");
 		gameIcons.put("bawk bawk battles", "egg");
@@ -191,7 +193,7 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 		presence.setDetails(gameState[0]);
 		presence.setState(gameState[1]);
 		presence.setLargeImage("mineplex_logo", serverIP);
-		if ((Minecraft.getSystemTime() > (Plex.serverState.lastControlInput == null ? 0 : Plex.serverState.lastControlInput) + AFK_IDLE_TIME) && Plex.serverState.lastControlInput != null) {
+		if ((Minecraft.getSystemTime() > (Plex.serverState.lastControlInput == null ? 0 : Plex.serverState.lastControlInput) + AFK_IDLE_TIME) && Plex.serverState.lastControlInput != null && this.showAfk.booleanValue) {
 			isAfk = true;
 			presence.setDetails("AFK | " + gameState[0]);
 			presence.setSmallImage("afk", "AFK | " + gameState[0]);
@@ -324,61 +326,59 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 			}
 			catch (Throwable ee) {}
 		}
-		if (richPresenceOpening) {
+		if (richPresenceOpening || richPresenceOpened) {
 			return;
 		}
-		if (!richPresenceOpened) {
-			richPresenceOpening = true;
-			final Thread openClientThread = new Thread(new Runnable() {
-				public void run() {
-					try {
-						ipcClient.connect(DiscordBuild.ANY);
-						if (richPresenceErrorShown || timeoutShown) {
-							new Timer().schedule(new TimerTask() {
-								public void run() {
-									try {
-										PlexCoreUtils.chatAddMessage(PlexCoreUtils.chatPlexPrefix() + PlexCoreUtils.chatStyleText("GREEN", "Discord reconnected!"));
-									}
-									catch (Throwable ee) {}
+		richPresenceOpening = true;
+		final Thread openClientThread = new Thread(new Runnable() {
+			public void run() {
+				try {
+					ipcClient.connect(DiscordBuild.ANY);
+					if (richPresenceErrorShown || timeoutShown) {
+						new Timer().schedule(new TimerTask() {
+							public void run() {
+								try {
+									PlexCoreUtils.chatAddMessage(PlexCoreUtils.chatPlexPrefix() + PlexCoreUtils.chatStyleText("GREEN", "Discord reconnected!"));
+								} catch (Throwable ee) {
 								}
-							}, 1000L);
-						}
-						richPresenceErrorShown = false;
-						timeoutShown = false;
+							}
+						}, 1000L);
 					}
-					catch (Throwable e) {
-						String error = e.getMessage();
-						if (error == null) {
-							error = "null";
-						}
-						Plex.logger.error("The rich presence failed to connect due to " + error);
-						Plex.logger.error(org.apache.commons.lang3.exception.ExceptionUtils.getStackTrace(e));
-						richPresenceOpened = false;
-						richPresenceOpening = false;
-						showRichPresenceError = true;
-						return;
-					}
+					richPresenceErrorShown = false;
+					timeoutShown = false;
 					richPresenceOpened = true;
 					richPresenceOpening = false;
 				}
-			});
-			openClientThread.start();
-			new Timer().schedule(new TimerTask() {
-				public void run() {
-					if (openClientThread.isAlive()) {
-						try {
-							openClientThread.interrupt();
-							richPresenceOpening = false;
-							if (!timeoutShown) {
-								PlexCoreUtils.chatAddMessage(PlexCoreUtils.chatPlexPrefix() + PlexCoreUtils.chatStyleText("DARK_RED", "Connection to Discord timed out!"));
-								timeoutShown = true;
-							}
-						}
-						catch (Throwable ee) {}
-					}
+				catch (Throwable e) {
+					String error = String.valueOf(e.getMessage());
+					Plex.logger.error("The rich presence failed to connect due to " + error);
+					Plex.logger.error(org.apache.commons.lang3.exception.ExceptionUtils.getStackTrace(e));
+					richPresenceOpened = false;
+					richPresenceOpening = false;
+					showRichPresenceError = true;
 				}
-			}, 6000L);
-		}
+			}
+		});
+		openClientThread.start();
+		new Timer().schedule(new TimerTask() {
+			public void run() {
+				if (openClientThread.isAlive() && richPresenceOpening) {
+					richPresenceOpened = false;
+					try {
+						openClientThread.interrupt();
+					}
+					catch (Throwable ee) {}
+					try {
+						if (!timeoutShown) {
+							PlexCoreUtils.chatAddMessage(PlexCoreUtils.chatPlexPrefix() + PlexCoreUtils.chatStyleText("DARK_RED", "Connection to Discord timed out!"));
+							timeoutShown = true;
+						}
+					}
+					catch (Throwable ee) {}
+				}
+				richPresenceOpening = false;
+			}
+		}, 6000L);
 	}
 
 	@Override

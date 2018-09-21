@@ -79,7 +79,7 @@ public class PlexCoreUtils {
 		String valueText = args[(args.length - 1)];
 		List<String> styles = Arrays.asList(args).subList(0, (args.length - 1));
 		String outputText = EnumChatFormatting.RESET + "";
-		String[] words = valueText.split("\\s");
+		String[] words = valueText.split("\\s", -1);
 		String output = "";
 		for (String word : words) {
 			String outputWord = "";

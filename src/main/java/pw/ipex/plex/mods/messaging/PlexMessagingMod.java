@@ -1,6 +1,8 @@
 package pw.ipex.plex.mods.messaging;
 
+import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -59,6 +61,24 @@ public class PlexMessagingMod extends PlexModBase {
 	}
 
 	public void refreshAutoCompleteList() {
+		if (autoCompleteContainer.getItemById("@misc.server") == null) {
+			PlexUIAutoCompleteItem item = new PlexUIAutoCompleteItem();
+			item.autoCompleteText = "null";
+			item.id = "@misc.server";
+			item.searchText = "@server";
+			item.displayText = PlexCoreUtils.ampersandToFormatCharacter("&dCurrent Server - &3" + "null");
+			autoCompleteContainer.addItem(item);
+		}
+		if (Plex.serverState.currentLobbyName != null) {
+			PlexUIAutoCompleteItem item = autoCompleteContainer.getItemById("@misc.server");
+			item.autoCompleteText = Plex.serverState.currentLobbyName;
+			item.displayText = PlexCoreUtils.ampersandToFormatCharacter("&dCurrent Server - &3" + Plex.serverState.currentLobbyName);
+		}
+		else {
+			PlexUIAutoCompleteItem item = autoCompleteContainer.getItemById("@misc.server");
+			item.autoCompleteText = "";
+			item.displayText = PlexCoreUtils.ampersandToFormatCharacter("&dCurrent Server - &3" + "...");
+		}
 		for (String emoteName : Plex.serverState.emotesList.keySet()) {
 			if (autoCompleteContainer.getItemById("emote." + emoteName) == null) {
 				PlexUIAutoCompleteItem item = new PlexUIAutoCompleteItem();
@@ -69,6 +89,34 @@ public class PlexMessagingMod extends PlexModBase {
 				autoCompleteContainer.addItem(item);
 			}
 		}
+		List<String> playerNameList = new ArrayList<>();
+		for (NetworkPlayerInfo player : Plex.minecraft.thePlayer.sendQueue.getPlayerInfoMap()) {
+			String name = player.getGameProfile().getName();
+			if (!name.matches("^[a-zA-Z0-9]{1,20}$")) {
+				continue;
+			}
+			playerNameList.add(name);
+			if (autoCompleteContainer.getItemById("player." + name) == null) {
+				PlexUIAutoCompleteItem item = new PlexUIAutoCompleteItem();
+				item.autoCompleteText = name;
+				item.id = "player." + name;
+				item.searchText = name;
+				item.displayText = name;
+				item.attachedPlayerHead = name;
+				autoCompleteContainer.addItem(item);
+			}
+		}
+		List<PlexUIAutoCompleteItem> removeItems = new ArrayList<>();
+		for (PlexUIAutoCompleteItem item : autoCompleteContainer.autoCompleteItems) {
+			if (item.id.startsWith("player.")) {
+				if (!playerNameList.contains(item.id.substring(7))) {
+					removeItems.add(item);
+				}
+			}
+		}
+		autoCompleteContainer.autoCompleteItems.removeAll(removeItems);
+
+		autoCompleteContainer.sortItemsById();
 	}
 	
 	public void handleMessage(String message) {

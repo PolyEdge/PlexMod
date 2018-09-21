@@ -22,6 +22,9 @@ public class PlexUIAutoCompleteTextField {
 
     public Boolean autoCompleteListVisible = false;
 
+    public List<String> previousSentMessages = new ArrayList<>();
+    public Integer currentPreviousSentMessageIndex = 0;
+
     public List<? extends PlexUIAutoCompleteItem> items = new ArrayList<>();
 
     public Integer listBackgroundColour = 0x000000;
@@ -38,7 +41,33 @@ public class PlexUIAutoCompleteTextField {
         this.autoCompleteList = new PlexUIScrolledItemList(this.items, 0, 0, 0, 0);
         this.autoCompleteList.setPadding(10, 0);
         this.autoCompleteList.defaultEntryHeight = 10;
+        this.autoCompleteList.scrollbar.hiddenForcedScroll = 0.0F;
         this.setAutocompleteListPosition(this.xPosition, this.yPosition - 50, this.xPosition + this.itemWidth, this.yPosition - 1);
+
+        this.previousSentMessages.add("");
+    }
+
+    public void addToSentMessages(String message) {
+        this.previousSentMessages.remove(message);
+        this.previousSentMessages.add(1, message);
+    }
+
+    public void resetSentMessagesIndex() {
+        this.currentPreviousSentMessageIndex = 0;
+    }
+
+    public List<String> getPreviousSentMessages() {
+        return this.previousSentMessages;
+    }
+
+    public void setPreviousSentMessages(List<String> messages) {
+        if (messages.size() == 0) {
+            messages.add("");
+        }
+        if (!messages.get(0).equals("")) {
+            messages.add(0, "");
+        }
+        this.previousSentMessages = messages;
     }
 
     public void setAutocompleteListPosition(int x, int y, int endX, int endY) {
@@ -73,7 +102,7 @@ public class PlexUIAutoCompleteTextField {
         if (this.text.getText().endsWith(" ")) {
             return "";
         }
-        String[] words = this.text.getText().split("\\s");
+        String[] words = this.text.getText().split("\\s", -1);
         if (words.length == 0) {
             return "";
         }
@@ -127,24 +156,49 @@ public class PlexUIAutoCompleteTextField {
         this.autoCompleteList.scrollToItemIfNotCompletelyInView(items.get(selectedIndex));
     }
 
+    public void moveItemInMessageHistory(int by) {
+        if (this.autoCompleteListVisible) {
+            this.setAutoCompleteListVisible(false);
+        }
+        this.currentPreviousSentMessageIndex += by;
+        if (this.currentPreviousSentMessageIndex <= 0) {
+            this.currentPreviousSentMessageIndex = 0;
+        }
+        else if (this.currentPreviousSentMessageIndex >= this.previousSentMessages.size()) {
+            this.currentPreviousSentMessageIndex = this.previousSentMessages.size() - 1;
+        }
+        this.text.setText(this.previousSentMessages.get(this.currentPreviousSentMessageIndex));
+        this.text.setCursorPositionEnd();
+    }
+
     public boolean keyTyped(char par1, int par2) {
-        if (par2 == 15 && this.text.isFocused()) {
+        if (par2 == 15 && this.text.isFocused() && !this.autoCompleteListVisible) {
             this.setAutoCompleteListVisible(true);
             return true;
         }
-        if (par2 == 1 && this.text.isFocused() && this.autoCompleteListVisible) {
+        if (par2 == 15 && this.text.isFocused() && !this.getAutoCompleteListVisible()) {
+            this.setAutoCompleteListVisible(true);
+            return true;
+        }
+        if (par2 == 1 && this.text.isFocused() && this.getAutoCompleteListVisible()) {
             this.setAutoCompleteListVisible(false);
             return true;
         }
-        if (par2 == 200 && this.text.isFocused() && this.autoCompleteListVisible) {
+        if (par2 == 200 && this.text.isFocused() && this.getAutoCompleteListVisible()) {
             this.moveSelectedItem(-1);
             return true;
         }
-        if (par2 == 208 && this.text.isFocused() && this.autoCompleteListVisible) {
+        else if (par2 == 200 && this.text.isFocused()) {
+            this.moveItemInMessageHistory(1);
+        }
+        if (par2 == 208 && this.text.isFocused() && this.getAutoCompleteListVisible()) {
             this.moveSelectedItem(1);
             return true;
         }
-        if (par2 == 28 && this.text.isFocused() && this.autoCompleteListVisible) {
+        else if (par2 == 208 && this.text.isFocused()) {
+            this.moveItemInMessageHistory(-1);
+        }
+        if (par2 == 28 && this.text.isFocused() && this.getAutoCompleteListVisible()) {
             PlexUIAutoCompleteItem item = this.getSelectedItem();
             if (item != null) {
                 this.autoCompleteWithItem(item);
@@ -184,7 +238,10 @@ public class PlexUIAutoCompleteTextField {
     public void autoCompleteWithItem(PlexUIAutoCompleteItem item) {
         this.setAutoCompleteListVisible(false);
         String output = "";
-        String[] words = this.text.getText().split("\\s");
+        String[] words = this.text.getText().split("\\s", -1);
+        if (this.text.getText().endsWith(" ")) {
+
+        }
         for (int wordIndex = 0; wordIndex < words.length - 1; wordIndex++) {
             output = output + words[wordIndex] + " ";
         }

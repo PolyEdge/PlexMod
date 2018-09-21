@@ -13,6 +13,7 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
 import pw.ipex.plex.Plex;
 import pw.ipex.plex.core.PlexCore;
+import pw.ipex.plex.core.PlexCoreRenderUtils;
 import pw.ipex.plex.core.PlexCoreTextures;
 import pw.ipex.plex.core.PlexCoreUtils;
 import pw.ipex.plex.mods.plexmod.PlexPlexMod;
@@ -308,6 +309,20 @@ public class PlexUIModMenuScreen extends GuiScreen {
 		}
 		GL11.glPopMatrix();
 	}
+
+	public int getSocialMediaStartX() {
+		int iconSize = 16;
+		int barHeight = 25;
+		int positionIncrement = iconSize + (iconSize / 6) + 2;
+		int positionX = this.width - ((barHeight - iconSize) / 2) - iconSize;
+		int positionY = ((barHeight - iconSize) / 2);
+		for (String item : PlexPlexMod.socialMediaRenderInformation.keySet()) {
+			if (PlexPlexMod.socialMediaLinks.containsKey(item)) {
+				positionX -= positionIncrement;
+			}
+		}
+		return positionX + positionIncrement;
+	}
 	
 	public void drawHeaderImage() {
 		GL11.glPushMatrix();
@@ -357,7 +372,14 @@ public class PlexUIModMenuScreen extends GuiScreen {
 
 			drawCenteredString(this.fontRendererObj, this.baseUiScreen.uiGetTitle(), this.zoneCenterX(), 35, 16777215); // Local title
 			drawHeaderImage();
-			drawSocialMedia();			
+			drawSocialMedia();
+
+			String lobbyName = Plex.serverState.updatedLobbyName;
+			if (lobbyName == null) {
+				lobbyName = "...";
+			}
+
+			PlexCoreRenderUtils.drawScaledStringRightSide(lobbyName, this.getSocialMediaStartX() - 5, 8, 0xdf8214, 1.0F, false);
 		}
 
 		
