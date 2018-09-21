@@ -7,6 +7,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
 import pw.ipex.plex.Plex;
 import pw.ipex.plex.commandqueue.PlexCommandQueue;
+import pw.ipex.plex.commandqueue.PlexCommandQueueCommand;
 import pw.ipex.plex.core.PlexCore;
 import pw.ipex.plex.core.PlexCoreLobbyType;
 import pw.ipex.plex.core.PlexCoreUtils;
@@ -61,9 +62,10 @@ public class PlexAutoFriendMod extends PlexModBase {
 			playerMatcher.find();
 			String friendName = playerMatcher.group(1);
 			if (!blacklist.contains(friendName)) {
-				friendQueue.addCommand("/f " + friendName);
+				PlexCommandQueueCommand command = new PlexCommandQueueCommand("autoFriendMod", "/f " + friendName);
+				command.completeOnSend = true;
+				friendQueue.addCommand(command);
 			}
-			Plex.logger.info("autofriendmatch");
 		}
 	}
 

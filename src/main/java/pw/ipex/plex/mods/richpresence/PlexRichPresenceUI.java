@@ -15,14 +15,14 @@ public class PlexRichPresenceUI extends PlexUIBase {
 
 	@Override
 	public void uiAddButtons(PlexUIModMenuScreen ui) {
-		Integer top = ui.startingYPos(84);
+		Integer top = ui.startingYPos(107);
 		Integer paneSize = ui.centeredPaneSize(1, 20, 160);
 		Integer pane1Pos = ui.centeredPanePos(0, 1, 20, 160);
 		ui.addElement(new GuiButton(5, pane1Pos + 5, top + 0, paneSize - 10, 20, enabledDisabled("Rich Presence", PlexCore.getSharedValue("richPresence_enabled").booleanValue)));
 		ui.addElement(new GuiButton(6, pane1Pos + 5, top + 23, paneSize - 10, 20, shownHidden("Current Server", PlexCore.getSharedValue("richPresence_showLobbies").booleanValue)));
 		ui.addElement(new GuiButton(7, pane1Pos + 5, top + 46, paneSize - 10, 20, shownHidden("IGN", PlexCore.getSharedValue("richPresence_showIGN").booleanValue)));
 		ui.addElement(new GuiButton(8, pane1Pos + 5, top + 69, paneSize - 10, 20, timerMode()));
-		ui.addElement(new GuiButton(9, pane1Pos + 5, top + 69, paneSize - 10, 20, enabledDisabled("AFK Status", PlexCore.getSharedValue("richPresence_showAFK").booleanValue)));
+		ui.addElement(new GuiButton(9, pane1Pos + 5, top + 92, paneSize - 10, 20, enabledDisabled("AFK Status", PlexCore.getSharedValue("richPresence_showAFK").booleanValue)));
 
 	}
 

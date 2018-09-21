@@ -52,7 +52,7 @@ public class PlexMessagingUIScreen extends PlexUIBase {
 	
 	@Override
 	public String uiGetTitle() {
-		return "Direct Messages";
+		return "Messaging";
 	}
 	
 	@Override

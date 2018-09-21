@@ -176,8 +176,8 @@ public class PlexUIAutoCompleteTextField {
             this.setAutoCompleteListVisible(true);
             return true;
         }
-        if (par2 == 15 && this.text.isFocused() && !this.getAutoCompleteListVisible()) {
-            this.setAutoCompleteListVisible(true);
+        if (par2 == 15 && this.text.isFocused() && this.getAutoCompleteListVisible()) {
+            this.setAutoCompleteListVisible(false);
             return true;
         }
         if (par2 == 1 && this.text.isFocused() && this.getAutoCompleteListVisible()) {
@@ -282,7 +282,7 @@ public class PlexUIAutoCompleteTextField {
         this.autoCompleteList.items = visibleItems;
 
         if (listVisible) {
-            PlexCoreRenderUtils.staticDrawGradientRect(this.autoCompleteList.startX, this.autoCompleteList.startY - 2, this.autoCompleteList.endX, this.autoCompleteList.endY + 2, PlexCoreUtils.replaceColour(this.listBackgroundColour, null, null, null, 127), PlexCoreUtils.replaceColour(this.listBackgroundColour, null, null, null, 190));
+            PlexCoreRenderUtils.staticDrawGradientRect(this.autoCompleteList.startX, this.autoCompleteList.startY - 2, this.autoCompleteList.endX, this.autoCompleteList.endY + 2, PlexCoreUtils.replaceColour(this.listBackgroundColour, null, null, null, 230), PlexCoreUtils.replaceColour(this.listBackgroundColour, null, null, null, 230));
         }
 
         this.autoCompleteList.drawScreen(par1, par2, par3);
