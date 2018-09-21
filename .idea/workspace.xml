@@ -2,18 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="6ce1a131-a8c5-4525-a913-2a63c964dcea" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/Plex.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/Plex.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/commandqueue/PlexCommandQueueCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/commandqueue/PlexCommandQueueCommand.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/core/PlexCoreListeners.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/core/PlexCoreListeners.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/core/PlexCoreServerState.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/core/PlexCoreServerState.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/autofriend/PlexAutoFriendUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/autofriend/PlexAutoFriendUI.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/autogg/PlexAutoGGUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/autogg/PlexAutoGGUI.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/hidestream/PlexHideStreamMod.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/hidestream/PlexHideStreamMod.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/messaging/PlexMessagingUIScreen.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/messaging/PlexMessagingUIScreen.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/richpresence/PlexNewRichPresenceMod.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/richpresence/PlexNewRichPresenceMod.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/ui/PlexUIAutoCompleteTextField.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/ui/PlexUIAutoCompleteTextField.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/ui/PlexUIScrolledItemList.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/ui/PlexUIScrolledItemList.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/ui/PlexUIStaticLabel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/ui/PlexUIStaticLabel.java" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/.gradle/" />
     <ignored path="$PROJECT_DIR$/build/" />
@@ -62,23 +52,23 @@
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
-          <entry key="java" value="130" />
+          <entry key="java" value="132" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
-          <entry key="JAVA" value="130" />
+          <entry key="JAVA" value="132" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="dummy" value="53" />
-          <entry key="java" value="26089" />
+          <entry key="java" value="26382" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="JAVA" value="26089" />
+          <entry key="JAVA" value="26382" />
           <entry key="PLAIN_TEXT" value="53" />
         </counts>
       </usages-collector>
@@ -111,16 +101,46 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/pw/ipex/plex/ui/PlexUIAutoCompleteTextField.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="299">
-              <caret line="93" column="44" lean-forward="true" selection-start-line="93" selection-start-column="44" selection-end-line="93" selection-end-column="44" />
+            <state relative-caret-position="-1078">
+              <caret line="66" column="14" selection-start-line="66" selection-start-column="14" selection-end-line="66" selection-end-column="14" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="e#6370#6371#0" expanded="true" />
                 <element signature="e#6430#6431#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/richpresence/PlexNewRichPresenceMod.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1613">
+              <caret line="377" column="21" lean-forward="true" selection-start-line="377" selection-start-column="21" selection-end-line="377" selection-end-column="21" />
+              <folding>
+                <element signature="e#13833#14116#0" expanded="true" />
+                <element signature="e#14115#14116#0" expanded="true" />
+                <element signature="e#14290#14291#0" expanded="true" />
+                <element signature="e#14319#14320#0" expanded="true" />
+                <element signature="e#14720#14793#0" expanded="true" />
+                <element signature="e#14792#14793#0" expanded="true" />
+                <element signature="e#14923#15002#0" expanded="true" />
+                <element signature="e#15001#15002#0" expanded="true" />
+                <element signature="e#15110#15213#0" expanded="true" />
+                <element signature="e#15212#15213#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/pw/ipex/plex/core/PlexCoreUtils.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="478">
+              <caret line="484" column="23" lean-forward="true" selection-start-line="484" selection-start-column="23" selection-end-line="484" selection-end-column="23" />
             </state>
           </provider>
         </entry>
@@ -830,7 +850,6 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/src/main/java/pw/ipex/plex/core/PlexCoreChatRegexEntry.java" />
-        <option value="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/richpresence/PlexNewRichPresenceMod.java" />
         <option value="$PROJECT_DIR$/src/main/java/pw/ipex/plex/commandqueue/PlexQueueCommand.java" />
         <option value="$PROJECT_DIR$/src/main/java/pw/ipex/plex/commandqueue/PlexCoreCommandQueue.java" />
         <option value="$PROJECT_DIR$/src/main/java/pw/ipex/plex/commandqueue/PlexCommandQueueDelaySet.java" />
@@ -876,6 +895,7 @@
         <option value="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/messaging/PlexMessagingUIScreen.java" />
         <option value="$PROJECT_DIR$/src/main/java/pw/ipex/plex/ui/PlexUIScrolledItemList.java" />
         <option value="$PROJECT_DIR$/src/main/java/pw/ipex/plex/ui/PlexUIAutoCompleteTextField.java" />
+        <option value="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/richpresence/PlexNewRichPresenceMod.java" />
       </list>
     </option>
   </component>
@@ -1089,7 +1109,7 @@
   </component>
   <component name="PropertiesComponent">
     <property name="SearchEverywhereHistoryKey" value="&#9;FILE&#9;file://D:/WorkspaceV6/Plex/src/main/java/pw/ipex/plex/ui/PlexUIScrolledItemList.java" />
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1537504214423" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1537545227255" />
     <property name="project.structure.last.edited" value="SDKs" />
     <property name="project.structure.proportion" value="0.0" />
     <property name="project.structure.side.proportion" value="0.2" />
@@ -1136,7 +1156,7 @@
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.4989154" visible="true" weight="0.19509594" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.4989154" visible="true" weight="0.19509594" />
       <window_info id="Structure" order="1" sideWeight="0.5010846" side_tool="true" weight="0.18656716" />
       <window_info id="Image Layers" order="2" />
       <window_info id="Designer" order="3" />
@@ -1330,13 +1350,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/richpresence/PlexNewRichPresenceMod.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3366">
-          <caret line="329" column="45" lean-forward="true" selection-start-line="329" selection-start-column="45" selection-end-line="329" selection-end-column="45" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/plexmod/PlexPlexCommand.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="68">
@@ -1400,29 +1413,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="935">
           <caret line="85" column="13" lean-forward="true" selection-start-line="85" selection-start-column="13" selection-end-line="85" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/pw/ipex/plex/core/PlexCoreUtils.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="427">
-          <caret line="384" column="49" lean-forward="true" selection-start-line="384" selection-start-column="49" selection-end-line="384" selection-end-column="49" />
-          <folding>
-            <element signature="e#13994#13995#0" expanded="true" />
-            <element signature="e#14033#14034#0" expanded="true" />
-            <element signature="e#14937#14938#0" expanded="true" />
-            <element signature="e#14978#14979#0" expanded="true" />
-            <element signature="e#15066#15067#0" expanded="true" />
-            <element signature="e#15104#15105#0" expanded="true" />
-            <element signature="e#16054#16055#0" expanded="true" />
-            <element signature="e#16095#16096#0" expanded="true" />
-            <element signature="e#16177#16178#0" expanded="true" />
-            <element signature="e#16213#16214#0" expanded="true" />
-            <element signature="e#17313#17314#0" expanded="true" />
-            <element signature="e#17368#17369#0" expanded="true" />
-            <element signature="e#21968#21969#0" expanded="true" />
-            <element signature="e#22003#22004#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1524,20 +1514,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/pw/ipex/plex/core/PlexCorePersistentPlayerManager.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="330">
-          <caret line="61" column="39" selection-start-line="61" selection-start-column="39" selection-end-line="61" selection-end-column="39" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#4265#4266#0" expanded="true" />
-            <element signature="e#4318#4319#0" expanded="true" />
-            <element signature="e#4375#4376#0" expanded="true" />
-            <element signature="e#4429#4430#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/pw/ipex/plex/ui/PlexUIStaticLabel.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="279">
@@ -1589,12 +1565,52 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/pw/ipex/plex/ui/PlexUIAutoCompleteTextField.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="299">
-          <caret line="93" column="44" lean-forward="true" selection-start-line="93" selection-start-column="44" selection-end-line="93" selection-end-column="44" />
+        <state relative-caret-position="-1078">
+          <caret line="66" column="14" selection-start-line="66" selection-start-column="14" selection-end-line="66" selection-end-column="14" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="e#6370#6371#0" expanded="true" />
             <element signature="e#6430#6431#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/pw/ipex/plex/core/PlexCoreUtils.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="478">
+          <caret line="484" column="23" lean-forward="true" selection-start-line="484" selection-start-column="23" selection-end-line="484" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/pw/ipex/plex/core/PlexCorePersistentPlayerManager.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="330">
+          <caret line="61" column="39" selection-start-line="61" selection-start-column="39" selection-end-line="61" selection-end-column="39" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#4265#4266#0" expanded="true" />
+            <element signature="e#4318#4319#0" expanded="true" />
+            <element signature="e#4375#4376#0" expanded="true" />
+            <element signature="e#4429#4430#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/richpresence/PlexNewRichPresenceMod.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1613">
+          <caret line="377" column="21" lean-forward="true" selection-start-line="377" selection-start-column="21" selection-end-line="377" selection-end-column="21" />
+          <folding>
+            <element signature="e#13833#14116#0" expanded="true" />
+            <element signature="e#14115#14116#0" expanded="true" />
+            <element signature="e#14290#14291#0" expanded="true" />
+            <element signature="e#14319#14320#0" expanded="true" />
+            <element signature="e#14720#14793#0" expanded="true" />
+            <element signature="e#14792#14793#0" expanded="true" />
+            <element signature="e#14923#15002#0" expanded="true" />
+            <element signature="e#15001#15002#0" expanded="true" />
+            <element signature="e#15110#15213#0" expanded="true" />
+            <element signature="e#15212#15213#0" expanded="true" />
           </folding>
         </state>
       </provider>

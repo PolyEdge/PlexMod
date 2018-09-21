@@ -45,6 +45,7 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 	
 	public Boolean richPresenceErrorShown = false;
 	public Boolean showRichPresenceError = false;
+	public Boolean timeoutShown = false;
 	
 	public Boolean isAfk = false;
 	public PlexCoreValue modEnabled = new PlexCoreValue("richPresence_enabled", false);
@@ -323,36 +324,60 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 			}
 			catch (Throwable ee) {}
 		}
+		if (richPresenceOpening) {
+			return;
+		}
 		if (!richPresenceOpened) {
 			richPresenceOpening = true;
-			try {
-				ipcClient.connect(DiscordBuild.ANY);
-				if (richPresenceErrorShown) {
-					new Timer().schedule(new TimerTask() {
-						public void run() {
-							try {
-								PlexCoreUtils.chatAddMessage(PlexCoreUtils.chatPlexPrefix() + PlexCoreUtils.chatStyleText("GREEN", "Discord reconnected!"));
-							}
-							catch (Throwable ee) {}
+			final Thread openClientThread = new Thread(new Runnable() {
+				public void run() {
+					try {
+						ipcClient.connect(DiscordBuild.ANY);
+						if (richPresenceErrorShown || timeoutShown) {
+							new Timer().schedule(new TimerTask() {
+								public void run() {
+									try {
+										PlexCoreUtils.chatAddMessage(PlexCoreUtils.chatPlexPrefix() + PlexCoreUtils.chatStyleText("GREEN", "Discord reconnected!"));
+									}
+									catch (Throwable ee) {}
+								}
+							}, 1000L);
 						}
-					}, 1000L);
+						richPresenceErrorShown = false;
+						timeoutShown = false;
+					}
+					catch (Throwable e) {
+						String error = e.getMessage();
+						if (error == null) {
+							error = "null";
+						}
+						Plex.logger.error("The rich presence failed to connect due to " + error);
+						Plex.logger.error(org.apache.commons.lang3.exception.ExceptionUtils.getStackTrace(e));
+						richPresenceOpened = false;
+						richPresenceOpening = false;
+						showRichPresenceError = true;
+						return;
+					}
+					richPresenceOpened = true;
+					richPresenceOpening = false;
 				}
-				richPresenceErrorShown = false;
-			}
-			catch (Throwable e) {
-				String error = e.getMessage();
-				if (error == null) {
-					error = "null";
+			});
+			openClientThread.start();
+			new Timer().schedule(new TimerTask() {
+				public void run() {
+					if (openClientThread.isAlive()) {
+						try {
+							openClientThread.interrupt();
+							richPresenceOpening = false;
+							if (!timeoutShown) {
+								PlexCoreUtils.chatAddMessage(PlexCoreUtils.chatPlexPrefix() + PlexCoreUtils.chatStyleText("DARK_RED", "Connection to Discord timed out!"));
+								timeoutShown = true;
+							}
+						}
+						catch (Throwable ee) {}
+					}
 				}
-				Plex.logger.error("The rich presence failed to connect due to " + error);
-				Plex.logger.error(org.apache.commons.lang3.exception.ExceptionUtils.getStackTrace(e));
-				richPresenceOpened = false;
-				richPresenceOpening = false;
-				showRichPresenceError = true;
-				return;
-			}
-			
-			richPresenceOpened = true;
+			}, 6000L);
 		}
 	}
 

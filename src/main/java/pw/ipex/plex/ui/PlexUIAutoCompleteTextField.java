@@ -64,7 +64,7 @@ public class PlexUIAutoCompleteTextField {
         this.updateAutoCompleteItems();
         String lastWord = this.getLastWordInBox();
         if (lastWord.trim().equals("")) {
-            return false;
+            //return false;
         }
         return this.autoCompleteList.getItemsMatchingSearchTerm(lastWord).size() != 0;
     }
