@@ -98,6 +98,13 @@ public class PlexCommandQueueCommand {
 	public Long getSendTime() {
 		return this.latestCommandSentTimestamp;
 	}
+
+	public Long getTimeSinceSent() {
+		if (this.latestCommandSentTimestamp == null) {
+			return -1L;
+		}
+		return Minecraft.getSystemTime() - this.latestCommandSentTimestamp;
+	}
 	
 	public void resend() {
 		this.commandSent = false;

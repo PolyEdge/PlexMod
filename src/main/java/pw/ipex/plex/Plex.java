@@ -10,6 +10,7 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import pw.ipex.plex.commandqueue.PlexCommandQueueManager;
 import pw.ipex.plex.core.*;
+import pw.ipex.plex.mods.autofriend.PlexAutoFriendMod;
 import pw.ipex.plex.mods.autogg.PlexAutoGGMod;
 import pw.ipex.plex.mods.autothank.PlexAutoThankMod;
 import pw.ipex.plex.mods.betterreply.PlexBetterReplyMod;
@@ -57,7 +58,7 @@ public class Plex {
 		
 		PlexCoreTextures.loadTextures();
 		PlexCore.registerMod(new PlexPlexMod());
-		//PlexCore.registerMod(new PlexFriendsListEnhancementsMod());
+		//PlexCore.registerMod(new PlexFriendsListEnhancementsMod());  // (this module no longer works because they removed the offline section. press f to pay respects)
 		PlexCore.registerMod(new PlexBetterReplyMod());
 		PlexCore.registerMod(new PlexMessagingMod());
 		PlexCore.registerMod(new PlexHideStreamMod());
@@ -66,5 +67,6 @@ public class Plex {
 		//PlexCore.registerMod(new PlexRichPresenceMod());
 		PlexCore.registerMod(new PlexNewRichPresenceMod());
 		PlexCore.registerMod(new PlexAutoGGMod());
+		PlexCore.registerMod(new PlexAutoFriendMod());
 	}
 }

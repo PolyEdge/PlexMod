@@ -106,16 +106,31 @@ public class PlexCoreListeners {
 			}
 		}
 		if (min.matches("Chat> Emotes List:")) {
-			if (this.otherCommandsQueue.getItem(0).isSent() && this.otherCommandsQueue.getItem(0).command.equals("/emotes")) {
-				e.setCanceled(true);
+			if (otherCommandsQueue.hasItems()) {
+				if (this.otherCommandsQueue.getItem(0).isSent() && this.otherCommandsQueue.getItem(0).command.equals("/emotes")) {
+					e.setCanceled(true);
+				}
 			}
 		}
 		if (message.matches(this.MATCH_EMOTE)) {
 			Matcher emoteDetails = this.PATTERN_EMOTE.matcher(message);
 			emoteDetails.find();
 			Plex.serverState.emotesList.put(emoteDetails.group(1), emoteDetails.group(2));
-			if (this.otherCommandsQueue.getItem(0).isSent() && this.otherCommandsQueue.getItem(0).command.equals("/emotes")) {
-				e.setCanceled(true);
+			if (otherCommandsQueue.hasItems()) {
+				if (this.otherCommandsQueue.getItem(0).isSent() && this.otherCommandsQueue.getItem(0).command.equals("/emotes")) {
+					e.setCanceled(true);
+				}
+			}
+		}
+		if (min.toLowerCase().startsWith("permissions> you do not have permission to do that")) {
+			if (otherCommandsQueue.hasItems()) {
+				if (this.otherCommandsQueue.getItem(0).isSent() && this.otherCommandsQueue.getItem(0).command.equals("/emotes")) {
+					if (this.otherCommandsQueue.getItem(0).getTimeSinceSent() < 2000L) {
+						e.setCanceled(true);
+						Plex.serverState.canUseEmotes = false;
+						this.otherCommandsQueue.getItem(0).markComplete();
+					}
+				}
 			}
 		}
 	}
@@ -157,8 +172,8 @@ public class PlexCoreListeners {
 			}
 			this.awaitingLoad = true;
 			if (Plex.serverState.emotesList.size() == 0) {
-				PlexCommandQueueCommand emoteCommand = new PlexCommandQueueCommand("plexCore", "/emotes", 8000L);
-				emoteCommand.completeAfter = 5000L;
+				PlexCommandQueueCommand emoteCommand = new PlexCommandQueueCommand("plexCore", "/emotes", 4000L);
+				emoteCommand.completeAfter = 3000L;
 				this.otherCommandsQueue.addCommand(emoteCommand);
 			}
 		}

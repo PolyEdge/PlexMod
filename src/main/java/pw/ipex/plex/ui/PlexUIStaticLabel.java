@@ -10,6 +10,8 @@ public class PlexUIStaticLabel extends GuiScreen {
 	public int startX;
 	public int startY;
 	public int labelHeight;
+
+	public int anchor = 0; // top left, top right, bottom left, bottom right
 	
 	public float displayX = 0.0F;
 	public float displayY = 0.0F;
@@ -220,8 +222,15 @@ public class PlexUIStaticLabel extends GuiScreen {
 		}
 		int padding = (int)((this.displayHeight * (this.labelPaddingPercent)) / 2.0F);
 		float fontScale = (this.displayHeight - padding * 2) / Plex.minecraft.fontRendererObj.FONT_HEIGHT;
+
+		int realWidth = (int)(this.displayTextWidth * fontScale) + extraXPadding * 2 + padding * 2;
+		int realHeight = this.labelHeight;
+
+		int realX = this.anchor % 2 == 0 ? (int) this.displayX : (int) this.displayX - realWidth;
+		int realY = this.anchor < 2 ? (int) this.displayY : (int) this.displayY - realHeight;
+
 		//int textWidth = (int) (this.displayTextWidth * fontScale);
-		PlexCoreRenderUtils.drawScaledGradientRect((int)this.displayX, (int)this.displayY, (int)this.displayX + (int)(this.displayTextWidth * fontScale) + extraXPadding * 2 + padding * 2, (int)this.displayY + this.labelHeight, 1.0F, this.displayColour, this.displayColour);
-		PlexCoreRenderUtils.drawScaledString(this.displayText, (int)this.displayX + padding + extraXPadding, (int)this.displayY + padding, this.textDisplayColour, fontScale, false);
+		PlexCoreRenderUtils.drawScaledGradientRect(realX, realY, realX + realWidth, realY + realHeight, 1.0F, this.displayColour, this.displayColour);
+		PlexCoreRenderUtils.drawScaledString(this.displayText, realX + padding + extraXPadding, realY + padding, this.textDisplayColour, fontScale, false);
 	}
 }

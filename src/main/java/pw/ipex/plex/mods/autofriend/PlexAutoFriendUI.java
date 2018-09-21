@@ -15,7 +15,7 @@ public class PlexAutoFriendUI extends PlexUIBase {
 	
 	@Override
 	public String uiGetTitle() {
-		return "Auto GG";
+		return "AutoFriend";
 	}
 
 	@Override

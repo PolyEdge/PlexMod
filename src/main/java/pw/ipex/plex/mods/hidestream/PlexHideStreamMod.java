@@ -45,6 +45,8 @@ public class PlexHideStreamMod extends PlexModBase {
 		AD_MATCHERS.add("rank sale");
 		AD_MATCHERS.add("get your (?:new )?(?:rank)");
 		AD_MATCHERS.add("all ranks are");
+		AD_MATCHERS.add("on sale");
+		AD_MATCHERS.add("shop.mineplex.com");
 		AD_MATCHERS.add("rank upgrade");
 		AD_MATCHERS.add("treasure chest");
 		AD_MATCHERS.add("\\$[0-9]+\\.[0-9]{2}");

@@ -27,11 +27,11 @@ public class PlexAutoGGUI extends PlexUIBase {
 		ui.addElement(new GuiButton(6, pane1Pos + 5, top + 23, paneSize - 10, 20, beforeAfter("Chat Silence", PlexCore.getSharedValue("autoGG_waitUntilSilenceOver").booleanValue)));
 		ui.addElement(new PlexUISlider(this, 7, pane1Pos + 5, top + 46, paneSize - 10, 20, (float) (PlexCore.getSharedValue("autoGG_delay").doubleValue / (PlexAutoGGMod.MAX_DELAY - PlexAutoGGMod.MIN_DELAY)), delayDisplayString()));	
 		this.primaryMessageField = new PlexUITextField(8, Plex.minecraft.fontRendererObj, pane1Pos + 5, top + 69, paneSize - 10, 20);
-		this.primaryMessageField.text.setText(PlexCore.getSharedValue("autoGG_primaryMessage").stringValue);
 		this.primaryMessageField.text.setMaxStringLength(100);
+		this.primaryMessageField.text.setText(PlexCore.getSharedValue("autoGG_primaryMessage").stringValue);
 		this.secondaryMessageField = new PlexUITextField(8, Plex.minecraft.fontRendererObj, pane1Pos + 5, top + 92, paneSize - 10, 20);
-		this.secondaryMessageField.text.setText(PlexCore.getSharedValue("autoGG_secondaryMessage").stringValue);
 		this.secondaryMessageField.text.setMaxStringLength(100);
+		this.secondaryMessageField.text.setText(PlexCore.getSharedValue("autoGG_secondaryMessage").stringValue);
 	}
 	
 	@Override

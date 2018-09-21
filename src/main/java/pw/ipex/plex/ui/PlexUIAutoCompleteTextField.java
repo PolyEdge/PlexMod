@@ -58,6 +58,9 @@ public class PlexUIAutoCompleteTextField {
     }
 
     public boolean getAutoCompleteListVisible() {
+        if (!this.autoCompleteListVisible) {
+            return false;
+        }
         this.updateAutoCompleteItems();
         String lastWord = this.getLastWordInBox();
         if (lastWord.trim().equals("")) {
@@ -67,7 +70,10 @@ public class PlexUIAutoCompleteTextField {
     }
 
     public String getLastWordInBox() {
-        String[] words = this.text.getText().split("\\S");
+        if (this.text.getText().endsWith(" ")) {
+            return "";
+        }
+        String[] words = this.text.getText().split("\\s");
         if (words.length == 0) {
             return "";
         }
@@ -76,7 +82,7 @@ public class PlexUIAutoCompleteTextField {
 
     public List<? extends PlexUIAutoCompleteItem> getItemsMatching(String text) {
         if (text.trim().equals("")) {
-            return new ArrayList<>();
+            return this.items;
         }
         return this.autoCompleteList.getItemsMatchingSearchTerm(this.items, text, 0);
     }
@@ -86,7 +92,7 @@ public class PlexUIAutoCompleteTextField {
     }
 
     public void setSelectedItem(int index) {
-        List<? extends  PlexUIAutoCompleteItem> items = this.getItemsMatchingLastWord();
+        List<? extends PlexUIAutoCompleteItem> items = this.getItemsMatchingLastWord();
         for (int itemIndex = 0; itemIndex < items.size(); itemIndex++) {
             items.get(itemIndex).softSelected = false;
         }
@@ -106,14 +112,19 @@ public class PlexUIAutoCompleteTextField {
 
     public void moveSelectedItem(int by) {
         int selectedIndex = -1;
-        for (int itemIndex = 0; itemIndex < this.items.size(); itemIndex++) {
-            if (this.items.get(itemIndex).softSelected && selectedIndex == -1) {
+        List<? extends PlexUIAutoCompleteItem> items = this.getItemsMatchingLastWord();
+        if (items.size() == 0) {
+            return;
+        }
+        for (int itemIndex = 0; itemIndex < items.size(); itemIndex++) {
+            if (items.get(itemIndex).softSelected && selectedIndex == -1) {
                 selectedIndex = itemIndex;
             }
-            this.items.get(itemIndex).softSelected = false;
+            items.get(itemIndex).softSelected = false;
         }
-        selectedIndex = PlexCoreUtils.intRange(selectedIndex + by, 0, this.items.size() - 1);
-        this.items.get(selectedIndex).softSelected = true;
+        selectedIndex = PlexCoreUtils.intRange(selectedIndex + by, 0, items.size() - 1);
+        items.get(selectedIndex).softSelected = true;
+        this.autoCompleteList.scrollToItemIfNotCompletelyInView(items.get(selectedIndex));
     }
 
     public boolean keyTyped(char par1, int par2) {
@@ -173,11 +184,11 @@ public class PlexUIAutoCompleteTextField {
     public void autoCompleteWithItem(PlexUIAutoCompleteItem item) {
         this.setAutoCompleteListVisible(false);
         String output = "";
-        String[] words = this.text.getText().split("\\S");
+        String[] words = this.text.getText().split("\\s");
         for (int wordIndex = 0; wordIndex < words.length - 1; wordIndex++) {
             output = output + words[wordIndex] + " ";
         }
-        output = output + item.autoCompleteText;
+        output = output + item.autoCompleteText + " ";
         this.text.setText(output);
         this.text.setCursorPositionEnd();
     }
@@ -204,13 +215,14 @@ public class PlexUIAutoCompleteTextField {
         }
         if (!softSelectedItem && visibleItems.size() != 0) {
             visibleItems.get(0).softSelected = true;
+            this.autoCompleteList.scrollToItemIfNotCompletelyInView(visibleItems.get(0));
         }
         this.text.drawTextBox();
         //GlStateManager.disableColorLogic();
         //GlStateManager.enableTexture2D();
-        boolean listVisible = true;//this.getAutoCompleteListVisible();
+        boolean listVisible = this.getAutoCompleteListVisible();
         this.autoCompleteList.setVisible(listVisible);
-        this.autoCompleteList.items = this.items;//visibleItems;
+        this.autoCompleteList.items = visibleItems;
 
         if (listVisible) {
             PlexCoreRenderUtils.staticDrawGradientRect(this.autoCompleteList.startX, this.autoCompleteList.startY - 2, this.autoCompleteList.endX, this.autoCompleteList.endY + 2, PlexCoreUtils.replaceColour(this.listBackgroundColour, null, null, null, 127), PlexCoreUtils.replaceColour(this.listBackgroundColour, null, null, null, 190));

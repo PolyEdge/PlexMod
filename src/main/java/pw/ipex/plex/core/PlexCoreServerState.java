@@ -26,6 +26,8 @@ public class PlexCoreServerState {
 	public Long lastControlInput = null;
 	public Long lastChatOpen = 0L;
 
+	public Boolean canUseEmotes = true;
+
 	public HashMap<String, String> emotesList = new HashMap<>();
 	
 	
