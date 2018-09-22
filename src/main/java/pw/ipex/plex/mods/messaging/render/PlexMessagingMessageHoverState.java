@@ -6,6 +6,8 @@ public class PlexMessagingMessageHoverState {
 	public boolean IS_SELECTED = false;
 	
 	public String selectedWord = null;
+	public Integer localStringOffset = null;
+	public Integer globalStringOffset = null;
 	public PlexMessagingMessageTextData selectedLine = null;
 	public boolean messageSelected = false;
 	public boolean headSelected = false;
@@ -56,6 +58,18 @@ public class PlexMessagingMessageHoverState {
 	public PlexMessagingMessageHoverState setSelectedLine(PlexMessagingMessageTextData line) {
 		this.SET_SELECTED_IF_TRUE(line != null);
 		this.selectedLine = line;
+		return this;
+	}
+
+	public PlexMessagingMessageHoverState setHoveredLocalStringOffset(int stringOffset) {
+		this.SET_SELECTED_IF_TRUE(stringOffset != -1);
+		this.localStringOffset = stringOffset;
+		return this;
+	}
+
+	public PlexMessagingMessageHoverState setHoveredGlobalStringOffset(int stringOffset) {
+		this.SET_SELECTED_IF_TRUE(stringOffset != -1);
+		this.globalStringOffset = stringOffset;
 		return this;
 	}
 }

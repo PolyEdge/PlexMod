@@ -8,6 +8,8 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.util.BlockPos;
 import pw.ipex.plex.ci.PlexCommandHandler;
 import pw.ipex.plex.core.PlexCore;
+import pw.ipex.plex.core.PlexCoreChatRegex;
+import pw.ipex.plex.core.PlexCoreUtils;
 
 public class PlexDevelopmentCommand extends PlexCommandHandler {
 
@@ -29,6 +31,17 @@ public class PlexDevelopmentCommand extends PlexCommandHandler {
 		}
 		if (args[0].equalsIgnoreCase("server") || args[0].equalsIgnoreCase("lobby")) {
 			PlexCore.getSharedValue("_plexDev_lobbyStream").set(!PlexCore.getSharedValue("_plexDev_lobbyStream").booleanValue);
+		}
+		if (args[0].equalsIgnoreCase("regex") && args.length > 1) {
+			String input = "";
+			for (int x = 1; x < args.length; x++) {
+				input = input + args[x] + " ";
+			}
+			input = input.trim();
+			PlexCoreUtils.chatAddMessage("split of \"" + input + "\"");
+			for (String x : PlexCoreChatRegex.splitFormatRegionString(input)) {
+				PlexCoreUtils.chatAddMessage(x);
+			}
 		}
 	}
 

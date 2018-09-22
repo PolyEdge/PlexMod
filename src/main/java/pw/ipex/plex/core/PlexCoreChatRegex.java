@@ -7,6 +7,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class PlexCoreChatRegex {
+	public static String SPLIT_FORMAT_REGION = "((?:([^ \n]*?)(?<!\\\\)\\{\\{([^|]+?)\\|(.+?)(?<!\\\\)\\}\\}|[^ \n]+|\n) ?)";
+	public static Pattern PATTERN_FORMAT_REGION = Pattern.compile(SPLIT_FORMAT_REGION); // why cant i keep the delimiter in java
 	
 	public static String MATCH_PLAYER_CHAT = "^(?:&7Dead )?(?:(?:&[0-9a-fA-Fklmnor])*([0-9]{1,3}) ) *(?:(?:&[0-9a-fA-Fklmnor])*&l(ULTRA|HERO|LEGEND|TITAN|ETERNAL|YT|YOUTUBE|ARTIST|TRAINEE|SUPPORT|MOD|SR\\.MOD|MAPPER|BUILDER|MAPLEAD|JR\\.DEV|DEV|ADMIN|LEADER|OWNER))? *(?:&[0-9a-fA-Fklmnor])* *([a-zA-Z0-9_-]+) *(?:&[0-9a-fA-Fklmnor])* *(.*)$";
 	public static String MATCH_PLAYER_MPS_CHAT = "^(?:&7Dead )?(?:(?:&[0-9a-fA-Fklmnor])*([0-9]{1,3}) )? *(?:(?:&[0-9a-fA-Fklmnor])*&l(ULTRA|HERO|LEGEND|TITAN|ETERNAL|YT|YOUTUBE|ARTIST|TRAINEE|SUPPORT|MOD|SR\\.MOD|MAPPER|BUILDER|MAPLEAD|JR\\.DEV|DEV|ADMIN|LEADER|OWNER))? *(?:&[0-9a-fA-Fkmnor])* *([a-zA-Z0-9_-]+) *(?:&[0-9a-fA-Fklmnor])* *(.*)$"; // there are no levels in mps, so a weaker regex is given (player's name cannot be bold)
@@ -28,6 +30,12 @@ public class PlexCoreChatRegex {
 	public static String MATCH_PARTY_DECLINE = "^&9Party> &7You have denied your invite to &e([a-zA-Z0-9_]+)&7's party\\.$";
 	
 	public static String MATCH_DM_PLAYER_OFFLINE = "^&9Online Player Search> &e0&7 matches for \\[&e([A-Za-z0-9_]+)&7]\\.$";
+
+	public static Pattern PATTERN_PLAYER_CHAT = Pattern.compile(MATCH_PLAYER_CHAT);
+	public static Pattern PATTERN_PLAYER_MPS_CHAT = Pattern.compile(MATCH_PLAYER_MPS_CHAT);
+	public static Pattern PATTERN_PARTY_CHAT = Pattern.compile(MATCH_PARTY_CHAT);
+	public static Pattern PATTERN_TEAM_CHAT = Pattern.compile(MATCH_TEAM_CHAT);
+	public static Pattern PATTERN_DIRECT_MESSAGE = Pattern.compile(MATCH_DIRECT_MESSAGE);
 	
 	public static List<PlexCoreChatRegexEntry> regexEntries = new ArrayList<PlexCoreChatRegexEntry>();
 	
@@ -54,13 +62,26 @@ public class PlexCoreChatRegex {
 		addEntry("direct_message_player_offline", MATCH_DM_PLAYER_OFFLINE, "direct_message").addField(1, "destination");
 		
 	}
-	
-	
-	public static Pattern PATTERN_PLAYER_CHAT = Pattern.compile(MATCH_PLAYER_CHAT);
-	public static Pattern PATTERN_PLAYER_MPS_CHAT = Pattern.compile(MATCH_PLAYER_MPS_CHAT);
-	public static Pattern PATTERN_PARTY_CHAT = Pattern.compile(MATCH_PARTY_CHAT);
-	public static Pattern PATTERN_TEAM_CHAT = Pattern.compile(MATCH_TEAM_CHAT);
-	public static Pattern PATTERN_DIRECT_MESSAGE = Pattern.compile(MATCH_DIRECT_MESSAGE);
+
+	public static List<String> splitFormatRegionString(String input) {
+		Matcher matcher = PATTERN_FORMAT_REGION.matcher(input);
+		List<String> output = new ArrayList<>();
+		while (matcher.find()) {
+			if (matcher.group(3) != null && matcher.group(4) != null) {
+				if (matcher.group(2) != null) {
+					if (!matcher.group(2).equals("")) {
+						output.add("$" + matcher.group(2));
+					}
+				}
+				output.add("!" + matcher.group(3) + "|" + matcher.group(4));
+			}
+			else {
+				output.add("$" + matcher.group(1));
+			}
+		}
+		return output;
+	}
+
 	
 	public static String determinePotentialChatType(String message) { //already filtered
 		if (message.matches(MATCH_PARTY_CHAT)) {
@@ -75,59 +96,9 @@ public class PlexCoreChatRegex {
 		if (message.matches(MATCH_DIRECT_MESSAGE)) {
 			return "direct_message";
 		}
-		if (message.matches(MATCH_PLAYER_MPS_CHAT)) {
-			if (possibleMpsChat(message)) {
-				return "player_mps";
-			}
-		}
 		return "unknown";
 	}
-	
-	public static Boolean possibleMpsChat(String message) {
-		if (!message.matches(MATCH_PLAYER_MPS_CHAT)) {
-			return false;
-		}
-		Matcher matcher = PATTERN_PLAYER_MPS_CHAT.matcher(message);
-		matcher.find();
-		if (matcher.group(2) == null) {
-			return false;
-		}
-		return PlexCore.getPlayerIGNList(true).contains(matcher.group(2).toLowerCase());
-	}
-	
-	public static String getMessageField(List<String> data, String field) {
-		if (data == null) {
-			return null;
-		}
-		if (!Integer.valueOf(data.size()).equals(4)) {
-			return null;
-		}
-		if (field.equals("level")) {
-			return data.get(0);
-		}
-		if (field.equals("rank")) {
-			return data.get(1);
-		}
-		if (field.equals("ign")) {
-			return data.get(2);
-		}
-		if (field.equals("message")) {
-			return data.get(3);
-		}
-		return null;
-	}
-	
-	public static Boolean compare(List<String> data, String field, String value) {
-		String fieldData = getMessageField(data, field);
-		if (fieldData == null) {
-			return false;
-		}
-		if (fieldData.equals("")) {
-			return false;
-		}
-		return fieldData.equalsIgnoreCase(value);
-	}
-	
+
 	public static Matcher getChatMatcher(String message) {
 		String messageType = determinePotentialChatType(message);
 		Matcher matcher = null;

@@ -9,11 +9,7 @@ import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import pw.ipex.plex.Plex;
 import pw.ipex.plex.ci.PlexCommandListener;
-import pw.ipex.plex.core.PlexCore;
-import pw.ipex.plex.core.PlexCoreChatRegex;
-import pw.ipex.plex.core.PlexCoreLobbyType;
-import pw.ipex.plex.core.PlexCoreUtils;
-import pw.ipex.plex.core.PlexCoreValue;
+import pw.ipex.plex.core.*;
 import pw.ipex.plex.mod.PlexModBase;
 
 public class PlexHideStreamMod extends PlexModBase {
@@ -89,49 +85,61 @@ public class PlexHideStreamMod extends PlexModBase {
 		if (!PlexCoreUtils.isChatMessage(e.type)) {
 			return;
 		}
-		String message = PlexCoreUtils.condenseChatAmpersandFilter(e.message.getFormattedText());
-		String potentialType = PlexCoreChatRegex.determinePotentialChatType(message);
-		List<String> potentialCi = PlexCoreChatRegex.determineRegularMessageData(message);
+		String message = PlexCoreUtils.condenseChatFilter(e.message.getFormattedText());
+		String ampMessage = PlexCoreUtils.condenseChatAmpersandFilter(e.message.getFormattedText());
+		PlexCoreChatRegexEntry entry = PlexCoreChatRegex.getEntryMatchingText(message);
+		String potentialType = "";
+		Boolean isOwnPlayer = false;
+		if (entry != null) {
+			potentialType = entry.entryName;
+			if (entry.hasField("author")) {
+				isOwnPlayer = PlexCore.getPlayerIGN().equals(entry.getField(message, "author"));
+			}
+		}
+
 		String min = PlexCoreUtils.minimalize(e.message.getFormattedText());
-		Boolean potentialMps = (potentialType.equals("player_mps") && this.mpsSupport.booleanValue);
-		Boolean isOwnPlayer = PlexCoreChatRegex.compare(potentialCi, "ign", PlexCore.getPlayerIGN());
+
 		//PlexCoreUtils.chatAddMessage(potentialType);
 		if (hidePlayerChat.booleanValue) {
-			if (!isOwnPlayer && (potentialType.equals("player") || potentialMps)) {
+			if (!isOwnPlayer && (potentialType.equals("player_chat"))) {
 				e.setCanceled(true);
 				return;
 			}
 		}
 		if (hidePartyChat.booleanValue) {
-			if (!isOwnPlayer && (potentialType.equals("party"))) {
+			if (!isOwnPlayer && (potentialType.equals("party_chat"))) {
 				e.setCanceled(true);
 				return;
 			}
 		}
 		if (hideTeamChat.booleanValue) {
-			if (!isOwnPlayer && (potentialType.equals("team"))) {
+			if (!isOwnPlayer && (potentialType.equals("team_chat"))) {
 				e.setCanceled(true);
 				return;
 			}
 		}
 		if (lobbyFiltrationLevel.integerValue >= 1) {
-			if (message.startsWith("&9Treasure>") && !message.startsWith("&9Treasure> &e" + PlexCore.getPlayerIGN())) {
+			if (ampMessage.startsWith("&9Treasure>") && !ampMessage.startsWith("&9Treasure> &e" + PlexCore.getPlayerIGN())) {
 				e.setCanceled(true);
 				return;
 			}
-			if (message.toLowerCase().startsWith("&2&lcarl the creeper>")) {
+			if (ampMessage.toLowerCase().startsWith("&2&lcarl the creeper>")) {
 				e.setCanceled(true);
 				return;
 			}
 		}
 		if (lobbyFiltrationLevel.integerValue >= 2) {
-			if (message.startsWith("&9Stats Manager>")) {
+			if (ampMessage.startsWith("&9Stats Manager>")) {
+				e.setCanceled(true);
+				return;
+			}
+			if (ampMessage.startsWith("&9Friends> &7You have &e") && ampMessage.toLowerCase().contains("pending friend requests")) {
 				e.setCanceled(true);
 				return;
 			}
 		}
 		if (hideCommunityInvites.booleanValue) {
-			if (message.startsWith("&9Communities> &7You have been invited to join &e") && message.trim().endsWith("&7 communities!")) {
+			if (ampMessage.startsWith("&9Communities> &7You have been invited to join &e") && ampMessage.trim().endsWith("&7 communities!")) {
 				e.setCanceled(true);
 				return;
 			}
@@ -147,7 +155,7 @@ public class PlexHideStreamMod extends PlexModBase {
 					this.adBlockPadding = false;
 				}
 			}
-			else if (potentialType.equals("unknown") || (potentialMps)) {
+			else if (entry == null) {
 				for (Pattern pat : adPatterns) {
 					Matcher m = pat.matcher(min);
 					if (m.find()) {

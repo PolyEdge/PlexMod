@@ -196,18 +196,23 @@ public final class PlexMessagingUIMessageWindow extends GuiScreen {
 			for (String line : message.content.split("\n")) {
 				textLinesSplit.add(line);
 			}
+			int charPos = -1;
+			List<Integer> lineCharPos = new ArrayList<>(); // dont kill me for using parallel lists pls thanks
 			for (String line : textLinesSplit) {
+				charPos++; // account for newline
 				List<String> textWrapLines = PlexCoreRenderUtils.textWrapScaledString(line, this.getMaxChatMessageWidth() - (this.getXPaddingByScaledTextHeight(Plex.minecraft.fontRendererObj.FONT_HEIGHT, this.messageTextScale) * 2) - playerHeadExtra, this.messageTextScale);
 				for (String wrapLine : textWrapLines) {
 					textLines.add(wrapLine);
+					lineCharPos.add(charPos);
+					charPos += wrapLine.length();
 				}
 			}
 
 			int y = authorExtra;
-			for (String line : textLines) {
-				int lineSize = PlexCoreRenderUtils.calculateScaledStringWidth(line, this.messageTextScale); // text width
+			for (int lineNo = 0; lineNo < textLines.size(); lineNo++) {
+				int lineSize = PlexCoreRenderUtils.calculateScaledStringWidth(textLines.get(lineNo), this.messageTextScale); // text width
 				lineSize += (this.getXPaddingByScaledTextHeight(Plex.minecraft.fontRendererObj.FONT_HEIGHT, this.messageTextScale) * 2); // padding
-				renderData.addTextLine(line, this.messageTextScale, this.getXPaddingByScaledTextHeight(Plex.minecraft.fontRendererObj.FONT_HEIGHT, this.messageTextScale) + (message.position == message.POSITION_LEFT ? playerHeadExtra : 0), y + this.getYPaddingByScaledTextHeight(Plex.minecraft.fontRendererObj.FONT_HEIGHT, this.messageTextScale), lineSize, message.getColour());
+				renderData.addTextLine(textLines.get(lineNo), this.messageTextScale, this.getXPaddingByScaledTextHeight(Plex.minecraft.fontRendererObj.FONT_HEIGHT, this.messageTextScale) + (message.position == message.POSITION_LEFT ? playerHeadExtra : 0), y + this.getYPaddingByScaledTextHeight(Plex.minecraft.fontRendererObj.FONT_HEIGHT, this.messageTextScale), lineSize, message.getColour(), lineCharPos.get(lineNo));
 				if (lineSize > backdropWidth) {
 					backdropWidth = lineSize;
 				}
@@ -466,12 +471,19 @@ public final class PlexMessagingUIMessageWindow extends GuiScreen {
 			int lineHeight = line.getHeight();
 			int wordSpaceWidth = PlexCoreRenderUtils.calculateScaledStringWidth(" ", line.scale);
 			int wordX = lineX;
-			for (String word : line.text.split(" ")) {
-				int wordWidth = PlexCoreRenderUtils.calculateScaledStringWidth(word, line.scale);
+			String builtLine = "";
+			int offset;
+			for (Character letter : line.text.toCharArray()) {
+				builtLine += letter.toString();
+				offset = builtLine.length() - 1;
+				int wordWidth = PlexCoreRenderUtils.calculateScaledStringWidth(builtLine, line.scale);
 				if (mouseX > wordX && mouseY > lineY && mouseX < wordX + wordWidth && mouseY < lineY + lineHeight) {
-					return hoverState.setSelectedWord(word).setSelectedLine(line);
+					if (line.stringOffset != -1) {
+						hoverState.setHoveredGlobalStringOffset(line.stringOffset + offset);
+					}
+					return hoverState.setHoveredLocalStringOffset(offset).setSelectedLine(line);
 				}
-				wordX += wordWidth + wordSpaceWidth;
+				//wordX += wordWidth + wordSpaceWidth;
 			}
 			if (mouseX > lineX && mouseY > lineY && mouseX < lineX + line.width && mouseY < lineY + lineHeight) {
 				hoverState.setMessageSelected(true).setSelectedLine(line);

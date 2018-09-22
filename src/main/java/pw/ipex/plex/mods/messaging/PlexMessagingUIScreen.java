@@ -364,7 +364,13 @@ public class PlexMessagingUIScreen extends PlexUIBase {
 				PlexCoreRenderUtils.drawScaledString(selectedMessage.selectedWord, (float)this.parentUI.zoneStartX() + 5, (float)this.parentUI.zoneStartY() + 10, 0xffffff, 0.5F, false);
 			}
 			if (selectedMessage.messageSelected) {
-				PlexCoreRenderUtils.drawScaledString("ms", (float)this.parentUI.zoneStartX() + 5, (float)this.parentUI.zoneStartY() + 15, 0xffffff, 0.5F, false);
+				PlexCoreRenderUtils.drawScaledString("m", (float)this.parentUI.zoneStartX() + 5, (float)this.parentUI.zoneStartY() + 15, 0xffffff, 0.5F, false);
+			}
+			if (selectedMessage.localStringOffset != null) {
+				PlexCoreRenderUtils.drawScaledString("l " + selectedMessage.localStringOffset, (float)this.parentUI.zoneStartX() + 5, (float)this.parentUI.zoneStartY() + 20, 0xffffff, 0.5F, false);
+			}
+			if (selectedMessage.globalStringOffset != null) {
+				PlexCoreRenderUtils.drawScaledString("g " + selectedMessage.globalStringOffset, (float)this.parentUI.zoneStartX() + 5, (float)this.parentUI.zoneStartY() + 25, 0xffffff, 0.5F, false);
 			}
 		}
 		

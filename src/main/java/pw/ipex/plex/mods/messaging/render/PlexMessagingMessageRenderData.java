@@ -49,6 +49,18 @@ public class PlexMessagingMessageRenderData {
 		textData.colour = colour;
 		this.textLines.add(textData);
 	}
+
+	public void addTextLine(String text, float scale, int x, int y, int width, int colour, int charOffset) {
+		PlexMessagingMessageTextData textData = new PlexMessagingMessageTextData();
+		textData.text = text;
+		textData.scale = scale;
+		textData.x = x;
+		textData.y = y;
+		textData.width = width;
+		textData.colour = colour;
+		textData.stringOffset = charOffset;
+		this.textLines.add(textData);
+	}
 	
 	public int getXPosition(int startX, int endX) {
 		if (this.relativeX == null) {
