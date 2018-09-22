@@ -2,14 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="6ce1a131-a8c5-4525-a913-2a63c964dcea" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/core/PlexCoreChatRegex.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/core/PlexCoreChatRegex.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/developmentmod/PlexDevelopmentCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/developmentmod/PlexDevelopmentCommand.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/hidestream/PlexHideStreamMod.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/hidestream/PlexHideStreamMod.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/messaging/PlexMessagingUIMessageWindow.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/messaging/PlexMessagingUIMessageWindow.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/messaging/PlexMessagingUIScreen.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/messaging/PlexMessagingUIScreen.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/messaging/render/PlexMessagingMessageHoverState.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/messaging/render/PlexMessagingMessageHoverState.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/messaging/render/PlexMessagingMessageRenderData.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/messaging/render/PlexMessagingMessageRenderData.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/messaging/render/PlexMessagingMessageTextData.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/messaging/render/PlexMessagingMessageTextData.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/hidestream/PlexHideStreamUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/hidestream/PlexHideStreamUI.java" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/.gradle/" />
     <ignored path="$PROJECT_DIR$/build/" />
@@ -58,23 +52,23 @@
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
-          <entry key="java" value="179" />
+          <entry key="java" value="181" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
-          <entry key="JAVA" value="179" />
+          <entry key="JAVA" value="181" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="dummy" value="53" />
-          <entry key="java" value="31669" />
+          <entry key="java" value="31757" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="JAVA" value="31669" />
+          <entry key="JAVA" value="31757" />
           <entry key="PLAIN_TEXT" value="53" />
         </counts>
       </usages-collector>
@@ -94,15 +88,6 @@
                 <element signature="e#11412#11413#0" expanded="true" />
                 <element signature="e#11464#11465#0" expanded="true" />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/hidestream/PlexHideStreamMod.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1693">
-              <caret line="143" column="23" lean-forward="true" selection-start-line="143" selection-start-column="23" selection-end-line="143" selection-end-column="23" />
             </state>
           </provider>
         </entry>
@@ -140,11 +125,20 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/messaging/PlexMessagingUIMessageWindow.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="499">
+            <state relative-caret-position="295">
               <caret line="484" column="17" lean-forward="true" selection-start-line="484" selection-start-column="17" selection-end-line="484" selection-end-column="17" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/hidestream/PlexHideStreamMod.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="537">
+              <caret line="185" column="89" lean-forward="true" selection-start-line="185" selection-start-column="89" selection-end-line="185" selection-end-column="89" />
             </state>
           </provider>
         </entry>
@@ -827,7 +821,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/src/main/java/pw/ipex/plex/commandqueue/PlexQueueCommand.java" />
         <option value="$PROJECT_DIR$/src/main/java/pw/ipex/plex/commandqueue/PlexCoreCommandQueue.java" />
         <option value="$PROJECT_DIR$/src/main/java/pw/ipex/plex/commandqueue/PlexCommandQueueDelaySet.java" />
         <option value="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/messaging/PlexMessagingChatMessageConstructor.java" />
@@ -870,7 +863,6 @@
         <option value="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/richpresence/PlexRichPresenceUI.java" />
         <option value="$PROJECT_DIR$/src/main/java/pw/ipex/plex/commandqueue/PlexCommandQueueManager.java" />
         <option value="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/autofriend/PlexAutoFriendMod.java" />
-        <option value="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/hidestream/PlexHideStreamMod.java" />
         <option value="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/developmentmod/PlexDevelopmentCommand.java" />
         <option value="$PROJECT_DIR$/src/main/java/pw/ipex/plex/core/PlexCoreChatRegex.java" />
         <option value="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/messaging/render/PlexMessagingMessageRenderData.java" />
@@ -878,6 +870,8 @@
         <option value="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/messaging/render/PlexMessagingMessageTextData.java" />
         <option value="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/messaging/PlexMessagingUIScreen.java" />
         <option value="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/messaging/PlexMessagingUIMessageWindow.java" />
+        <option value="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/hidestream/PlexHideStreamUI.java" />
+        <option value="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/hidestream/PlexHideStreamMod.java" />
       </list>
     </option>
   </component>
@@ -1113,7 +1107,7 @@
   </component>
   <component name="PropertiesComponent">
     <property name="SearchEverywhereHistoryKey" value="setPriority&#9;PSI&#9;JAVA://pw.ipex.plex.commandqueue.PlexCommandQueue#setPriority" />
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1537652864973" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1537654211247" />
     <property name="project.structure.last.edited" value="SDKs" />
     <property name="project.structure.proportion" value="0.0" />
     <property name="project.structure.side.proportion" value="0.2" />
@@ -1197,13 +1191,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/main/java/pw/ipex/plex/ui/PlexUITextField.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="391">
-          <caret line="25" selection-start-line="25" selection-end-line="43" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/messaging/PlexMessagingMessage.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-1122">
@@ -1542,13 +1529,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/hidestream/PlexHideStreamMod.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1693">
-          <caret line="143" column="23" lean-forward="true" selection-start-line="143" selection-start-column="23" selection-end-line="143" selection-end-column="23" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/pw/ipex/plex/core/PlexCoreChatRegex.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-17">
@@ -1594,20 +1574,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/pw/ipex/plex/core/PlexCoreListeners.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="295">
-          <caret line="132" column="85" selection-start-line="132" selection-start-column="85" selection-end-line="132" selection-end-column="85" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#8591#8592#0" expanded="true" />
-            <element signature="e#8659#8660#0" expanded="true" />
-            <element signature="e#11412#11413#0" expanded="true" />
-            <element signature="e#11464#11465#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/messaging/PlexMessagingUIScreen.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="363">
@@ -1624,8 +1590,36 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/messaging/PlexMessagingUIMessageWindow.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="499">
+        <state relative-caret-position="295">
           <caret line="484" column="17" lean-forward="true" selection-start-line="484" selection-start-column="17" selection-end-line="484" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/hidestream/PlexHideStreamUI.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="333">
+          <caret line="68" lean-forward="true" selection-start-line="68" selection-end-line="68" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/pw/ipex/plex/core/PlexCoreListeners.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="295">
+          <caret line="132" column="85" selection-start-line="132" selection-start-column="85" selection-end-line="132" selection-end-column="85" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#8591#8592#0" expanded="true" />
+            <element signature="e#8659#8660#0" expanded="true" />
+            <element signature="e#11412#11413#0" expanded="true" />
+            <element signature="e#11464#11465#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/hidestream/PlexHideStreamMod.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="537">
+          <caret line="185" column="89" lean-forward="true" selection-start-line="185" selection-start-column="89" selection-end-line="185" selection-end-column="89" />
         </state>
       </provider>
     </entry>

@@ -22,11 +22,11 @@ public class PlexHideStreamUI extends PlexUIBase {
 		ui.addElement(new GuiButton(5, pane1Pos + 5, top + 0, paneSize - 10, 20, buttonDisplayString("Player Chat", !PlexCore.getSharedValue("hideStream_hidePlayerChat").booleanValue)));
 		ui.addElement(new GuiButton(6, pane1Pos + 5, top + 23, paneSize - 10, 20, buttonDisplayString("Party Chat", !PlexCore.getSharedValue("hideStream_hidePartyChat").booleanValue)));
 		ui.addElement(new GuiButton(7, pane1Pos + 5, top + 46, paneSize - 10, 20, buttonDisplayString("Team Chat", !PlexCore.getSharedValue("hideStream_hideTeamChat").booleanValue)));
-		ui.addElement(new PlexUISlider(this, 8, pane1Pos + 5, top + 69, paneSize - 10, 20, Float.valueOf(PlexCore.getSharedValue("hideStream_lobbyFiltrationLevel").integerValue) / PlexHideStreamMod.MAX_LOBBY_FILTRATION, filtrationLevelDisplayString()));
-		
+		ui.addElement(new GuiButton(8, pane1Pos + 5, top + 46, paneSize - 10, 20, buttonDisplayString("Community Chat", !PlexCore.getSharedValue("hideStream_hideComChat").booleanValue)));
+
 		ui.addElement(new GuiButton(9, pane2Pos + 5, top + 0, paneSize - 10, 20, buttonDisplayString("Community Invites", !PlexCore.getSharedValue("hideStream_hideInvites").booleanValue)));
 		ui.addElement(new GuiButton(10, pane2Pos + 5, top + 23, paneSize - 10, 20, enabledDisabled("Adblocking", PlexCore.getSharedValue("hideStream_adBlock").booleanValue)));
-		ui.addElement(new GuiButton(11, pane2Pos + 5, top + 46, paneSize - 10, 20, enabledDisabled("MPS Support", PlexCore.getSharedValue("hideStream_mpsSupportEnabled").booleanValue)));
+		ui.addElement(new PlexUISlider(this, 11, pane2Pos + 5, top + 46, paneSize - 10, 20, Float.valueOf(PlexCore.getSharedValue("hideStream_lobbyFiltrationLevel").integerValue) / PlexHideStreamMod.MAX_LOBBY_FILTRATION, filtrationLevelDisplayString()));
 		//ui.addElement(new PlexUISlider(this, 12, pane2Pos + 5, top + 69, paneSize - 10, 20, Float.valueOf(PlexCore.getSharedValue("hideStream_barReductionIndex").integerValue) / PlexHideStreamMod.MAX_BAR_REDUCTION, barReductionDisplayString()));
 
 	}
@@ -52,7 +52,7 @@ public class PlexHideStreamUI extends PlexUIBase {
 	
 	@Override
 	public void uiSliderInteracted(PlexUISlider slider) {
-		if (slider.id == 8) {
+		if (slider.id == 11) {
 			PlexCore.getSharedValue("hideStream_lobbyFiltrationLevel").set(Math.round(slider.sliderValue * PlexHideStreamMod.MAX_LOBBY_FILTRATION));
 			slider.displayString = filtrationLevelDisplayString();
 		}
@@ -81,6 +81,10 @@ public class PlexHideStreamUI extends PlexUIBase {
 			PlexCore.getSharedValue("hideStream_hideTeamChat").set(!PlexCore.getSharedValue("hideStream_hideTeamChat").booleanValue);
 			button.displayString = buttonDisplayString("Team Chat", !PlexCore.getSharedValue("hideStream_hideTeamChat").booleanValue);
 		}
+		if (button.id == 8) {
+			PlexCore.getSharedValue("hideStream_hideComChat").set(!PlexCore.getSharedValue("hideStream_hideComChat").booleanValue);
+			button.displayString = buttonDisplayString("Community Chat", !PlexCore.getSharedValue("hideStream_hideComChat").booleanValue);
+		}
 		if (button.id == 9) {
 			PlexCore.getSharedValue("hideStream_hideInvites").set(!PlexCore.getSharedValue("hideStream_hideInvites").booleanValue);
 			button.displayString = buttonDisplayString("Community Invites", !PlexCore.getSharedValue("hideStream_hideInvites").booleanValue);
@@ -88,10 +92,6 @@ public class PlexHideStreamUI extends PlexUIBase {
 		if (button.id == 10) {
 			PlexCore.getSharedValue("hideStream_adBlock").set(!PlexCore.getSharedValue("hideStream_adBlock").booleanValue);
 			button.displayString = enabledDisabled("[B] Adblocking", PlexCore.getSharedValue("hideStream_adBlock").booleanValue);
-		}
-		if (button.id == 11) {
-			PlexCore.getSharedValue("hideStream_mpsSupportEnabled").set(!PlexCore.getSharedValue("hideStream_mpsSupportEnabled").booleanValue);
-			button.displayString = enabledDisabled("MPS Support", PlexCore.getSharedValue("hideStream_mpsSupportEnabled").booleanValue);
 		}
 	}
 }

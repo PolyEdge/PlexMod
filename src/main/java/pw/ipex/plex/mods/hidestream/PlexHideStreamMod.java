@@ -21,10 +21,10 @@ public class PlexHideStreamMod extends PlexModBase {
 	public PlexCoreValue hidePlayerChat = new PlexCoreValue("hideStream_hidePlayerChat", false);
 	public PlexCoreValue hidePartyChat = new PlexCoreValue("hideStream_hidePartyChat", false);
 	public PlexCoreValue hideTeamChat = new PlexCoreValue("hideStream_hideTeamChat", false);
+	public PlexCoreValue hideComChat = new PlexCoreValue("hideStream_hideComChat", false);
 	public PlexCoreValue lobbyFiltrationLevel = new PlexCoreValue("hideStream_lobbyFiltrationLevel", 0);
 	public PlexCoreValue hideCommunityInvites = new PlexCoreValue("hideStream_hideInvites", false);
 	public PlexCoreValue attemptedAdblocking = new PlexCoreValue("hideStream_adBlock", false);
-	public PlexCoreValue mpsSupport = new PlexCoreValue("hideStream_mpsSupportEnabled", false);
 	public PlexCoreValue barReductionIndex = new PlexCoreValue("hideStream_barReductionIndex", 0);
 	
 	public List<Pattern> adPatterns = new ArrayList<Pattern>();
@@ -60,10 +60,10 @@ public class PlexHideStreamMod extends PlexModBase {
 		this.hidePlayerChat.set(this.modSetting("hide_player_chat", false).getBoolean());
 		this.hidePartyChat.set(this.modSetting("hide_team_chat", false).getBoolean());
 		this.hideTeamChat.set(this.modSetting("hide_team_chat", false).getBoolean());
+		this.hideComChat.set(this.modSetting("hide_community_chat", false).getBoolean());
 		this.lobbyFiltrationLevel.set(this.modSetting("lobby_filtration_level", 0).getInt());
 		this.hideCommunityInvites.set(this.modSetting("hide_community_invites", false).getBoolean());
 		this.attemptedAdblocking.set(this.modSetting("attempted_adblocking", false).getBoolean());
-		this.mpsSupport.set(this.modSetting("mps_support", false).getBoolean());
 		this.barReductionIndex.set(this.modSetting("bar_reduction_index", 0).getInt());
 		this.barReductionIndex.set(0);
 
@@ -114,6 +114,12 @@ public class PlexHideStreamMod extends PlexModBase {
 		}
 		if (hideTeamChat.booleanValue) {
 			if (!isOwnPlayer && (potentialType.equals("team_chat"))) {
+				e.setCanceled(true);
+				return;
+			}
+		}
+		if (hideComChat.booleanValue) {
+			if (!isOwnPlayer && (potentialType.equals("community_chat"))) {
 				e.setCanceled(true);
 				return;
 			}
@@ -180,10 +186,10 @@ public class PlexHideStreamMod extends PlexModBase {
 		this.modSetting("hide_player_chat", false).set(this.hidePlayerChat.booleanValue);
 		this.modSetting("hide_party_chat", false).set(this.hidePartyChat.booleanValue);
 		this.modSetting("hide_team_chat", false).set(this.hideTeamChat.booleanValue);
+		this.modSetting("hide_community_chat", false).set(this.hideComChat.booleanValue);
 		this.modSetting("lobby_filtration_level", 0).set(this.lobbyFiltrationLevel.integerValue);
 		this.modSetting("hide_community_invites", false).set(this.hideCommunityInvites.booleanValue);
 		this.modSetting("attempted_adblocking", false).set(this.attemptedAdblocking.booleanValue);
-		this.modSetting("mps_support", false).set(this.mpsSupport.booleanValue);
 		this.modSetting("bar_reduction_index", 0).set(this.barReductionIndex.integerValue);
 	}
 
