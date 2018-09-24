@@ -217,7 +217,7 @@ public class PlexUIStaticLabel extends GuiScreen {
 	
 	public void drawScreen(int par1, int par2, float par3) {
 		updateLabel();
-		if (!this.visible) {
+		if (!this.visible || this.displayHeight == 0.0F) {
 			return;
 		}
 		int padding = (int)((this.displayHeight * (this.labelPaddingPercent)) / 2.0F);

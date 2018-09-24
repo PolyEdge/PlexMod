@@ -26,6 +26,9 @@ public class PlexUIAutoCompleteItem implements PlexUIScrolledItem {
     }
 
     @Override
+    public void listItemOtherItemClicked() {}
+
+    @Override
     public void listItemSelect() {
         this.softSelected = true;
     }

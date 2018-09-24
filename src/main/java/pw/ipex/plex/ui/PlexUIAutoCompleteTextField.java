@@ -213,9 +213,14 @@ public class PlexUIAutoCompleteTextField {
         return false;
     }
 
-    public void mouseClicked(int par1, int par2, int btn) {
-        this.autoCompleteList.mouseClicked(par1, par2, btn);
-        this.text.mouseClicked(par1, par2, btn);
+    public void mouseClicked(int mouseX, int mouseY, int btn) {
+        if (this.autoCompleteListVisible) {
+            if (!(mouseX >= this.autoCompleteList.startX && mouseY >= this.autoCompleteList.startY - 15 && mouseX <= this.autoCompleteList.endX && mouseY <= this.autoCompleteList.endY + 15)) {
+                this.autoCompleteListVisible = false;
+            }
+        }
+        this.autoCompleteList.mouseClicked(mouseX, mouseY, btn);
+        this.text.mouseClicked(mouseX, mouseY, btn);
     }
 
     public void mouseDragged(int mouseX, int mouseY, int clickedMouseButton, long timeSinceLastClick) {

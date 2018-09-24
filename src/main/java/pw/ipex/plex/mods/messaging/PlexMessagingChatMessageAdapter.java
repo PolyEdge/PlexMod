@@ -25,6 +25,7 @@ public class PlexMessagingChatMessageAdapter {
 	public boolean requiresChatOpen = false;
 	public boolean sendToSelectedChannel = false;
 	public boolean enableFormatRegions = false;
+	public boolean updateRecipientEntityNameCase = false;
 	public List<PlexMessagingMessageEventHandler> callbacks = new ArrayList<PlexMessagingMessageEventHandler>();
 	public List<String> conditions = new ArrayList<String>();
 	public int defaultMessageType = 1;
@@ -85,6 +86,11 @@ public class PlexMessagingChatMessageAdapter {
 		this.recipientEntityName = recipient;
 		return this;
 	}
+
+	public PlexMessagingChatMessageAdapter setUpdatesRecipientEntityNameCase(boolean update) {
+		this.updateRecipientEntityNameCase = update;
+		return this;
+	}
 	
 	public PlexMessagingChatMessageAdapter setDefaultMessageType(int defaultType) {
 		this.defaultMessageType = defaultType;
@@ -132,7 +138,7 @@ public class PlexMessagingChatMessageAdapter {
 	}
 	
 	public String getMessageTag(String key, String text) {
-		PlexCoreUtils.chatAddMessage(key + "> " + text + " > " + this.messageTags.get(key) + " > " + this.formatStringWithGroups(this.messageTags.get(key), text));
+		//PlexCoreUtils.chatAddMessage(key + "> " + text + " > " + this.messageTags.get(key) + " > " + this.formatStringWithGroups(this.messageTags.get(key), text));
 		return this.formatStringWithGroups(this.messageTags.get(key), text);
 	}
 	

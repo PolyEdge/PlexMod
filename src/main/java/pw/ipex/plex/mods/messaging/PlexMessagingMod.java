@@ -171,6 +171,9 @@ public class PlexMessagingMod extends PlexModBase {
 			channelName = "PM." + channelName;
 		}
 		PlexMessagingChannelBase channel = getChannel(channelName, messageAdapter.getChannelClass(), recipientEntityName);
+		if (!channel.recipientEntityName.equals(recipientEntityName) && channel.recipientEntityName.equalsIgnoreCase(recipientEntityName) && messageAdapter.updateRecipientEntityNameCase) {
+			channel.recipientEntityName = recipientEntityName;
+		}
 		messageAdapter.applyChannelTags(chatMessage, channel);
 		if (!messageAdapter.meetsRequirements(PlexMessagingUIScreen.isChatOpen(), PlexMessagingMod.channelManager.selectedChannel, channel)) {
 			return null;
@@ -183,11 +186,11 @@ public class PlexMessagingMod extends PlexModBase {
 		return message;
 	}
 	
-	public PlexMessagingChannelBase getChannel(String name, Class<? extends PlexMessagingChannelBase> type) {
-		return this.getChannel(name, type, null);
+	public static PlexMessagingChannelBase getChannel(String name, Class<? extends PlexMessagingChannelBase> type) {
+		return getChannel(name, type, null);
 	}
 	
-	public PlexMessagingChannelBase getChannel(String name, Class<? extends PlexMessagingChannelBase> type, String recipientEntityName) {
+	public static PlexMessagingChannelBase getChannel(String name, Class<? extends PlexMessagingChannelBase> type, String recipientEntityName) {
 		if (recipientEntityName == null) {
 			recipientEntityName = "";
 		}

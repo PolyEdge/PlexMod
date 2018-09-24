@@ -49,6 +49,10 @@ public class PlexCoreRenderUtils extends GuiScreen {
 	public int calculateScaledStringWidth(String text, float scale) {
 		return (int)(Plex.minecraft.fontRendererObj.getStringWidth(text) * scale);
 	}
+
+	public int calculateScaledStringHeight(float scale) {
+		return (int) (scale * Plex.minecraft.fontRendererObj.FONT_HEIGHT);
+	}
 	
 	public String trimScaledTextToWidth(String text, int width, float scale) {
 		GL11.glPushMatrix();
@@ -64,6 +68,46 @@ public class PlexCoreRenderUtils extends GuiScreen {
 		List<String> outputText = Plex.minecraft.fontRendererObj.listFormattedStringToWidth(text, width);
 		GL11.glPopMatrix();	
 		return outputText;
+	}
+
+	public int drawCenteredTextWrapScaledString(String text, int x, int y, int width, float scale, int colour, int lineSpacing) {
+		GL11.glPushMatrix();
+		GL11.glScaled(scale, scale, scale);
+		List<String> outputText = Plex.minecraft.fontRendererObj.listFormattedStringToWidth(text, width);
+		int maxWidth = 0;
+		for (String line : outputText) {
+			int length = Plex.minecraft.fontRendererObj.getStringWidth(line);
+			if (length > maxWidth) {
+				maxWidth = length;
+			}
+		}
+		int startX = (int) ((x / scale) - (maxWidth / 2));
+		int yPos = 0;
+		for (String line : outputText) {
+			Plex.minecraft.fontRendererObj.drawString(line, startX, (int) (y / scale) + yPos, colour);
+			yPos += Plex.minecraft.fontRendererObj.FONT_HEIGHT + lineSpacing;
+		}
+		GL11.glPopMatrix();
+		return yPos;
+	}
+
+	public int calculateCenteredTextWrapScaledStringHeight(String text, int width, float scale, int lineSpacing) {
+		GL11.glPushMatrix();
+		GL11.glScaled(scale, scale, scale);
+		List<String> outputText = Plex.minecraft.fontRendererObj.listFormattedStringToWidth(text, width);
+		int maxWidth = 0;
+		for (String line : outputText) {
+			int length = Plex.minecraft.fontRendererObj.getStringWidth(line);
+			if (length > maxWidth) {
+				maxWidth = length;
+			}
+		}
+		int yPos = 0;
+		for (String line : outputText) {
+			yPos += Plex.minecraft.fontRendererObj.FONT_HEIGHT + lineSpacing;
+		}
+		GL11.glPopMatrix();
+		return yPos;
 	}
 
 	public void drawScaledXImage(ResourceLocation image, int x, int y, int width, float offsetX, float offsetY) {

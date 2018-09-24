@@ -297,7 +297,7 @@ public class PlexUIScrolledItemList extends GuiScreen {
 	
 			if (itemText != null) {
 				String finalText = Plex.minecraft.fontRendererObj.trimStringToWidth(itemText, this.getEndXWithScrollbar() - this.paddingX * 2);
-				Plex.renderUtils.drawScaledStringLeftSide(finalText, this.startX + this.paddingX, itemYposition + (heightOrDefault(item) - (Plex.minecraft.fontRendererObj.FONT_HEIGHT / 2)), itemForegroundColour, 1.0F);
+				Plex.renderUtils.drawScaledStringLeftSide(finalText, this.startX + this.paddingX, itemYposition + ((heightOrDefault(item) / 2) - (Plex.minecraft.fontRendererObj.FONT_HEIGHT / 2)), itemForegroundColour, 1.0F);
 			}
 			else {
 				item.listItemRenderText(this.startX + this.paddingX, itemYposition, this.getSizeXWithScrollbar() - this.paddingX * 2, heightOrDefault(item), isSelected, isMouseOver);
@@ -316,6 +316,11 @@ public class PlexUIScrolledItemList extends GuiScreen {
 		
 		PlexUIScrolledItem hoverItem = this.getMouseOverItem(par1, par2);
 		if (hoverItem != null) {
+			for (PlexUIScrolledItem item : this.items) {
+				if (item != hoverItem) {
+					item.listItemOtherItemClicked();
+				}
+			}
 			hoverItem.listItemSelect();
 			hoverItem.listItemClick();
 		}

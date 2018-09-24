@@ -29,6 +29,7 @@ public class PlexCoreChatRegex {
 	public static String MATCH_PARTY_LEAVE = "^&9Party> &7You have left your party\\.?$";
 	public static String MATCH_PARTY_DECLINED = "^&9Party> &e([a-zA-Z0-9_]+)&7 has denied your invite\\.?$";
 	public static String MATCH_PARTY_DECLINE = "^&9Party> &7You have denied your invite to &e([a-zA-Z0-9_]+)&7's party\\.?$";
+	public static String MATCH_PARTY_OFFLINE = "^&9Party> &7Could not locate &e([a-zA-Z0-9_]+)&?7?\\.?$";
 	
 	public static String MATCH_DM_PLAYER_OFFLINE = "^&9Online Player Search> &e0&7 matches for \\[&e([A-Za-z0-9_]+)&7]\\.?$";
 
@@ -58,9 +59,8 @@ public class PlexCoreChatRegex {
 		addEntry("party_leave", MATCH_PARTY_LEAVE, "party");
 		addEntry("party_declined", MATCH_PARTY_DECLINED, "party").addField(1, "ign");
 		addEntry("party_decline", MATCH_PARTY_DECLINE, "party");
-		
-		
-		
+		addEntry("party_offline", MATCH_PARTY_OFFLINE, "party").addField(1, "ign");
+
 		addEntry("direct_message_player_offline", MATCH_DM_PLAYER_OFFLINE, "direct_message").addField(1, "destination");
 		
 	}

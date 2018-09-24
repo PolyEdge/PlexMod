@@ -13,6 +13,9 @@ import pw.ipex.plex.Plex;
 import pw.ipex.plex.core.PlexCore;
 
 import pw.ipex.plex.core.PlexCoreUtils;
+import pw.ipex.plex.mods.messaging.PlexMessagingChannelClassWrapper;
+import pw.ipex.plex.mods.messaging.PlexMessagingChannelManager;
+import pw.ipex.plex.mods.messaging.PlexMessagingChatMessageConstructor;
 import pw.ipex.plex.mods.messaging.PlexMessagingMod;
 import pw.ipex.plex.mods.messaging.render.PlexMessagingMessageHoverState;
 import pw.ipex.plex.ui.*;
@@ -34,6 +37,7 @@ public class PlexMessagingUIScreen extends PlexUIBase {
 	public PlexUIStaticLabel emoteTooltip;
 	public GuiButton sendButton;
 	public PlexUIScaledButton newConversationButton;
+	public PlexMessagingUICreateNewChatWindow newConversationWindow;
 
 	public Boolean isQuickChat = false;
 	//public Character lastKeyTyped = null;
@@ -118,6 +122,10 @@ public class PlexMessagingUIScreen extends PlexUIBase {
 		this.chatWindow.paddingTop = 5;
 		this.chatWindow.paddingBottom = 6;
 		this.chatWindow.hoverEventsEnabled = true;
+
+		this.newConversationWindow = new PlexMessagingUICreateNewChatWindow(this.parentUI.zoneStartX(), this.parentUI.zoneStartY() + 12, this.parentUI.zoneEndX() - this.getContactsPaneSize(), this.parentUI.zoneEndY() - 35);
+		this.newConversationWindow.headerText = "Welcome to the Chat";
+		this.newConversationWindow.setItems(new ArrayList<>(PlexMessagingChatMessageConstructor.groupClassMapping.values()));
 		
 		this.channelProgressBar = new PlexUIProgressBar(this.parentUI.zoneStartX() + 5, this.parentUI.zoneEndY() - 6, this.parentUI.horizontalPixelCount() - (getContactsPaneSize()) - 25 - 5, 1);
 		this.channelProgressBar.setBarSpeed(250);
@@ -128,8 +136,9 @@ public class PlexMessagingUIScreen extends PlexUIBase {
 		this.channelStatusLabel = new PlexUIStaticLabel(this.parentUI.zoneStartX() + 2, this.parentUI.zoneStartY() - 12, 12);
 		this.channelStatusLabel.setText("", true);
 
-		this.emoteTooltip = new PlexUIStaticLabel(this.parentUI.zoneStartX() + 8, this.parentUI.zoneEndY() - 12, 12);
+		this.emoteTooltip = new PlexUIStaticLabel(this.parentUI.zoneStartX() + 8, this.parentUI.zoneEndY() - 40, 12);
 		this.emoteTooltip.setText("", true);
+		this.emoteTooltip.setTextColour(0xff5555, true);
 		
 		this.sendButton = new GuiButton(10, startX + sizeX + 3, bottom - 22, 20, 20, ">");
 		this.parentUI.addElement(this.sendButton); //String.valueOf((char) 8594))
@@ -157,7 +166,7 @@ public class PlexMessagingUIScreen extends PlexUIBase {
 	@Override
 	public void uiButtonClicked(GuiButton button) {
 		if (button.id == 10 && PlexMessagingMod.channelManager.selectedChannel != null) {
-			this.sendMessage();
+			this.handleSendButton();
 		}
 		if (button.id == 11 && PlexMessagingMod.channelManager.selectedChannel != null) {
 			PlexMessagingMod.channelManager.setSelectedChannel(null);
@@ -174,6 +183,7 @@ public class PlexMessagingUIScreen extends PlexUIBase {
 		this.contactsList.mouseClicked(par1, par2, btn);
 		this.chatWindow.mouseClicked(par1, par2, btn);
 		this.searchBox.mouseClicked(par1, par2, btn);
+		this.newConversationWindow.mouseClicked(par1, par2, btn);
 	}
 	
 	@Override
@@ -181,6 +191,7 @@ public class PlexMessagingUIScreen extends PlexUIBase {
 		this.contactsList.mouseDragged(mouseX, mouseY, clickedMouseButton, timeSinceLastClick);
 		this.chatWindow.mouseDragged(mouseX, mouseY, clickedMouseButton, timeSinceLastClick);
 		this.messageField.mouseDragged(mouseX, mouseY, clickedMouseButton, timeSinceLastClick);
+		this.newConversationWindow.mouseDragged(mouseX, mouseY, clickedMouseButton, timeSinceLastClick);
 	}
 	
 	@Override
@@ -188,6 +199,7 @@ public class PlexMessagingUIScreen extends PlexUIBase {
 		this.contactsList.mouseReleased(mouseX, mouseY, state);
 		this.chatWindow.mouseReleased(mouseX, mouseY, state);
 		this.messageField.mouseReleased(mouseX, mouseY, state);
+		this.newConversationWindow.mouseReleased(mouseX, mouseY, state);
 	}
 	
 	@Override
@@ -198,9 +210,12 @@ public class PlexMessagingUIScreen extends PlexUIBase {
 	
 	@Override 
 	public void handleMouseInput(int x, int y) {
-		this.contactsList.handleMouseInput(x, y);
-		this.chatWindow.handleMouseInput(x, y);
 		this.messageField.handleMouseInput(x, y);
+		this.contactsList.handleMouseInput(x, y);
+		this.newConversationWindow.handleMouseInput(x, y);
+		if (!this.messageField.getAutoCompleteListVisible()) {
+			this.chatWindow.handleMouseInput(x, y);
+		}
 	}
 	
 	@Override
@@ -222,11 +237,7 @@ public class PlexMessagingUIScreen extends PlexUIBase {
 			}
 		}
 		if (((Integer) par2).equals(28)) {
-			this.sendMessage();
-			this.searchBox.text.setFocused(false);
-			if (this.isQuickChat) {
-				PlexCore.displayUIScreen(null);
-			}
+			this.handleSendButton();
 			return;
 		}
 
@@ -236,7 +247,6 @@ public class PlexMessagingUIScreen extends PlexUIBase {
 	
 	@Override
 	public void drawScreen(int par1, int par2, float par3) {
-		this.sendButton.enabled = this.isSelectedChannelReady();
 		if (this.searchBox.text.isFocused()) {
 			this.messageField.text.setCanLoseFocus(true);
 			this.messageField.text.setFocused(false);
@@ -249,6 +259,7 @@ public class PlexMessagingUIScreen extends PlexUIBase {
 		this.contactsList.searchText = this.searchBox.text.getText();
 		
 		if (PlexMessagingMod.channelManager.selectedChannel != null) {
+			this.newConversationWindow.isEnabled = false;
 			this.newConversationButton.enabled = true;
 			PlexMessagingMod.channelManager.selectedChannel.readingChannel();
 			if (!this.isSelectedChannelReady()) { //&& PlexMessagingMod.channelManager.selectedChannel.awaitingReady) {
@@ -258,6 +269,7 @@ public class PlexMessagingUIScreen extends PlexUIBase {
 					this.channelStatusLabel.setPosition(this.parentUI.zoneStartX() + 2, this.parentUI.zoneStartY() + 2, false);
 					this.channelStatusLabel.setTextColour(this.progressColourUnresponsive, true);
 					this.contactsList.setEnabled(true);
+					this.sendButton.enabled = false;
 				}
 				else {
 					this.channelProgressBar.setColour(this.progressColourLoading);
@@ -265,6 +277,7 @@ public class PlexMessagingUIScreen extends PlexUIBase {
 					this.channelStatusLabel.setPosition(this.parentUI.zoneStartX() + 2, this.parentUI.zoneStartY() + 2, false);
 					this.channelStatusLabel.setTextColour(this.progressColourLoading, true);
 					this.contactsList.setEnabled(false);
+					this.sendButton.enabled = false;
 				}
 			}
 			else if (this.isSelectedChannelErrored()) {
@@ -273,12 +286,14 @@ public class PlexMessagingUIScreen extends PlexUIBase {
 				this.channelStatusLabel.setPosition(this.parentUI.zoneStartX() + 2, this.parentUI.zoneStartY() + 2, false);
 				this.channelStatusLabel.setTextColour(this.progressColourUnresponsive, true);
 				this.contactsList.setEnabled(true);
+				this.sendButton.enabled = false;
 			}
 			else if (this.isSelectedChannelReady()) {
 				this.contactsList.setEnabled(true);
 				this.channelProgressBar.setColour(progressColourReady);
 				this.channelStatusLabel.setText("Channel Ready!");
 				this.channelStatusLabel.setTextColour(this.progressColourReady, true);
+				this.sendButton.enabled = true;
 				if (Minecraft.getSystemTime() > PlexMessagingMod.channelManager.selectedChannel.readyTime + 500L) {
 					this.channelStatusLabel.setPosition(this.parentUI.zoneStartX() + 2, this.parentUI.zoneStartY() - 12, false);
 				}
@@ -287,6 +302,7 @@ public class PlexMessagingUIScreen extends PlexUIBase {
 				}
 			}
 			else {
+				this.sendButton.enabled = false;
 				this.contactsList.setEnabled(true);
 				this.channelStatusLabel.setPosition(this.parentUI.zoneStartX() + 2, this.parentUI.zoneStartY() - 12, false);
 				this.channelStatusLabel.setText("");
@@ -296,6 +312,7 @@ public class PlexMessagingUIScreen extends PlexUIBase {
 		}
 		else {
 			this.newConversationButton.enabled = false;
+			this.newConversationWindow.isEnabled = true;
 			this.contactsList.setEnabled(true);
 			this.channelStatusLabel.setPosition(this.parentUI.zoneStartX() + 2, this.parentUI.zoneStartY() - 12, false);
 			this.channelStatusLabel.setText("");
@@ -353,28 +370,30 @@ public class PlexMessagingUIScreen extends PlexUIBase {
 		this.messageField.drawScreen(par1, par2, par3);
 		this.searchBox.drawScreen(par1, par2, par3);
 		this.channelProgressBar.drawScreen(par1, par2, par3);
+		this.newConversationWindow.drawScreen(par1, par2, par3);
+		this.emoteTooltip.drawScreen(par1, par2, par3);
 		
 		
-		
-		
-		PlexMessagingMessageHoverState selectedMessage = this.chatWindow.getMouseOverMessage(par1, par2);
-		if (selectedMessage != null) {
-			if (selectedMessage.selectedLine != null) {
-				Plex.renderUtils.drawScaledString(selectedMessage.selectedLine.text, (float)this.parentUI.zoneStartX() + 5, (float)this.parentUI.zoneStartY() + 5, 0xffffff, 0.5F, false);
-			}
-			if (selectedMessage.selectedWord != null) {
-				Plex.renderUtils.drawScaledString(selectedMessage.selectedWord, (float)this.parentUI.zoneStartX() + 5, (float)this.parentUI.zoneStartY() + 10, 0xffffff, 0.5F, false);
-			}
-			if (selectedMessage.messageSelected) {
-				Plex.renderUtils.drawScaledString("m", (float)this.parentUI.zoneStartX() + 5, (float)this.parentUI.zoneStartY() + 15, 0xffffff, 0.5F, false);
-			}
-			if (selectedMessage.localStringOffset != null) {
-				Plex.renderUtils.drawScaledString("l " + selectedMessage.localStringOffset, (float)this.parentUI.zoneStartX() + 5, (float)this.parentUI.zoneStartY() + 20, 0xffffff, 0.5F, false);
-			}
-			if (selectedMessage.globalStringOffset != null) {
-				Plex.renderUtils.drawScaledString("g " + selectedMessage.globalStringOffset, (float)this.parentUI.zoneStartX() + 5, (float)this.parentUI.zoneStartY() + 25, 0xffffff, 0.5F, false);
-				Plex.renderUtils.drawScaledString("\"" + selectedMessage.message.getBreakdownItemByIndex(selectedMessage.globalStringOffset) + "\"", (float)this.parentUI.zoneStartX() + 5, (float)this.parentUI.zoneStartY() + 30, 0xffffff, 0.5F, false);
+		if (false) {
+			PlexMessagingMessageHoverState selectedMessage = this.chatWindow.getMouseOverMessage(par1, par2);
+			if (selectedMessage != null) {
+				if (selectedMessage.selectedLine != null) {
+					Plex.renderUtils.drawScaledString(selectedMessage.selectedLine.text, (float)this.parentUI.zoneStartX() + 5, (float)this.parentUI.zoneStartY() + 5, 0xffffff, 0.5F, false);
+				}
+				if (selectedMessage.selectedWord != null) {
+					Plex.renderUtils.drawScaledString(selectedMessage.selectedWord, (float)this.parentUI.zoneStartX() + 5, (float)this.parentUI.zoneStartY() + 10, 0xffffff, 0.5F, false);
+				}
+				if (selectedMessage.messageSelected) {
+					Plex.renderUtils.drawScaledString("m", (float)this.parentUI.zoneStartX() + 5, (float)this.parentUI.zoneStartY() + 15, 0xffffff, 0.5F, false);
+				}
+				if (selectedMessage.localStringOffset != null) {
+					Plex.renderUtils.drawScaledString("l " + selectedMessage.localStringOffset, (float)this.parentUI.zoneStartX() + 5, (float)this.parentUI.zoneStartY() + 20, 0xffffff, 0.5F, false);
+				}
+				if (selectedMessage.globalStringOffset != null) {
+					Plex.renderUtils.drawScaledString("g " + selectedMessage.globalStringOffset, (float)this.parentUI.zoneStartX() + 5, (float)this.parentUI.zoneStartY() + 25, 0xffffff, 0.5F, false);
+					Plex.renderUtils.drawScaledString("\"" + selectedMessage.message.getBreakdownItemByIndex(selectedMessage.globalStringOffset) + "\"", (float)this.parentUI.zoneStartX() + 5, (float)this.parentUI.zoneStartY() + 30, 0xffffff, 0.5F, false);
 
+				}
 			}
 		}
 		
@@ -393,6 +412,29 @@ public class PlexMessagingUIScreen extends PlexUIBase {
 	public PlexMessagingUIScreen setQuickChat() {
 		this.isQuickChat = true;
 		return this;
+	}
+
+	public void handleSendButton() {
+		if (PlexMessagingMod.channelManager.selectedChannel == null) {
+			PlexMessagingChannelClassWrapper selectedType = this.newConversationWindow.getSelectedItem();
+			if (selectedType == null) {
+				return;
+			}
+			String text = this.messageField.text.getText();
+			String channelName = selectedType.getChannelNameFromText(text);
+			String recipientEntityName = selectedType.getRecipientEntityNameFromText(text);
+			PlexMessagingMod.channelManager.setSelectedChannel(PlexMessagingMod.getChannel(channelName, selectedType.channelClass, recipientEntityName));
+			if (selectedType.getAutoCommandFromText(text) != null) {
+				Plex.minecraft.thePlayer.sendChatMessage(selectedType.getAutoCommandFromText(text));
+			}
+			this.messageField.text.setText("");
+			return;
+		}
+		this.sendMessage();
+		this.searchBox.text.setFocused(false);
+		if (this.isQuickChat) {
+			PlexCore.displayUIScreen(null);
+		}
 	}
 	
 	public void sendMessage() {

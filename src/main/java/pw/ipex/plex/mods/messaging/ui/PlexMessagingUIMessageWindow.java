@@ -70,7 +70,7 @@ public final class PlexMessagingUIMessageWindow extends GuiScreen {
 	}
 	
 	public void updateScrollbarPosition() {
-		this.scrollbar = new PlexUIScrollbar(this.startY, this.endY, this.endX - 7, 6);
+		this.scrollbar.setPosition(this.startY, this.endY, this.endX - 7, 6);
 	}
 	
 	public void setChannel(PlexMessagingChannelBase channel) {
