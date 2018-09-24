@@ -1,23 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="6ce1a131-a8c5-4525-a913-2a63c964dcea" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/core/PlexCoreChatRegex.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/core/PlexCoreChatRegex.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/core/PlexCoreRenderUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/core/PlexCoreRenderUtils.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/messaging/PlexMessagingChatMessageAdapter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/messaging/PlexMessagingChatMessageAdapter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/messaging/PlexMessagingChatMessageConstructor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/messaging/PlexMessagingChatMessageConstructor.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/messaging/PlexMessagingMod.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/messaging/PlexMessagingMod.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/messaging/channel/PlexMessagingChannelBase.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/messaging/channel/PlexMessagingChannelBase.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/messaging/ui/PlexMessagingUIMessageWindow.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/messaging/ui/PlexMessagingUIMessageWindow.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/messaging/ui/PlexMessagingUIScreen.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/messaging/ui/PlexMessagingUIScreen.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/ui/PlexUIAutoCompleteItem.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/ui/PlexUIAutoCompleteItem.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/ui/PlexUIAutoCompleteTextField.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/ui/PlexUIAutoCompleteTextField.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/ui/PlexUIScrolledItem.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/ui/PlexUIScrolledItem.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/ui/PlexUIScrolledItemList.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/ui/PlexUIScrolledItemList.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/ui/PlexUIStaticLabel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pw/ipex/plex/ui/PlexUIStaticLabel.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/mcmod.info" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/mcmod.info" afterDir="false" />
-    </list>
+    <list default="true" id="6ce1a131-a8c5-4525-a913-2a63c964dcea" name="Default Changelist" comment="" />
     <ignored path="$PROJECT_DIR$/.gradle/" />
     <ignored path="$PROJECT_DIR$/build/" />
     <ignored path="$PROJECT_DIR$/out/" />
@@ -203,7 +187,7 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/messaging/ui/PlexMessagingUIScreen.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="800">
+            <state relative-caret-position="1259">
               <caret line="138" column="111" selection-start-line="138" selection-start-column="111" selection-end-line="138" selection-end-column="111" />
             </state>
           </provider>
@@ -1164,7 +1148,7 @@
   </component>
   <component name="PropertiesComponent">
     <property name="SearchEverywhereHistoryKey" value="test&#9;ACTION&#9;Maven.ToggleSkipTests&#10;GuiScreen&#9;PSI&#9;JAVA://net.minecraft.client.gui.GuiScreen&#10;hiddenForcedScroll&#9;PSI&#9;JAVA://pw.ipex.plex.ui.PlexUIScrollbar#hiddenForcedScroll&#10;setPriority&#9;PSI&#9;JAVA://pw.ipex.plex.commandqueue.PlexCommandQueue#setPriority" />
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1537806802020" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1537807234223" />
     <property name="project.structure.last.edited" value="SDKs" />
     <property name="project.structure.proportion" value="0.0" />
     <property name="project.structure.side.proportion" value="0.2" />
@@ -1211,7 +1195,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
+    <frame x="-8" y="-8" width="1936" height="1056" extended-state="7" />
     <editor active="true" />
     <layout>
       <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.4989154" visible="true" weight="0.1663113" />
@@ -1650,7 +1634,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/pw/ipex/plex/mods/messaging/ui/PlexMessagingUIScreen.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="800">
+        <state relative-caret-position="1259">
           <caret line="138" column="111" selection-start-line="138" selection-start-column="111" selection-end-line="138" selection-end-column="111" />
         </state>
       </provider>

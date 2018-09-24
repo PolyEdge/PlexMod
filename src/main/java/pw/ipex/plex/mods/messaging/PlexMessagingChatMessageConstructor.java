@@ -15,7 +15,7 @@ public class PlexMessagingChatMessageConstructor {
 	
 	static {
 		addGroupChannelClass("party", new PlexMessagingChannelClassWrapper(PlexMessagingPartyChatChannel.class, "@Party").setName("Party").setDescription("Type a name to invite them to the party.").setAutoCommand("/party invite {name}").setForegroundColour(0xffe820e8));
-		addGroupChannelClass("team", new PlexMessagingChannelClassWrapper(PlexMessagingTeamChatChannel.class, "#Party").setName("Team").setDescription("Type below to use team chat (in-game only)").setForegroundColour(0xff4286f4));
+		addGroupChannelClass("team", new PlexMessagingChannelClassWrapper(PlexMessagingTeamChatChannel.class, "#Party").setName("Team").setDescription("Type below to use team chat (in-game only)").setForegroundColour(0xff4286f4).setAutoCommand("#{name}"));
 		addGroupChannelClass("community", new PlexMessagingChannelClassWrapper(PlexMessagingCommunityChatChannel.class, "!{name}").setName("Community").setDescription("Enter a community name below to chat in it.").setRecipientEntityName("{name}"));
 		addGroupChannelClass("direct_message", new PlexMessagingChannelClassWrapper(PlexMessagingPrivateMessagesChannel.class, "PM.{name}").setName("PMs").setDescription("Type a player name below to private message them.").setRecipientEntityName("{name}").setForegroundColour(0xffffaa00));
 		
