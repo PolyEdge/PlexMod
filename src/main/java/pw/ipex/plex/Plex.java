@@ -40,6 +40,7 @@ public class Plex {
 	public static PlexCoreListeners plexListeners = new PlexCoreListeners();
 	public static PlexPlexCommand plexCommand = new PlexPlexCommand();
 	public static PlexCorePersistentPlayerManager playerManager = new PlexCorePersistentPlayerManager();
+	public static PlexCoreRenderUtils renderUtils = new PlexCoreRenderUtils();
 
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {

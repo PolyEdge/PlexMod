@@ -7,7 +7,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class PlexCoreChatRegex {
-	public static String SPLIT_FORMAT_REGION = "((?:([^ \n]*?)(?<!\\\\)\\{\\{([^|]+?)\\|(.+?)(?<!\\\\)\\}\\}|[^ \n]+|\n) ?)";
+	public static String SPLIT_FORMAT_REGION = "((?:([^ \n]*?)(?<!\\\\)\\{\\{([^|]+?)\\|(.+?)(?<!\\\\)\\}\\}|[^ \n]+|\n)|( +))";
 	public static Pattern PATTERN_FORMAT_REGION = Pattern.compile(SPLIT_FORMAT_REGION); // why cant i keep the delimiter in java
 	
 	public static String MATCH_PLAYER_CHAT = "^(?:&7Dead )?(?:(?:&[0-9a-fA-Fklmnor])*([0-9]{1,3}) ) *(?:(?:&[0-9a-fA-Fklmnor])*&l(ULTRA|HERO|LEGEND|TITAN|ETERNAL|YT|YOUTUBE|ARTIST|TRAINEE|SUPPORT|MOD|SR\\.MOD|MAPPER|BUILDER|MAPLEAD|JR\\.DEV|DEV|ADMIN|LEADER|OWNER))? *(?:&[0-9a-fA-Fklmnor])* *([a-zA-Z0-9_-]+) *(?:&[0-9a-fA-Fklmnor])* *(.*)$";
@@ -19,17 +19,18 @@ public class PlexCoreChatRegex {
 	public static String MATCH_COMMUNITY_CHAT = "^&([0-9a-f]?)&l([a-zA-Z0-9_]+) &([0-9a-f]?)&l([a-zA-Z0-9_]+) &([0-9a-f]?)(.+)$";
 	public static String MATCH_COMMUNITY_CHAT_FIX = "^(?:&([0-9a-f]))?&l([a-zA-Z0-9_]+) (?:&([0-9a-f]))?&l([a-zA-Z0-9_]+) (?:&([0-9a-f]?))?(.+)$";
 
+	public static String MATCH_PARTY_CREATE = "^&9Party> &7You don't seem to have a party, so I've created a new one for you!$";
 	public static String MATCH_PARTY_INVITE = "^&9Party> &7You have been invited to &e([a-zA-Z0-9_]+)&7's party! (.*)$";
-	public static String MATCH_PARTY_INVITED = "^&9Party> &e([a-zA-Z0-9_]+)&7 has invited &e([a-zA-Z0-9_]+)&7 to the party\\.$";
+	public static String MATCH_PARTY_INVITED = "^&9Party> &e([a-zA-Z0-9_]+)&7 has invited &e([a-zA-Z0-9_]+)&7 to the party\\.?$";
 	public static String MATCH_PARTY_REPLY = "^&9Party> &7Reply: &a&lACCEPT &c&lDENY &e&lVIEW$";
-	public static String MATCH_PARTY_JOIN  = "^&9Party> &e([a-zA-Z0-9_]+)&7 has joined the party\\.$";
-	public static String MATCH_PARTY_REMOVE = "^&9Party> &e([a-zA-Z0-9_]+)&7 has been removed from the party\\.$";
-	public static String MATCH_PARTY_LEFT = "^&9Party> &e([a-zA-Z0-9_]+)&7 has left the party\\.$";
-	public static String MATCH_PARTY_LEAVE = "^&9Party> &7You have left your party\\.$";
+	public static String MATCH_PARTY_JOIN  = "^&9Party> &e([a-zA-Z0-9_]+)&7 has joined the party\\.?$";
+	public static String MATCH_PARTY_REMOVE = "^&9Party> &e([a-zA-Z0-9_]+)&7 has been removed from the party\\.?$";
+	public static String MATCH_PARTY_LEFT = "^&9Party> &e([a-zA-Z0-9_]+)&7 has left the party\\.?$";
+	public static String MATCH_PARTY_LEAVE = "^&9Party> &7You have left your party\\.?$";
 	public static String MATCH_PARTY_DECLINED = "^&9Party> &e([a-zA-Z0-9_]+)&7 has denied your invite\\.?$";
-	public static String MATCH_PARTY_DECLINE = "^&9Party> &7You have denied your invite to &e([a-zA-Z0-9_]+)&7's party\\.$";
+	public static String MATCH_PARTY_DECLINE = "^&9Party> &7You have denied your invite to &e([a-zA-Z0-9_]+)&7's party\\.?$";
 	
-	public static String MATCH_DM_PLAYER_OFFLINE = "^&9Online Player Search> &e0&7 matches for \\[&e([A-Za-z0-9_]+)&7]\\.$";
+	public static String MATCH_DM_PLAYER_OFFLINE = "^&9Online Player Search> &e0&7 matches for \\[&e([A-Za-z0-9_]+)&7]\\.?$";
 
 	public static Pattern PATTERN_PLAYER_CHAT = Pattern.compile(MATCH_PLAYER_CHAT);
 	public static Pattern PATTERN_PLAYER_MPS_CHAT = Pattern.compile(MATCH_PLAYER_MPS_CHAT);
@@ -46,7 +47,8 @@ public class PlexCoreChatRegex {
 		addEntry("team_chat", MATCH_TEAM_CHAT).addField(1, "level").addField(2, "rank").addField(3, "author").addField(4, "message").tag("chatMessage");
 		addEntry("direct_message", MATCH_DIRECT_MESSAGE).addField(1, "author").addField(2, "destination").addField(3, "message").tag("chatMessage");
 		addEntry("community_chat", MATCH_COMMUNITY_CHAT_FIX).addField(1, "com_name_colour").addField(2, "community").addField(3, "author_colour").addField(4, "author").addField(5, "message_colour").addField(6, "message").tag("chatMessage");
-		
+
+		addEntry("party_create", MATCH_PARTY_CREATE, "party");
 		addEntry("party_invite", MATCH_PARTY_INVITE, "party").addField(1, "sender").addField(2, "extra");
 		addEntry("party_invited", MATCH_PARTY_INVITED, "party").addField(1, "sender").addField(2, "invited_player");
 		addEntry("party_invite_reply", MATCH_PARTY_REPLY, "party");
@@ -74,6 +76,9 @@ public class PlexCoreChatRegex {
 					}
 				}
 				output.add("!" + matcher.group(3) + "|" + matcher.group(4));
+			}
+			else if (matcher.group(5) != null) {
+				output.add("$" + matcher.group(5));
 			}
 			else {
 				output.add("$" + matcher.group(1));

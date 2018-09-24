@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import pw.ipex.plex.core.PlexCore;
+import pw.ipex.plex.mods.messaging.callback.PlexMessagingMessageEventParty;
 import pw.ipex.plex.mods.messaging.channel.*;
 
 public class PlexMessagingChatMessageConstructor {
@@ -22,10 +23,12 @@ public class PlexMessagingChatMessageConstructor {
 		addAdapter("chatMessage", "team_chat", "{$message}", "#Team").setChannelClass(getGroupChannelClass("team")).setDefaultMessageType(0).setAuthor("{author}");
 		addAdapter("chatMessage", "community_chat", "{$message}", "!{community}").setChannelClass(getGroupChannelClass("community")).setDefaultMessageType(0).setAuthor("{author}").setRecipientEntityName("{community}").setChannelTag("comColour", "{com_name_colour}");
 		addAdapter("chatMessage", "direct_message", "{$message}", "PM.{author}").setChannelClass(getGroupChannelClass("direct_message")).setDefaultMessageType(0).setAuthor("{author}");
-		
-		addAdapter("party", "party_invite", "&7Party invite from {sender}\n&a&lACCEPT  &c&lDENY", "@Party").addMessageTag("invitation_sender_ign", "{ign}");
+
+		addAdapter("party", "party_create", "&7You created a new party.", "@Party");
+		addAdapter("party", "party_invite", "&7Party invite from &e{sender}&7:\n{{ACCEPT_BUTTON|&a&lACCEPT}}  {{DENY_BUTTON|&c&lDENY}}", "@Party").addMessageTag("invitation_sender_ign", "{sender}").setUsesFormatRegions(true).addCallback(new PlexMessagingMessageEventParty());
 		addAdapter("party", "party_invited", "&e{sender} &7has invited &e{invited_player} &7to the party.", "@Party");
 		addAdapter("party", "party_join", "&e{ign} &7joined the party.", "@Party").condition("{ign} !equals " + PlexCore.getPlayerIGN());
+		addAdapter("party", "party_join", "&e{ign} &7joined the party.", "@Party").condition("{ign} equals " + PlexCore.getPlayerIGN()).setChannelOpenedRequired(true);
 		addAdapter("party", "party_left", "&e{ign} &7left the party.", "@Party");
 		addAdapter("party", "party_leave", "&7You left your current party.", "@Party");
 		addAdapter("party", "party_remove", "&e{ign} &7was removed from your party.", "@Party");

@@ -1,13 +1,11 @@
 package pw.ipex.plex.mods.messaging;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import com.google.gson.JsonObject;
 
 import net.minecraft.client.Minecraft;
 import pw.ipex.plex.core.PlexCoreChatRegexEntry;
+import pw.ipex.plex.mods.messaging.callback.PlexMessagingMessageEventHandler;
 import pw.ipex.plex.mods.messaging.channel.PlexMessagingChannelBase;
 import pw.ipex.plex.mods.messaging.render.PlexMessagingMessageRenderData;
 
@@ -28,14 +26,16 @@ public class PlexMessagingMessage {
 	public Long time = 0L;
 	public Integer position = 0;
 	public String playerHead = null;
+	public PlexMessagingChatMessageAdapter parentAdapter = null;
 	public PlexMessagingChannelBase channel;
 	
 	public Map<String, String> tags = new HashMap<String, String>();
 	
-	public List<PlexMessagingMessageClickCallback> callbacks = new ArrayList<PlexMessagingMessageClickCallback>();
+	public List<PlexMessagingMessageEventHandler> callbacks = new ArrayList<PlexMessagingMessageEventHandler>();
 	public PlexCoreChatRegexEntry chatRegex = null;
 	
 	public PlexMessagingMessageRenderData cachedRenderData;
+	public Map<Integer, String> messageBreakdown;
 	
 	public PlexMessagingMessage setTag(String key, String value) {
 		this.tags.put(key, value);
@@ -110,7 +110,7 @@ public class PlexMessagingMessage {
 		return this;
 	}
 	
-	public PlexMessagingMessage addCallback(PlexMessagingMessageClickCallback callback) {
+	public PlexMessagingMessage addCallback(PlexMessagingMessageEventHandler callback) {
 		this.callbacks.add(callback);
 		return this;
 	}
@@ -133,6 +133,19 @@ public class PlexMessagingMessage {
 			return this.channel.getMessageBackgroundColour();
 		}
 		return this.defaultColour;
+	}
+
+	public String getBreakdownItemByIndex(int index) {
+		if (this.messageBreakdown == null || index < 0) {
+			return null;
+		}
+		String item = null;
+		for (int entryMin : this.messageBreakdown.keySet()) {
+			if (index >= entryMin) {
+				item = this.messageBreakdown.get(entryMin);
+			}
+		}
+		return item;
 	}
 	
 	public JsonObject toJson() {

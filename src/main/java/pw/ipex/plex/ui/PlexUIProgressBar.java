@@ -2,7 +2,8 @@ package pw.ipex.plex.ui;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
-import pw.ipex.plex.core.PlexCoreRenderUtils;
+
+import pw.ipex.plex.Plex;
 import pw.ipex.plex.core.PlexCoreUtils;
 
 public class PlexUIProgressBar extends GuiScreen {
@@ -106,6 +107,6 @@ public class PlexUIProgressBar extends GuiScreen {
 	
 	public void drawScreen(int par1, int par2, float par3) {
 		updateProgressBar();
-		PlexCoreRenderUtils.drawScaledGradientRect(this.startX, this.startY, (int) (this.startX + (this.barWidth * this.displayProgress)), this.startY + this.barHeight, 1.0F, (int) PlexCoreUtils.replaceColour(this.displayColour, null, null, null, 255), (int) PlexCoreUtils.replaceColour(this.displayColour, null, null, null, 255));
+		Plex.renderUtils.drawScaledGradientRect(this.startX, this.startY, (int) (this.startX + (this.barWidth * this.displayProgress)), this.startY + this.barHeight, 1.0F, (int) PlexCoreUtils.replaceColour(this.displayColour, null, null, null, 255), (int) PlexCoreUtils.replaceColour(this.displayColour, null, null, null, 255));
 	}
 }

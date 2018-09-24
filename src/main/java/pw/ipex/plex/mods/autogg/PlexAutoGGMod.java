@@ -141,10 +141,10 @@ public class PlexAutoGGMod extends PlexModBase {
 	@SubscribeEvent
 	public void onOverlay(RenderGameOverlayEvent event) {
 		if (this.subtitleText != null) {
-			PlexCoreRenderUtils.drawScaledString("\"" + this.subtitleText + "\"", 25, 45, 0xffffffff, 0.5F, false);
+			Plex.renderUtils.drawScaledString("\"" + this.subtitleText + "\"", 25, 45, 0xffffffff, 0.5F, false);
 		}
 		else {
-			PlexCoreRenderUtils.drawScaledString("\"\"", 25, 45, 0xffffffff, 0.5F, false);
+			Plex.renderUtils.drawScaledString("\"\"", 25, 45, 0xffffffff, 0.5F, false);
 		}
 
 	}

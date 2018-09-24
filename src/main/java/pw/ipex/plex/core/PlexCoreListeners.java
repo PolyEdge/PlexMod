@@ -20,7 +20,7 @@ import net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientDisconnection
 import pw.ipex.plex.Plex;
 import pw.ipex.plex.commandqueue.PlexCommandQueue;
 import pw.ipex.plex.commandqueue.PlexCommandQueueCommand;
-import pw.ipex.plex.mods.messaging.PlexMessagingUIScreen;
+import pw.ipex.plex.mods.messaging.ui.PlexMessagingUIScreen;
 import pw.ipex.plex.ui.PlexUIBase;
 import pw.ipex.plex.ui.PlexUIModMenuScreen;
 
@@ -96,7 +96,7 @@ public class PlexCoreListeners {
 			}
 		}
 		if (min.matches(this.MATCH_SERVER_MESSAGE)) {
-			Plex.logger.info("test");
+			//Plex.logger.info("test");
 			if (this.serverCommandQueue.hasItems()) {
 				if (this.serverCommandQueue.getItem(0).isSent()) {
 					this.serverCommandQueue.getItem(0).markComplete();

@@ -3,7 +3,7 @@ package pw.ipex.plex.ui;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import pw.ipex.plex.Plex;
-import pw.ipex.plex.core.PlexCoreRenderUtils;
+
 import pw.ipex.plex.core.PlexCoreUtils;
 
 public class PlexUIStaticLabel extends GuiScreen {
@@ -123,7 +123,7 @@ public class PlexUIStaticLabel extends GuiScreen {
 		if (force) {
 			this.displayText = text;
 		}
-		this.targetTextWidth = PlexCoreRenderUtils.calculateScaledStringWidth(text, 1.0F);
+		this.targetTextWidth = Plex.renderUtils.calculateScaledStringWidth(text, 1.0F);
 		this.oldDisplayText = this.displayText;
 		this.text = text;
 		this.lastTextUpdate = Minecraft.getSystemTime();			
@@ -187,15 +187,15 @@ public class PlexUIStaticLabel extends GuiScreen {
 		if (this.lastTextUpdate != null) {
 			float timeBetween = ((float)PlexCoreUtils.longRange((Minecraft.getSystemTime() - this.lastTextUpdate), 0L, (long) this.textUpdateMs) / (float) this.textUpdateMs);
 			if (!this.displayText.equals(this.text) || this.displayTextWidth != this.targetTextWidth) {
-				int oldWidth = PlexCoreRenderUtils.calculateScaledStringWidth(this.oldDisplayText, 1.0F);
-				int newWidth = PlexCoreRenderUtils.calculateScaledStringWidth(this.text, 1.0F);
+				int oldWidth = Plex.renderUtils.calculateScaledStringWidth(this.oldDisplayText, 1.0F);
+				int newWidth = Plex.renderUtils.calculateScaledStringWidth(this.text, 1.0F);
 				this.displayTextWidth = (int) (oldWidth + (float)(newWidth - oldWidth) * timeBetween);
-				this.displayText = PlexCoreRenderUtils.trimScaledTextToWidth(this.text, this.displayTextWidth, 1.0F);
+				this.displayText = Plex.renderUtils.trimScaledTextToWidth(this.text, this.displayTextWidth, 1.0F);
 			}
 		}
 		else {
 			this.displayText = this.text;
-			this.displayTextWidth = PlexCoreRenderUtils.calculateScaledStringWidth(this.text, 1.0F);
+			this.displayTextWidth = Plex.renderUtils.calculateScaledStringWidth(this.text, 1.0F);
 		}
 		if (lastColourUpdate != null) {
 			if (this.displayColour != this.colour) {
@@ -230,7 +230,7 @@ public class PlexUIStaticLabel extends GuiScreen {
 		int realY = this.anchor < 2 ? (int) this.displayY : (int) this.displayY - realHeight;
 
 		//int textWidth = (int) (this.displayTextWidth * fontScale);
-		PlexCoreRenderUtils.drawScaledGradientRect(realX, realY, realX + realWidth, realY + realHeight, 1.0F, this.displayColour, this.displayColour);
-		PlexCoreRenderUtils.drawScaledString(this.displayText, realX + padding + extraXPadding, realY + padding, this.textDisplayColour, fontScale, false);
+		Plex.renderUtils.drawScaledGradientRect(realX, realY, realX + realWidth, realY + realHeight, 1.0F, this.displayColour, this.displayColour);
+		Plex.renderUtils.drawScaledString(this.displayText, realX + padding + extraXPadding, realY + padding, this.textDisplayColour, fontScale, false);
 	}
 }

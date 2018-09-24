@@ -1,14 +1,13 @@
 package pw.ipex.plex.mods.messaging;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import pw.ipex.plex.core.PlexCoreChatRegex;
 import pw.ipex.plex.core.PlexCoreChatRegexEntry;
+import pw.ipex.plex.core.PlexCoreUtils;
+import pw.ipex.plex.mods.messaging.callback.PlexMessagingMessageEventHandler;
 import pw.ipex.plex.mods.messaging.channel.PlexMessagingChannelBase;
 
 public class PlexMessagingChatMessageAdapter {
@@ -25,12 +24,15 @@ public class PlexMessagingChatMessageAdapter {
 	public boolean requiresChannelOpen = false;
 	public boolean requiresChatOpen = false;
 	public boolean sendToSelectedChannel = false;
-	public List<PlexMessagingMessageClickCallback> callbacks = new ArrayList<PlexMessagingMessageClickCallback>();
+	public boolean enableFormatRegions = false;
+	public List<PlexMessagingMessageEventHandler> callbacks = new ArrayList<PlexMessagingMessageEventHandler>();
 	public List<String> conditions = new ArrayList<String>();
 	public int defaultMessageType = 1;
 	public int defaultMessageSide = 0;
 	public String MATCH_CONDITION = "(.+?) (!?)(startswith|endswith|startswithcase|endswithcase|equals|equalscase|contains(?:\\.[0-9]+)?|char\\.[0-9]+|regex) (.+)";
+	public String MATCH_DEFAULT_BREAKDOWN = "([^ ]+ ?)";
 	public Pattern PATTERN_CONDITION = Pattern.compile(MATCH_CONDITION);
+	public Pattern PATTERN_DEFAULT_BREAKDOWN = Pattern.compile(MATCH_DEFAULT_BREAKDOWN);
 	
 	public PlexMessagingChatMessageAdapter(String group, String regexEntryName, String formatString) {
 		this.chatGroup = group;
@@ -54,7 +56,7 @@ public class PlexMessagingChatMessageAdapter {
 		return this.regexEntry.formatStringWithGroups(textMatchingRegex, stringToBeFormatted);
 	}
 	
-	public PlexMessagingChatMessageAdapter addCallback(PlexMessagingMessageClickCallback callback) {
+	public PlexMessagingChatMessageAdapter addCallback(PlexMessagingMessageEventHandler callback) {
 		this.callbacks.add(callback);
 		return this;
 	}
@@ -104,6 +106,11 @@ public class PlexMessagingChatMessageAdapter {
 		return this;
 	}
 
+	public PlexMessagingChatMessageAdapter setUsesFormatRegions(boolean enable) {
+		this.enableFormatRegions = enable;
+		return this;
+	}
+
 	public PlexMessagingChatMessageAdapter setChannelTag(String tag, String value) {
 		this.channelFields.put(tag, value);
 		return this;
@@ -125,6 +132,7 @@ public class PlexMessagingChatMessageAdapter {
 	}
 	
 	public String getMessageTag(String key, String text) {
+		PlexCoreUtils.chatAddMessage(key + "> " + text + " > " + this.messageTags.get(key) + " > " + this.formatStringWithGroups(this.messageTags.get(key), text));
 		return this.formatStringWithGroups(this.messageTags.get(key), text);
 	}
 	
@@ -140,7 +148,49 @@ public class PlexMessagingChatMessageAdapter {
 	}
 	
 	public String getMessageContent(String text) {
-		return this.formatStringWithGroups(this.contentFormatString, text);	
+		if (this.enableFormatRegions) {
+			List<String> regions = PlexCoreChatRegex.splitFormatRegionString(this.contentFormatString);
+			String output = "";
+			for (String region : regions) {
+				if (region.startsWith("$")) {
+					output = output + this.formatStringWithGroups(region.substring(1), text);
+				}
+				else if (region.startsWith("!")) {
+					output = output + this.formatStringWithGroups(region.substring(1).split(Pattern.quote("|"), 2)[1], text);
+				}
+			}
+			//PlexCoreUtils.chatAddMessage("cmbuilder \"" + output.replace("\n", "{NL}") + "\"");
+			return output;
+		}
+		return this.formatStringWithGroups(this.contentFormatString, text);
+	}
+
+	public Map<Integer, String> getMessageBreakdown(String text) {
+		List<Map.Entry<String, String>> splitBreakdown = new ArrayList<>();
+		if (this.enableFormatRegions) {
+			for (String region : PlexCoreChatRegex.splitFormatRegionString(this.contentFormatString)) {
+				if (region.startsWith("$")) {
+					splitBreakdown.add(new AbstractMap.SimpleEntry<>(region, this.formatStringWithGroups(region.substring(1), text)));
+				}
+				else if (region.startsWith("!")) {
+					splitBreakdown.add(new AbstractMap.SimpleEntry<>(region.split("\\|", 2)[0], this.formatStringWithGroups(region.substring(1).split("\\|", 2)[1], text)));
+				}
+			}
+		}
+		else {
+			Matcher matcher = PATTERN_DEFAULT_BREAKDOWN.matcher(this.contentFormatString);
+			while (matcher.find()) {
+				splitBreakdown.add(new AbstractMap.SimpleEntry<>("$" + matcher.group(1), this.formatStringWithGroups(matcher.group(1), text)));
+			}
+		}
+		Map<Integer, String> breakdown = new LinkedHashMap<>();
+		int pos = 0;
+		for (Map.Entry<String, String> region : splitBreakdown) {
+			//PlexCoreUtils.chatAddMessage("bdbuilder \"" + region.getKey().replace("\n", "{NL}") + "\" >> \"" + region.getValue().replace("\n", "{NL}") + "\"");
+			breakdown.put(pos, region.getKey());
+			pos += region.getValue().length();
+		}
+		return breakdown;
 	}
 	
 	public String getAuthor(String text) {
@@ -243,19 +293,20 @@ public class PlexMessagingChatMessageAdapter {
 		
 		return meetsCondition == null ? false : (matcher.group(2).equals("!") ? !meetsCondition : meetsCondition);
 	}
-	
-	public PlexMessagingMessage getIncompleteMessageFromText(String text) {
+
+	public PlexMessagingMessage updateMessageFromString(PlexMessagingMessage message, String text) {
 		if (!this.matchesMessage(text)) {
 			return null;
 		}
-		PlexMessagingMessage message = new PlexMessagingMessage();
 		message.type = this.defaultMessageType;
 		message.position = this.defaultMessageSide;
-		for (PlexMessagingMessageClickCallback callback : this.callbacks) {
+		message.parentAdapter = this;
+		message.messageBreakdown = this.getMessageBreakdown(text);
+		for (PlexMessagingMessageEventHandler callback : this.callbacks) {
 			message.addCallback(callback);
 		}
 		for (String tag : this.messageTags.keySet()) {
-			message.setTag(tag, this.getMessageTag(text, tag));
+			message.setTag(tag, this.getMessageTag(tag, text));
 		}
 		message.setContent(this.getMessageContent(text));
 		String theAuthor = this.getAuthor(text);
@@ -263,6 +314,10 @@ public class PlexMessagingChatMessageAdapter {
 			message.setAuthor(theAuthor);
 		}
 		return message;
+	}
+	
+	public PlexMessagingMessage getIncompleteMessageFromText(String text) {
+		return this.updateMessageFromString(new PlexMessagingMessage(), text);
 	}
 	
 	public boolean meetsRequirements(boolean chatOpen, PlexMessagingChannelBase selectedChannel, PlexMessagingChannelBase messageChannel) {

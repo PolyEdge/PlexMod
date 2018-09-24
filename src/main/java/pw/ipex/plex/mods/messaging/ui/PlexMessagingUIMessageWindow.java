@@ -1,4 +1,4 @@
-package pw.ipex.plex.mods.messaging;
+package pw.ipex.plex.mods.messaging.ui;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,12 +7,12 @@ import org.lwjgl.input.Mouse;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
 import pw.ipex.plex.Plex;
-import pw.ipex.plex.core.PlexCoreRenderUtils;
+
+import pw.ipex.plex.core.PlexCoreUtils;
+import pw.ipex.plex.mods.messaging.PlexMessagingMessage;
+import pw.ipex.plex.mods.messaging.callback.PlexMessagingMessageEventHandler;
 import pw.ipex.plex.mods.messaging.channel.PlexMessagingChannelBase;
-import pw.ipex.plex.mods.messaging.render.PlexMessagingMessageHoverState;
-import pw.ipex.plex.mods.messaging.render.PlexMessagingMessageRenderData;
-import pw.ipex.plex.mods.messaging.render.PlexMessagingMessageRenderState;
-import pw.ipex.plex.mods.messaging.render.PlexMessagingMessageTextData;
+import pw.ipex.plex.mods.messaging.render.*;
 import pw.ipex.plex.ui.PlexUIScrollbar;
 
 public final class PlexMessagingUIMessageWindow extends GuiScreen {
@@ -49,6 +49,7 @@ public final class PlexMessagingUIMessageWindow extends GuiScreen {
 	public int mouseWheelScrollPixelAmount = 40;
 	
 	public boolean isEnabled = true;
+	public boolean hoverEventsEnabled = false;
 	
 	public PlexUIScrollbar scrollbar;
 	
@@ -180,7 +181,7 @@ public final class PlexMessagingUIMessageWindow extends GuiScreen {
 			int headSize = getDefaultBackdropSizeByScaledTextHeight(Plex.minecraft.fontRendererObj.FONT_HEIGHT, this.messageTextScale);
 			boolean headsShown = renderState.RENDER_HEADS_SHOWN;
 			int authorExtra = renderState.RENDER_AUTHOR_ENABLED ? (int)(Plex.minecraft.fontRendererObj.FONT_HEIGHT * this.authorTextScale) + this.messageAuthorSeparator : 0;
-			int authorWidth = renderState.RENDER_AUTHOR_ENABLED ? PlexCoreRenderUtils.calculateScaledStringWidth(message.author, this.authorTextScale) : 0;
+			int authorWidth = renderState.RENDER_AUTHOR_ENABLED ? Plex.renderUtils.calculateScaledStringWidth(message.author, this.authorTextScale) : 0;
 			int playerHeadExtra = !headsShown ? 0 : getDefaultBackdropSizeByScaledTextHeight(Plex.minecraft.fontRendererObj.FONT_HEIGHT, this.messageTextScale) + this.playerHeadMessageSpacing;
 			
 			renderData.displayBackdrop = true;
@@ -200,7 +201,7 @@ public final class PlexMessagingUIMessageWindow extends GuiScreen {
 			List<Integer> lineCharPos = new ArrayList<>(); // dont kill me for using parallel lists pls thanks
 			for (String line : textLinesSplit) {
 				charPos++; // account for newline
-				List<String> textWrapLines = PlexCoreRenderUtils.textWrapScaledString(line, this.getMaxChatMessageWidth() - (this.getXPaddingByScaledTextHeight(Plex.minecraft.fontRendererObj.FONT_HEIGHT, this.messageTextScale) * 2) - playerHeadExtra, this.messageTextScale);
+				List<String> textWrapLines = Plex.renderUtils.textWrapScaledString(line, this.getMaxChatMessageWidth() - (this.getXPaddingByScaledTextHeight(Plex.minecraft.fontRendererObj.FONT_HEIGHT, this.messageTextScale) * 2) - playerHeadExtra, this.messageTextScale);
 				for (String wrapLine : textWrapLines) {
 					textLines.add(wrapLine);
 					lineCharPos.add(charPos);
@@ -210,7 +211,7 @@ public final class PlexMessagingUIMessageWindow extends GuiScreen {
 
 			int y = authorExtra;
 			for (int lineNo = 0; lineNo < textLines.size(); lineNo++) {
-				int lineSize = PlexCoreRenderUtils.calculateScaledStringWidth(textLines.get(lineNo), this.messageTextScale); // text width
+				int lineSize = Plex.renderUtils.calculateScaledStringWidth(textLines.get(lineNo), this.messageTextScale); // text width
 				lineSize += (this.getXPaddingByScaledTextHeight(Plex.minecraft.fontRendererObj.FONT_HEIGHT, this.messageTextScale) * 2); // padding
 				renderData.addTextLine(textLines.get(lineNo), this.messageTextScale, this.getXPaddingByScaledTextHeight(Plex.minecraft.fontRendererObj.FONT_HEIGHT, this.messageTextScale) + (message.position == message.POSITION_LEFT ? playerHeadExtra : 0), y + this.getYPaddingByScaledTextHeight(Plex.minecraft.fontRendererObj.FONT_HEIGHT, this.messageTextScale), lineSize, message.getColour(), lineCharPos.get(lineNo));
 				if (lineSize > backdropWidth) {
@@ -274,18 +275,23 @@ public final class PlexMessagingUIMessageWindow extends GuiScreen {
 			for (String line : message.content.split("\n")) {
 				textLinesSplit.add(line);
 			}
+			int charPos = -1;
+			List<Integer> lineCharPos = new ArrayList<>(); // dont kill me for using parallel lists pls thanks
 			for (String line : textLinesSplit) {
-				List<String> textWrapLines = PlexCoreRenderUtils.textWrapScaledString(line, this.getMaxSystemMessageWidth() - (this.getXPaddingByScaledTextHeight(Plex.minecraft.fontRendererObj.FONT_HEIGHT, this.messageTextScale) * 2), this.messageTextScale);
+				charPos++; // account for newline
+				List<String> textWrapLines = Plex.renderUtils.textWrapScaledString(line, this.getMaxSystemMessageWidth() - (this.getXPaddingByScaledTextHeight(Plex.minecraft.fontRendererObj.FONT_HEIGHT, this.messageTextScale) * 2), this.messageTextScale);
 				for (String wrapLine : textWrapLines) {
 					textLines.add(wrapLine);
+					lineCharPos.add(charPos);
+					charPos += wrapLine.length();
 				}
 			}
 			int width = 0;
 			int y = 0;
-			for (String line : textLines) {
-				int lineSize = PlexCoreRenderUtils.calculateScaledStringWidth(line, this.messageTextScale); // text width
+			for (int lineNo = 0; lineNo < textLines.size(); lineNo++) {
+				int lineSize = Plex.renderUtils.calculateScaledStringWidth(textLines.get(lineNo), this.messageTextScale); // text width
 				//lineSize += (this.getXPaddingByScaledTextHeight(Plex.minecraft.fontRendererObj.FONT_HEIGHT, this.messageTextScale) * 2); // padding
-				renderData.addTextLine(line, this.messageTextScale, 0 - (lineSize / 2), y, lineSize, message.getColour());
+				renderData.addTextLine(textLines.get(lineNo), this.messageTextScale, 0 - (lineSize / 2), y, lineSize, message.getColour(), lineCharPos.get(lineNo));
 				if (lineSize > width) {
 					width = lineSize;
 				}
@@ -445,6 +451,8 @@ public final class PlexMessagingUIMessageWindow extends GuiScreen {
 	
 	public PlexMessagingMessageHoverState getMessageHoverState(PlexMessagingMessage message, int positionY, PlexMessagingMessageRenderState messageState, int mouseX, int mouseY) {
 		PlexMessagingMessageHoverState hoverState = new PlexMessagingMessageHoverState().setMessage(message);
+		hoverState.mouseX = mouseX;
+		hoverState.mouseY = mouseY;
 		if (mouseY < this.getRenderBorderTop() || mouseY > this.getRenderBorderBottom()) {
 			return hoverState;
 		}
@@ -459,7 +467,7 @@ public final class PlexMessagingUIMessageWindow extends GuiScreen {
 		if (renderData.authorVisible && messageState.RENDER_AUTHOR_ENABLED) {
 			int authorX = renderData.getItemXPosition(this.getChatStartX(), this.getChatEndX(), renderData.authorX);
 			int authorY = renderData.getItemYPosition(positionY, renderData.authorY);
-			int authorWidth = PlexCoreRenderUtils.calculateScaledStringWidth(renderData.authorName, renderData.authorScale);
+			int authorWidth = Plex.renderUtils.calculateScaledStringWidth(renderData.authorName, renderData.authorScale);
 			int authorHeight = (int) (Plex.minecraft.fontRendererObj.FONT_HEIGHT * renderData.authorScale);
 			if (mouseX > authorX && mouseY > authorY && mouseX < authorX + authorWidth && mouseY < authorY + authorHeight) {
 				return hoverState.setAuthorSelected(true);
@@ -469,14 +477,14 @@ public final class PlexMessagingUIMessageWindow extends GuiScreen {
 			int lineX = renderData.getItemXPosition(this.getChatStartX(), this.getChatEndX(), line.x);
 			int lineY = renderData.getItemYPosition(positionY, line.y);
 			int lineHeight = line.getHeight();
-			int wordSpaceWidth = PlexCoreRenderUtils.calculateScaledStringWidth(" ", line.scale);
+			int wordSpaceWidth = Plex.renderUtils.calculateScaledStringWidth(" ", line.scale);
 			int wordX = lineX;
 			String builtLine = "";
 			int offset;
 			for (Character letter : line.text.toCharArray()) {
 				builtLine += letter.toString();
 				offset = builtLine.length() - 1;
-				int wordWidth = PlexCoreRenderUtils.calculateScaledStringWidth(builtLine, line.scale);
+				int wordWidth = Plex.renderUtils.calculateScaledStringWidth(builtLine, line.scale);
 				if (mouseX > wordX && mouseY > lineY && mouseX < wordX + wordWidth && mouseY < lineY + lineHeight) {
 					if (line.stringOffset != -1) {
 						hoverState.setHoveredGlobalStringOffset(line.stringOffset + offset);
@@ -501,20 +509,13 @@ public final class PlexMessagingUIMessageWindow extends GuiScreen {
 		return hoverState;
 	}
 	
-	public void processMouseClick(PlexMessagingMessage message, int positionY, PlexMessagingMessageRenderState messageState, int mouseX, int mouseY, List<PlexMessagingMessageClickCallback> callbacks) {
-		PlexMessagingMessageHoverState hoverState = this.getMessageHoverState(message, positionY, messageState, mouseX, mouseY);
-		for (PlexMessagingMessageClickCallback callback : callbacks) {
-			callback.clickCallback(hoverState);
-		}
-	}
-	
 	public int drawMessage(PlexMessagingMessage message, int positionY, PlexMessagingMessageRenderState messageState) {
 		PlexMessagingMessageRenderData renderData = this.getRenderData(message, messageState);
 		if (renderData.playerHead != null && messageState.RENDER_HEAD_ENABLED) {
 			int headX = renderData.getItemXPosition(this.getChatStartX(), this.getChatEndX(), renderData.playerHeadX);
 			int headY = renderData.getItemYPosition(positionY, renderData.playerHeadY);
 			if (headY + renderData.playerHeadSize > this.getRenderBorderTop() && headY < this.getRenderBorderBottom()) {
-				PlexCoreRenderUtils.drawPlayerHead(renderData.playerHead, headX, headY, renderData.playerHeadSize);
+				Plex.renderUtils.drawPlayerHead(renderData.playerHead, headX, headY, renderData.playerHeadSize);
 			}
 		}
 		if (renderData.displayBackdrop) {
@@ -528,20 +529,20 @@ public final class PlexMessagingUIMessageWindow extends GuiScreen {
 			if (bdBottom > this.getRenderBorderBottom()) {
 				bdBottom = this.getRenderBorderBottom();
 			}
-			PlexCoreRenderUtils.staticDrawGradientRect(bdStartX, bdTop, bdEndX, bdBottom, renderData.backdropColour, renderData.backdropColour);
+			Plex.renderUtils.staticDrawGradientRect(bdStartX, bdTop, bdEndX, bdBottom, renderData.backdropColour, renderData.backdropColour);
 		}
 		if (renderData.authorVisible && messageState.RENDER_AUTHOR_ENABLED) {
 			int authorX = renderData.getItemXPosition(this.getChatStartX(), this.getChatEndX(), renderData.authorX);
 			int authorY = renderData.getItemYPosition(positionY, renderData.authorY);
 			if (authorY + (Plex.minecraft.fontRendererObj.FONT_HEIGHT * renderData.authorScale) > this.getRenderBorderTop() && authorY < this.getRenderBorderBottom()) {
-				PlexCoreRenderUtils.drawScaledString(renderData.authorName, authorX, authorY, 0xffffff, renderData.authorScale, false);
+				Plex.renderUtils.drawScaledString(renderData.authorName, authorX, authorY, 0xffffff, renderData.authorScale, false);
 			}
 		}
 		for (PlexMessagingMessageTextData line : renderData.textLines) {
 			int lineX = renderData.getItemXPosition(this.getChatStartX(), this.getChatEndX(), line.x);
 			int lineY = renderData.getItemYPosition(positionY, line.y);
 			if (lineY + (Plex.minecraft.fontRendererObj.FONT_HEIGHT * line.scale) > this.getRenderBorderTop() && lineY < this.getRenderBorderBottom()) {
-				PlexCoreRenderUtils.drawScaledString(line.text, lineX, lineY, line.colour, line.scale, false);
+				Plex.renderUtils.drawScaledString(line.text, lineX, lineY, line.colour, line.scale, false);
 			}			
 		}
 		return renderData.totalHeight;
@@ -561,10 +562,10 @@ public final class PlexMessagingUIMessageWindow extends GuiScreen {
 		int viewportTop = (int)(scrollRange * this.scrollbar.scrollValue + 0);
 		//int viewportBottom = (int)(scrollRange * this.scrollbar.scrollValue + this.getChatAreaHeight());
 		int currentY = 0;
-		//PlexCoreRenderUtils.drawScaledString("" + totalHeight, this.getChatStartX() + 5, this.getChatStartY() + 5, 0xffffff, 0.5F, false);
-		//PlexCoreRenderUtils.drawScaledString("" + scrollRange, this.getChatStartX() + 5, this.getChatStartY() + 15, 0xffffff, 0.5F, false);
-		//PlexCoreRenderUtils.drawScaledString("" + viewportTop, this.getChatStartX() + 5, this.getChatStartY() + 20, 0xffffff, 0.5F, false);
-		//PlexCoreRenderUtils.drawScaledString("" + this.getChatAreaHeight(), this.getChatStartX() + 5, this.getChatStartY() + 25, 0xffffff, 0.5F, false);
+		//Plex.renderUtils.drawScaledString("" + totalHeight, this.getChatStartX() + 5, this.getChatStartY() + 5, 0xffffff, 0.5F, false);
+		//Plex.renderUtils.drawScaledString("" + scrollRange, this.getChatStartX() + 5, this.getChatStartY() + 15, 0xffffff, 0.5F, false);
+		//Plex.renderUtils.drawScaledString("" + viewportTop, this.getChatStartX() + 5, this.getChatStartY() + 20, 0xffffff, 0.5F, false);
+		//Plex.renderUtils.drawScaledString("" + this.getChatAreaHeight(), this.getChatStartX() + 5, this.getChatStartY() + 25, 0xffffff, 0.5F, false);
 		boolean headsEnabled = this.channelContainsHeads();
 		for (int i = 0; i < this.displayedChannel.channelMessages.size(); i++) {
 			PlexMessagingMessage previousMessage = i - 1 >= 0 ? this.displayedChannel.channelMessages.get(i - 1) : null;
@@ -599,16 +600,50 @@ public final class PlexMessagingUIMessageWindow extends GuiScreen {
 				currentY += itemTotalHeight;
 				if (itemEndY > this.getRenderBorderTop() && itemStartY < this.getRenderBorderBottom()) {
 					this.drawMessage(message, itemStartY, messageState);
+					if (this.hoverEventsEnabled) {
+						PlexMessagingMessageHoverState hoverState = this.getMessageHoverState(message, itemStartY, messageState, mouseX, mouseY);
+						if (hoverState.IS_SELECTED) {
+							this.processMouseHover(message, hoverState, message.callbacks);
+						}
+					}
 				}
 			}
 		}
 		this.scrollbar.drawScreen(mouseX, mouseY, par3);
+	}
+
+	public void processMouseClick(PlexMessagingMessage message, int positionY, PlexMessagingMessageRenderState messageState, int mouseX, int mouseY, int button, List<PlexMessagingMessageEventHandler> callbacks) {
+		PlexMessagingMessageHoverState hoverState = this.getMessageHoverState(message, positionY, messageState, mouseX, mouseY);
+		this.processMouseClick(message, hoverState, button, callbacks);
+	}
+
+	public void processMouseHover(PlexMessagingMessage message, int positionY, PlexMessagingMessageRenderState messageState, int mouseX, int mouseY, List<PlexMessagingMessageEventHandler> callbacks) {
+		PlexMessagingMessageHoverState hoverState = this.getMessageHoverState(message, positionY, messageState, mouseX, mouseY);
+		for (PlexMessagingMessageEventHandler callback : callbacks) {
+			callback.onHover(hoverState);
+		}
+	}
+
+	public void processMouseClick(PlexMessagingMessage message, PlexMessagingMessageHoverState hoverState, int button, List<PlexMessagingMessageEventHandler> callbacks) {
+		for (PlexMessagingMessageEventHandler callback : callbacks) {
+			callback.onClick(hoverState, button);
+		}
+	}
+
+	public void processMouseHover(PlexMessagingMessage message, PlexMessagingMessageHoverState hoverState, List<PlexMessagingMessageEventHandler> callbacks) {
+		for (PlexMessagingMessageEventHandler callback : callbacks) {
+			callback.onHover(hoverState);
+		}
 	}
 	
 	@Override
 	public void mouseClicked(int par1, int par2, int btn) {
 		if (!this.isEnabled) {
 			return;
+		}
+		PlexMessagingMessageHoverState selectedMessage = this.getMouseOverMessage(par1, par2);
+		if (selectedMessage != null) {
+			this.processMouseClick(selectedMessage.message, selectedMessage, btn, selectedMessage.message.callbacks);
 		}
 		this.scrollbar.mousePressed(par1, par2, btn);
 		

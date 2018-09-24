@@ -22,7 +22,7 @@ public class PlexHideStreamUI extends PlexUIBase {
 		ui.addElement(new GuiButton(5, pane1Pos + 5, top + 0, paneSize - 10, 20, buttonDisplayString("Player Chat", !PlexCore.getSharedValue("hideStream_hidePlayerChat").booleanValue)));
 		ui.addElement(new GuiButton(6, pane1Pos + 5, top + 23, paneSize - 10, 20, buttonDisplayString("Party Chat", !PlexCore.getSharedValue("hideStream_hidePartyChat").booleanValue)));
 		ui.addElement(new GuiButton(7, pane1Pos + 5, top + 46, paneSize - 10, 20, buttonDisplayString("Team Chat", !PlexCore.getSharedValue("hideStream_hideTeamChat").booleanValue)));
-		ui.addElement(new GuiButton(8, pane1Pos + 5, top + 46, paneSize - 10, 20, buttonDisplayString("Community Chat", !PlexCore.getSharedValue("hideStream_hideComChat").booleanValue)));
+		ui.addElement(new GuiButton(8, pane1Pos + 5, top + 69, paneSize - 10, 20, buttonDisplayString("Community Chat", !PlexCore.getSharedValue("hideStream_hideComChat").booleanValue)));
 
 		ui.addElement(new GuiButton(9, pane2Pos + 5, top + 0, paneSize - 10, 20, buttonDisplayString("Community Invites", !PlexCore.getSharedValue("hideStream_hideInvites").booleanValue)));
 		ui.addElement(new GuiButton(10, pane2Pos + 5, top + 23, paneSize - 10, 20, enabledDisabled("Adblocking", PlexCore.getSharedValue("hideStream_adBlock").booleanValue)));

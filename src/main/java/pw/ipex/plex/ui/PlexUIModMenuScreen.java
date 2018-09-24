@@ -13,7 +13,7 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
 import pw.ipex.plex.Plex;
 import pw.ipex.plex.core.PlexCore;
-import pw.ipex.plex.core.PlexCoreRenderUtils;
+
 import pw.ipex.plex.core.PlexCoreTextures;
 import pw.ipex.plex.core.PlexCoreUtils;
 import pw.ipex.plex.mods.plexmod.PlexPlexMod;
@@ -379,7 +379,7 @@ public class PlexUIModMenuScreen extends GuiScreen {
 				lobbyName = "...";
 			}
 
-			PlexCoreRenderUtils.drawScaledStringRightSide(lobbyName, this.getSocialMediaStartX() - 5, 8, 0xdf8214, 1.0F, false);
+			Plex.renderUtils.drawScaledStringRightSide(lobbyName, this.getSocialMediaStartX() - 5, 8, 0xdf8214, 1.0F, false);
 		}
 
 		

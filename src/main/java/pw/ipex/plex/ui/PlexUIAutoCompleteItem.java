@@ -1,7 +1,7 @@
 package pw.ipex.plex.ui;
 
 import pw.ipex.plex.Plex;
-import pw.ipex.plex.core.PlexCoreRenderUtils;
+
 import pw.ipex.plex.core.PlexCoreUtils;
 import pw.ipex.plex.ui.PlexUIScrolledItem;
 
@@ -59,10 +59,10 @@ public class PlexUIAutoCompleteItem implements PlexUIScrolledItem {
         }
 
         String finalText = Plex.minecraft.fontRendererObj.trimStringToWidth(this.displayText, (x + cellWidth) - startX);
-        PlexCoreRenderUtils.drawScaledStringLeftSide(finalText, startX, y + ((cellHeight / 2) - (Plex.minecraft.fontRendererObj.FONT_HEIGHT / 2)), this.defaultColour, 1.0F);
+        Plex.renderUtils.drawScaledStringLeftSide(finalText, startX, y + ((cellHeight / 2) - (Plex.minecraft.fontRendererObj.FONT_HEIGHT / 2)), this.defaultColour, 1.0F);
         if (playerHead) {
-            PlexCoreRenderUtils.staticDrawGradientRect(playerHeadX, playerHeadY, playerHeadX + playerHeadSize, playerHeadY + playerHeadSize, 0xffffffff, 0xffffffff);
-            PlexCoreRenderUtils.drawPlayerHead(this.attachedPlayerHead, playerHeadX, playerHeadY, playerHeadSize);
+            Plex.renderUtils.staticDrawGradientRect(playerHeadX, playerHeadY, playerHeadX + playerHeadSize, playerHeadY + playerHeadSize, 0xffffffff, 0xffffffff);
+            Plex.renderUtils.drawPlayerHead(this.attachedPlayerHead, playerHeadX, playerHeadY, playerHeadSize);
         }
     }
 

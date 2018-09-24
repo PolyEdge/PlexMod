@@ -4,7 +4,9 @@ import pw.ipex.plex.mods.messaging.PlexMessagingMessage;
 
 public class PlexMessagingMessageHoverState {
 	public boolean IS_SELECTED = false;
-	
+
+	public int mouseX = 0;
+	public int mouseY = 0;
 	public String selectedWord = null;
 	public Integer localStringOffset = null;
 	public Integer globalStringOffset = null;

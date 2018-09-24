@@ -7,7 +7,7 @@ import org.lwjgl.input.Mouse;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
 import pw.ipex.plex.Plex;
-import pw.ipex.plex.core.PlexCoreRenderUtils;
+
 import pw.ipex.plex.core.PlexCoreUtils;
 
 public class PlexUIScrolledItemList extends GuiScreen {	
@@ -297,7 +297,7 @@ public class PlexUIScrolledItemList extends GuiScreen {
 	
 			if (itemText != null) {
 				String finalText = Plex.minecraft.fontRendererObj.trimStringToWidth(itemText, this.getEndXWithScrollbar() - this.paddingX * 2);
-				PlexCoreRenderUtils.drawScaledStringLeftSide(finalText, this.startX + this.paddingX, itemYposition + (heightOrDefault(item) - (Plex.minecraft.fontRendererObj.FONT_HEIGHT / 2)), itemForegroundColour, 1.0F);
+				Plex.renderUtils.drawScaledStringLeftSide(finalText, this.startX + this.paddingX, itemYposition + (heightOrDefault(item) - (Plex.minecraft.fontRendererObj.FONT_HEIGHT / 2)), itemForegroundColour, 1.0F);
 			}
 			else {
 				item.listItemRenderText(this.startX + this.paddingX, itemYposition, this.getSizeXWithScrollbar() - this.paddingX * 2, heightOrDefault(item), isSelected, isMouseOver);

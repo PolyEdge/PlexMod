@@ -11,7 +11,7 @@ import net.minecraft.util.IChatComponent;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import pw.ipex.plex.Plex;
-import pw.ipex.plex.core.PlexCoreRenderUtils;
+
 import pw.ipex.plex.core.PlexCoreUtils;
 import pw.ipex.plex.mods.messaging.PlexMessagingMessage;
 import pw.ipex.plex.mods.messaging.PlexMessagingMod;
@@ -213,7 +213,7 @@ public abstract class PlexMessagingChannelBase implements PlexUIScrolledItem {
 		int playerHeadY = y + ((cellHeight - playerHeadSize) / 2);
 		
 		if (unreadMessages > 0) {
-			channelNameStartX = x + PlexCoreRenderUtils.calculateScaledStringWidth(PlexCoreUtils.ampersandToFormatCharacter("&l[" + String.valueOf(unreadMessages) + "] "), 1.0F);
+			channelNameStartX = x + Plex.renderUtils.calculateScaledStringWidth(PlexCoreUtils.ampersandToFormatCharacter("&l[" + String.valueOf(unreadMessages) + "] "), 1.0F);
 		}
 		
 		if (this.getAttachedPlayerHead() != null) {
@@ -227,13 +227,13 @@ public abstract class PlexMessagingChannelBase implements PlexUIScrolledItem {
 			foregroundColour = PlexCoreUtils.multiplyColour(foregroundColour, 1.20F);
 		}
 		if (unreadMessages > 0) {
-			PlexCoreRenderUtils.drawScaledStringLeftSide(PlexCoreUtils.ampersandToFormatCharacter("&l[" + String.valueOf(unreadMessages) + "] "), x, y + ((cellHeight / 2) - (Plex.minecraft.fontRendererObj.FONT_HEIGHT / 2)), 0xff0202, 1.0F);				
+			Plex.renderUtils.drawScaledStringLeftSide(PlexCoreUtils.ampersandToFormatCharacter("&l[" + String.valueOf(unreadMessages) + "] "), x, y + ((cellHeight / 2) - (Plex.minecraft.fontRendererObj.FONT_HEIGHT / 2)), 0xff0202, 1.0F);
 		}
 		String finalText = Plex.minecraft.fontRendererObj.trimStringToWidth(this.getDisplayName(), (x + cellWidth) - channelNameStartX - (playerHead ? cellHeight : 0));
-		PlexCoreRenderUtils.drawScaledStringLeftSide(finalText, channelNameStartX, y + ((cellHeight / 2) - (Plex.minecraft.fontRendererObj.FONT_HEIGHT / 2)), this.getDisplayColour(), 1.0F);	
+		Plex.renderUtils.drawScaledStringLeftSide(finalText, channelNameStartX, y + ((cellHeight / 2) - (Plex.minecraft.fontRendererObj.FONT_HEIGHT / 2)), this.getDisplayColour(), 1.0F);
 		if (playerHead) {
-			PlexCoreRenderUtils.staticDrawGradientRect(playerHeadX, playerHeadY, playerHeadX + playerHeadSize, playerHeadY + playerHeadSize, 0xffffffff, 0xffffffff);
-			PlexCoreRenderUtils.drawPlayerHead(this.getAttachedPlayerHead(), playerHeadX, playerHeadY, playerHeadSize);
+			Plex.renderUtils.staticDrawGradientRect(playerHeadX, playerHeadY, playerHeadX + playerHeadSize, playerHeadY + playerHeadSize, 0xffffffff, 0xffffffff);
+			Plex.renderUtils.drawPlayerHead(this.getAttachedPlayerHead(), playerHeadX, playerHeadY, playerHeadSize);
 		}
 	}
 
