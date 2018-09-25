@@ -7,6 +7,9 @@ bin/
 /eclipse
 *.launch
 
+# Idea
+/.idea
+
 # Gradle/ForgeGradle files
 .gradle/
 build/
