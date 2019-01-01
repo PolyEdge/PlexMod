@@ -5,8 +5,8 @@ import pw.ipex.plex.Plex;
 import pw.ipex.plex.core.PlexCore;
 import pw.ipex.plex.ui.PlexUIBase;
 import pw.ipex.plex.ui.PlexUIModMenuScreen;
-import pw.ipex.plex.ui.PlexUISlider;
-import pw.ipex.plex.ui.PlexUITextField;
+import pw.ipex.plex.ui.widget.PlexUISlider;
+import pw.ipex.plex.ui.widget.PlexUITextField;
 
 public class PlexAutoGGUI extends PlexUIBase {
 	

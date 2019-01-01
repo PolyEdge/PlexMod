@@ -1,19 +1,14 @@
 package pw.ipex.plex.mods.autogg;
 
 import java.lang.reflect.Field;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiIngame;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
-import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
 import pw.ipex.plex.Plex;
 import pw.ipex.plex.core.*;
+import pw.ipex.plex.core.mineplex.PlexCoreLobbyType;
 import pw.ipex.plex.mod.PlexModBase;
-import scala.collection.parallel.ParIterableLike;
 
 public class PlexAutoGGMod extends PlexModBase {
 	public PlexCoreValue modEnabled = new PlexCoreValue("autoGG_enabled", false);
@@ -52,9 +47,8 @@ public class PlexAutoGGMod extends PlexModBase {
 	public String getModName() {
 		return "AutoGG";
 	}
-	
-	@SubscribeEvent
-	public void onClientTick(ClientTickEvent e) {
+
+	public void onlineModLoop() {
 		if (!this.modEnabled.booleanValue) {
 			return;
 		}

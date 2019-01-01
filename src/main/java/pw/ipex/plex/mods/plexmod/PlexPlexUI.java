@@ -4,7 +4,7 @@ import net.minecraft.client.gui.GuiButton;
 import pw.ipex.plex.Plex;
 import pw.ipex.plex.ui.PlexUIBase;
 import pw.ipex.plex.ui.PlexUIModMenuScreen;
-import pw.ipex.plex.ui.PlexUISlider;
+import pw.ipex.plex.ui.widget.PlexUISlider;
 
 public class PlexPlexUI extends PlexUIBase {
 

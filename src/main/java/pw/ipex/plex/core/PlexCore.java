@@ -1,10 +1,15 @@
 package pw.ipex.plex.core;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import net.minecraft.client.Minecraft;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
@@ -13,6 +18,9 @@ import net.minecraftforge.client.ClientCommandHandler;
 import pw.ipex.plex.Plex;
 import pw.ipex.plex.ci.PlexCommandHandler;
 import pw.ipex.plex.ci.PlexCommandListener;
+import pw.ipex.plex.core.loop.PlexCoreEventLoop;
+import pw.ipex.plex.core.loop.PlexCoreEventLoopManager;
+import pw.ipex.plex.core.mineplex.PlexCoreLobbyType;
 import pw.ipex.plex.mod.PlexModBase;
 import pw.ipex.plex.ui.PlexUIBase;
 import pw.ipex.plex.ui.PlexUITabContainer;
@@ -24,13 +32,33 @@ import pw.ipex.plex.ui.PlexUITabContainer;
  * @since 1.0
  */
 public class PlexCore {
-	public static Map<String, PlexModBase> plexMods = new HashMap<String, PlexModBase>();
-	public static Map<String, PlexCommandHandler> commandHandlerNamespace = new HashMap<String, PlexCommandHandler>();
-	public static Map<String, PlexCommandListener> commandListenerNamespace = new HashMap<String, PlexCommandListener>();
-	public static List<PlexUITabContainer> uiTabList = new ArrayList<PlexUITabContainer>();
-	public static Map<String, PlexCoreValue> sharedValues = new HashMap<String, PlexCoreValue>();
+	public static Map<Class<? extends PlexModBase>, PlexModBase> plexMods = new ConcurrentHashMap<>();
+	public static Map<PlexModBase, Runnable> modLoops = new HashMap<>();
+	public static Map<PlexModBase, Thread> modThreads = new HashMap<>();
+	public static Map<String, PlexCommandHandler> commandHandlerNamespace = new HashMap<>();
+	public static Map<String, PlexCommandListener> commandListenerNamespace = new HashMap<>();
+	public static List<PlexUITabContainer> uiTabList = new ArrayList<>();
+	public static Map<String, PlexCoreValue> sharedValues = new HashMap<>();
 
 	private PlexCore() {
+	}
+
+	/**
+	 * Registers the mod task loop
+	 *
+	 * @return The task loop, {@link PlexCoreEventLoop}
+	 */
+	public static PlexCoreEventLoop getModLoop() {
+		return Plex.eventLoop.get("modLoop");
+	}
+
+	/**
+	 * Registers the internal task loop
+	 *
+	 * @return The task loop, {@link PlexCoreEventLoop}
+	 */
+	public static PlexCoreEventLoop getInternalLoop() {
+		return Plex.eventLoop.get("internalTask");
 	}
 
 	/**
@@ -38,21 +66,32 @@ public class PlexCore {
 	 * 
 	 * @param mod The mod to register
 	 */
-	public static void registerMod(PlexModBase mod) {
-		plexMods.put(mod.getModName(), mod);
+	public static void registerMod(final PlexModBase mod) {
+		plexMods.put(mod.getClass(), mod);
 		mod.modInit();
+		getModLoop().addTask(() -> {
+			mod.modLoop(Plex.serverState.onMineplex);
+			if (Plex.serverState.onMineplex) {
+				mod.onlineModLoop();
+			}
+		}, mod.getLoopDelay());
 		PlexCore.saveAllConfig();
 	}
 
 	/**
 	 * Returns a mod
 	 * 
-	 * @param modName The name of the mod as returned by getModName()
-	 * @return The mod if it exists, null otherwise
+	 * @param modClass The class of the mod which extends {@link PlexModBase}
+	 * @return The mod if an instance of it is loaded, null otherwise
 	 */
-	public static PlexModBase getMod(String modName) {
-		if (plexMods.containsKey(modName)) {
-			return plexMods.get(modName);
+	public static <T extends PlexModBase> T modInstance(Class<T> modClass) {
+		if (plexMods.containsKey(modClass)) {
+			try {
+				return modClass.cast(plexMods.get(modClass));
+			}
+			catch (Throwable e) {
+				return null;
+			}
 		}
 		return null;
 	}
@@ -141,7 +180,7 @@ public class PlexCore {
 	/**
 	 * Gets the UI tab registered under the given title
 	 * 
-	 * @param name Title of the tab
+	 * @param label Title of the tab
 	 * @return The UI tab
 	 */
 	public static PlexUITabContainer getUiTab(String label) {

@@ -1,20 +1,17 @@
 package pw.ipex.plex.mods.autofriend;
 
-import net.minecraft.client.Minecraft;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.common.config.Property;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
 import pw.ipex.plex.Plex;
-import pw.ipex.plex.commandqueue.PlexCommandQueue;
-import pw.ipex.plex.commandqueue.PlexCommandQueueCommand;
+import pw.ipex.plex.cq.PlexCommandQueue;
+import pw.ipex.plex.cq.PlexCommandQueueCommand;
 import pw.ipex.plex.core.PlexCore;
-import pw.ipex.plex.core.PlexCoreLobbyType;
+import pw.ipex.plex.core.mineplex.PlexCoreLobbyType;
 import pw.ipex.plex.core.PlexCoreUtils;
 import pw.ipex.plex.core.PlexCoreValue;
 import pw.ipex.plex.mod.PlexModBase;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -62,8 +59,8 @@ public class PlexAutoFriendMod extends PlexModBase {
 			playerMatcher.find();
 			String friendName = playerMatcher.group(1);
 			if (!blacklist.contains(friendName)) {
-				PlexCommandQueueCommand command = new PlexCommandQueueCommand("autoFriendMod", "/f " + friendName);
-				command.completeOnSend = true;
+				PlexCommandQueueCommand command = new PlexCommandQueueCommand("autoFriendMod", "/f " + friendName, 4000L);
+				command.setCompleteOnSend(true);
 				friendQueue.addCommand(command);
 			}
 		}

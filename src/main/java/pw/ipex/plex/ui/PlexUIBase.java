@@ -2,6 +2,7 @@ package pw.ipex.plex.ui;
 
 import net.minecraft.client.gui.GuiButton;
 import pw.ipex.plex.core.PlexCoreUtils;
+import pw.ipex.plex.ui.widget.PlexUISlider;
 
 public abstract class PlexUIBase {
 	public PlexUIModMenuScreen parentUI;

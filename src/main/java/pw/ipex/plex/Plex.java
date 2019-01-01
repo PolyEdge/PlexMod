@@ -8,19 +8,24 @@ import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 //import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import pw.ipex.plex.commandqueue.PlexCommandQueueManager;
+import pw.ipex.plex.core.loop.PlexCoreEventLoop;
+import pw.ipex.plex.core.loop.PlexCoreEventLoopManager;
+import pw.ipex.plex.cq.PlexCommandQueueManager;
 import pw.ipex.plex.core.*;
+import pw.ipex.plex.core.mineplex.PlexCoreServerState;
+import pw.ipex.plex.core.render.PlexCoreRenderUtils;
+import pw.ipex.plex.core.render.PlexCoreTextures;
 import pw.ipex.plex.mods.autofriend.PlexAutoFriendMod;
 import pw.ipex.plex.mods.autogg.PlexAutoGGMod;
 import pw.ipex.plex.mods.autothank.PlexAutoThankMod;
-import pw.ipex.plex.mods.betterreply.PlexBetterReplyMod;
+import pw.ipex.plex.mods.replycommand.PlexBetterReplyMod;
 import pw.ipex.plex.mods.developmentmod.PlexDevelopmentMod;
-import pw.ipex.plex.mods.hidestream.PlexHideStreamMod;
-import pw.ipex.plex.mods.messaging.PlexMessagingMod;
+import pw.ipex.plex.mods.chatmod.PlexHideStreamMod;
+import pw.ipex.plex.mods.messagingscreen.PlexMessagingMod;
 import pw.ipex.plex.mods.plexmod.PlexPlexCommand;
 import pw.ipex.plex.mods.plexmod.PlexPlexMod;
-import pw.ipex.plex.mods.richpresence.PlexNewRichPresenceMod;
-//import pw.ipex.plex.mods.richpresence.PlexRichPresenceMod;
+import pw.ipex.plex.mods.discordrichstatus.PlexNewRichPresenceMod;
+//import pw.ipex.plex.mods.discordrichstatus.PlexRichPresenceMod;
 
 import org.apache.logging.log4j.Logger;
 
@@ -28,7 +33,7 @@ import org.apache.logging.log4j.Logger;
 public class Plex {
 	public static final String MODID = "PolyEdge_Plex";
 	public static final String VERSION = "0.4";
-	public static final String PATCHID = null;
+	public static final String PATCHID = "PATCH_1";
 	public static final String RELEASENOTICE = "Welcome to Plex 0.4!";
 
 	public static Minecraft minecraft = Minecraft.getMinecraft();
@@ -41,11 +46,10 @@ public class Plex {
 	public static PlexPlexCommand plexCommand = new PlexPlexCommand();
 	public static PlexCorePersistentPlayerManager playerManager = new PlexCorePersistentPlayerManager();
 	public static PlexCoreRenderUtils renderUtils = new PlexCoreRenderUtils();
+	public static PlexCoreEventLoopManager eventLoop = new PlexCoreEventLoopManager();
 
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
-		MinecraftForge.EVENT_BUS.register(this);
-
 		logger = event.getModLog();
 		config = new Configuration(event.getSuggestedConfigurationFile());
 		config.load();
@@ -53,11 +57,12 @@ public class Plex {
 
 	@EventHandler
 	public void init(FMLInitializationEvent event) {
-		MinecraftForge.EVENT_BUS.register(this);
 		MinecraftForge.EVENT_BUS.register(plexListeners);
-		MinecraftForge.EVENT_BUS.register(plexCommandQueue);
-		
 		PlexCoreTextures.loadTextures();
+
+		PlexCore.getInternalLoop().addTask(plexListeners::handleLobbySwitching, 25);
+		PlexCore.getInternalLoop().addTask(plexCommandQueue::processQueue, 25);
+
 		PlexCore.registerMod(new PlexPlexMod());
 		//PlexCore.registerMod(new PlexFriendsListEnhancementsMod());  // (this module no longer works because they removed the offline section. press f to pay respects)
 		PlexCore.registerMod(new PlexBetterReplyMod());
@@ -65,9 +70,12 @@ public class Plex {
 		PlexCore.registerMod(new PlexHideStreamMod());
 		PlexCore.registerMod(new PlexAutoThankMod());
 		PlexCore.registerMod(new PlexDevelopmentMod());
-		//PlexCore.registerMod(new PlexRichPresenceMod());
+		//PlexCore.registerMod(new PlexRichPresenceMod()); // (the old jar file is excluded from the git repository because the libraries it uses are no longer included and it will not compile)
 		PlexCore.registerMod(new PlexNewRichPresenceMod());
 		PlexCore.registerMod(new PlexAutoGGMod());
 		PlexCore.registerMod(new PlexAutoFriendMod());
+
+		PlexCore.getInternalLoop().start();
+		PlexCore.getModLoop().setClock(20).start();
 	}
 }

@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.net.InetSocketAddress;
 import java.time.OffsetDateTime;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -18,9 +19,10 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientConnectedToServerEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientDisconnectionFromServerEvent;
 import pw.ipex.plex.Plex;
-import pw.ipex.plex.commandqueue.PlexCommandQueue;
-import pw.ipex.plex.commandqueue.PlexCommandQueueCommand;
-import pw.ipex.plex.mods.messaging.ui.PlexMessagingUIScreen;
+import pw.ipex.plex.cq.PlexCommandQueue;
+import pw.ipex.plex.cq.PlexCommandQueueCommand;
+import pw.ipex.plex.core.mineplex.PlexCoreLobbyType;
+import pw.ipex.plex.mods.messagingscreen.ui.PlexMessagingUIScreen;
 import pw.ipex.plex.ui.PlexUIBase;
 import pw.ipex.plex.ui.PlexUIModMenuScreen;
 
@@ -37,19 +39,21 @@ public class PlexCoreListeners {
 	public Boolean resetUI = false;
 	public Boolean lobbyUpdateRequired = false;
 	public Boolean awaitingLoad = false;
-	public Map<Integer, Integer> lobbyLoadCounter = new HashMap<Integer, Integer>();
-	public Map<Integer, List<Long>> lobbyLoadTimes = new HashMap<Integer, List<Long>>();
+	public Map<Integer, Integer> lobbyLoadCounter = new ConcurrentHashMap<Integer, Integer>();
+	public Map<Integer, List<Long>> lobbyLoadTimes = new ConcurrentHashMap<>();
 	public List<Integer> dispatchedLobbyChanges = new ArrayList<>();
 
 	public Integer lobbyDeterminationAttempts = 0;
 	public Integer maxLobbyDeterminationRetries = 2;
-	public PlexCommandQueue serverCommandQueue = new PlexCommandQueue("plexCore", Plex.plexCommandQueue);
-	public PlexCommandQueue otherCommandsQueue = new PlexCommandQueue("plexCore", Plex.plexCommandQueue);
+	public PlexCommandQueue serverCommandQueue = new PlexCommandQueue("plexCore", Plex.plexCommandQueue, 0);
+	public PlexCommandQueue otherCommandsQueue = new PlexCommandQueue("plexCore", Plex.plexCommandQueue, 1);
 	
 	public Long lobbyDeterminationTimeout = 8000L;
 
 	public List<String> mineplexIPs = new ArrayList<>();
 	public List<String> hostnameBlacklist = new ArrayList<>();
+
+	public Thread worldSwitchHandler;
 
 
 	public PlexCoreListeners() {
@@ -61,13 +65,11 @@ public class PlexCoreListeners {
 
 		hostnameBlacklist.add("build.mineplex.com");
 
-		this.serverCommandQueue.setPriority(0);
 		this.serverCommandQueue.delaySet.chatOpenDelay = -1000L;
 		this.serverCommandQueue.delaySet.lobbySwitchDelay = -1000L;
 		this.serverCommandQueue.delaySet.joinServerDelay = -1000L;
 		this.serverCommandQueue.delaySet.commandDelay = 600L;
 
-		this.otherCommandsQueue.setPriority(1);
 		this.otherCommandsQueue.delaySet.chatOpenDelay = 0L;
 		this.otherCommandsQueue.delaySet.lobbySwitchDelay = 0L;
 		this.otherCommandsQueue.delaySet.joinServerDelay = 500L;
@@ -87,7 +89,7 @@ public class PlexCoreListeners {
 				gameName.find();
 				PlexCore.updateGameName(gameName.group(1));
 				try {
-					Plex.serverState.gameStartEpoch = Minecraft.getSystemTime();
+					Plex.serverState.gameStartTime = Minecraft.getSystemTime();
 					Plex.serverState.gameStartDateTime = OffsetDateTime.now();
 				}
 				catch (Throwable ee) {}
@@ -96,7 +98,6 @@ public class PlexCoreListeners {
 			}
 		}
 		if (min.matches(this.MATCH_SERVER_MESSAGE)) {
-			//Plex.logger.info("test");
 			if (this.serverCommandQueue.hasItems()) {
 				if (this.serverCommandQueue.getItem(0).isSent()) {
 					this.serverCommandQueue.getItem(0).markComplete();
@@ -130,7 +131,7 @@ public class PlexCoreListeners {
 		if (min.toLowerCase().startsWith("permissions> you do not have permission to do that")) {
 			if (otherCommandsQueue.hasItems()) {
 				if (this.otherCommandsQueue.getItem(0).isSent() && this.otherCommandsQueue.getItem(0).command.equals("/emotes")) {
-					if (this.otherCommandsQueue.getItem(0).getTimeSinceSent() < 2000L) {
+					if (this.otherCommandsQueue.getItem(0).getSentElapsed() < 2000L) {
 						e.setCanceled(true);
 						Plex.serverState.canUseEmotes = false;
 						this.otherCommandsQueue.getItem(0).markComplete();
@@ -168,8 +169,9 @@ public class PlexCoreListeners {
 			Plex.serverState.setToOnline();
 			Plex.serverState.lastControlInput = Minecraft.getSystemTime();
 			//Plex.logger.info("[plex mod] registering mod to event bus");
-			PlexCore.joinedMineplex();
+
 			this.sendServerCommand();
+			PlexCore.joinedMineplex();
 
 			try {
 				Plex.serverState.serverJoinTime = Minecraft.getSystemTime();
@@ -244,39 +246,6 @@ public class PlexCoreListeners {
 		if (Plex.minecraft.ingameGUI.getChatGUI().getChatOpen() || PlexMessagingUIScreen.isChatOpen()) {
 			Plex.serverState.lastChatOpen = Minecraft.getSystemTime();
 		}
-		if (Plex.serverState.onMineplex) {
-			for (Integer worldHash : this.lobbyLoadTimes.keySet()) {
-				if (this.lobbyLoadTimes.get(worldHash).size() != 0) {
-					boolean found = false;
-					for (Long loadTime : this.lobbyLoadTimes.get(worldHash)) {
-						if (Minecraft.getSystemTime() > loadTime + 200L) {
-							found = true;
-						}
-						if (Minecraft.getSystemTime() > loadTime + 200L && !this.dispatchedLobbyChanges.contains(worldHash)) {
-							this.lobbySwitched();
-							this.dispatchedLobbyChanges.add(worldHash);
-						}
-					}
-					if (!found) {
-						this.dispatchedLobbyChanges.remove(worldHash);
-					}
-				}
-				else {
-					this.dispatchedLobbyChanges.remove(worldHash);
-				}
-			}
-			this.updateLobbyType(getScoreboardTitle());
-			if (this.serverCommandQueue.hasItems()) {
-				if (this.serverCommandQueue.getItem(0).isSent()) {
-					if (Minecraft.getSystemTime() > this.serverCommandQueue.getItem(0).getSendTime() + this.lobbyDeterminationTimeout) {
-						this.serverCommandQueue.getItem(0).cancel();
-						if (lobbyDeterminationAttempts - 1 <= this.maxLobbyDeterminationRetries) {
-							this.sendServerCommand();
-						}
-					}	
-				}
-			}
-		}
 		if (this.targetUI != null) {
 			Plex.minecraft.displayGuiScreen(new PlexUIModMenuScreen(targetUI));
 		}
@@ -286,13 +255,43 @@ public class PlexCoreListeners {
 		}
 		this.targetUI = null;	
 	}
-	
-	public String getScoreboardTitle() {
-		try {
-			return Plex.minecraft.theWorld.getScoreboard().getObjectiveInDisplaySlot(1).getDisplayName();
+
+	public void handleLobbySwitching() {
+		if (!Plex.serverState.onMineplex) {
+			return;
 		}
-		catch (Exception e) {
-			return null;
+		for (Integer worldHash : this.lobbyLoadTimes.keySet()) {
+			if (this.lobbyLoadTimes.get(worldHash).size() != 0) {
+				boolean found = false;
+				for (Long loadTime : this.lobbyLoadTimes.get(worldHash)) {
+					if (Minecraft.getSystemTime() > loadTime + 200L) {
+						found = true;
+					}
+					if (Minecraft.getSystemTime() > loadTime + 200L && !this.dispatchedLobbyChanges.contains(worldHash)) {
+						this.lobbySwitched();
+						this.dispatchedLobbyChanges.add(worldHash);
+					}
+				}
+				if (!found) {
+					this.dispatchedLobbyChanges.remove(worldHash);
+				}
+			} else {
+				this.dispatchedLobbyChanges.remove(worldHash);
+			}
+		}
+		if (PlexCore.getCurrentLobbyType().equals(PlexCoreLobbyType.SERVER_UNDETERMINED) || PlexCore.getCurrentLobbyType().equals(PlexCoreLobbyType.SERVER_UNKNOWN)) {
+			this.updateLobbyType();
+		}
+		if (this.serverCommandQueue.hasItems()) {
+			if (this.serverCommandQueue.getItem(0).isSent()) {
+				if (Minecraft.getSystemTime() > this.serverCommandQueue.getItem(0).getSendTime() + this.lobbyDeterminationTimeout) {
+					PlexCoreUtils.chatAddMessage("test");
+					this.serverCommandQueue.getItem(0).cancel();
+					if (lobbyDeterminationAttempts - 1 <= this.maxLobbyDeterminationRetries) {
+						this.sendServerCommand();
+					}
+				}
+			}
 		}
 	}
 	
@@ -304,10 +303,10 @@ public class PlexCoreListeners {
 		this.sendServerCommand();
 		PlexCore.setLobbyType(PlexCoreLobbyType.SERVER_UNDETERMINED);
 		PlexCore.dispatchLobbyChanged(PlexCoreLobbyType.SWITCHED_SERVERS);
-		//PlexCore.updateLobby(PlexCoreLobbyType.SERVER_UNDETERMINED, true);
+
 		PlexCore.updateGameName(null);
 		Plex.serverState.lastLobbySwitch = Minecraft.getSystemTime();
-		Plex.serverState.gameStartEpoch = null;
+		Plex.serverState.gameStartTime = -1L;
 		Plex.serverState.gameStartDateTime = null;
 		Plex.serverState.updatedLobbyName = null;
 	}
@@ -315,8 +314,22 @@ public class PlexCoreListeners {
 	public void sendServerCommand() {
 		this.serverCommandQueue.addCommand("/server");
 	}
-	
-	public void updateLobbyType(String scoreboardText) {
+
+
+	public String getScoreboardTitle() {
+		try {
+			return Plex.minecraft.theWorld.getScoreboard().getObjectiveInDisplaySlot(1).getDisplayName();
+		}
+		catch (Exception e) {
+			return null;
+		}
+	}
+
+	public void updateLobbyType() {
+		if (!Plex.serverState.onMineplex) {
+			return;
+		}
+		String scoreboardText = this.getScoreboardTitle();
 		boolean forcedUpdate = false;
 		boolean updateIfPossible = false;
 		if (this.lobbyUpdateRequired) {
@@ -328,7 +341,7 @@ public class PlexCoreListeners {
 		}
 		if (PlexCore.getCurrentLobbyType().equals(PlexCoreLobbyType.SERVER_UNKNOWN)) {
 			updateIfPossible = true;
-		}			
+		}
 		if (scoreboardText == null) {
 			PlexCore.setLobbyType(PlexCoreLobbyType.SERVER_UNKNOWN);
 			if (forcedUpdate) {
@@ -342,9 +355,6 @@ public class PlexCoreListeners {
 		if (compareText.equals("mineplex")) {
 			lobbyType = PlexCoreLobbyType.GAME_INGAME;
 			if ((Minecraft.getSystemTime() > Plex.serverState.lastLobbySwitch + 3000L) && (Plex.serverState.currentGameName == null)) {
-				if ((Plex.minecraft.thePlayer.capabilities.allowFlying || Plex.minecraft.thePlayer.capabilities.isFlying)) {
-					Plex.serverState.isGameSpectator = true;
-				}
 				IChatComponent tabHeaderText = null;
 				try {
 					Field tabHeader = Plex.minecraft.ingameGUI.getTabList().getClass().getDeclaredField("header");
@@ -355,6 +365,9 @@ public class PlexCoreListeners {
 				if (tabHeaderText != null) {
 					String headerText = PlexCoreUtils.condenseChatAmpersandFilter(tabHeaderText.getFormattedText());
 					if (!headerText.toLowerCase().contains("mineplex network")) {
+						if ((Plex.minecraft.thePlayer.capabilities.allowFlying || Plex.minecraft.thePlayer.capabilities.isFlying)) {
+							Plex.serverState.isGameSpectator = true;
+						}
 						PlexCore.updateGameName(PlexCoreUtils.removeFormatting(headerText));
 					}
 				}

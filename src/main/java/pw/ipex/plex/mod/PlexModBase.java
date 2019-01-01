@@ -3,7 +3,7 @@ package pw.ipex.plex.mod;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Property;
 import pw.ipex.plex.Plex;
-import pw.ipex.plex.core.PlexCoreLobbyType;
+import pw.ipex.plex.core.mineplex.PlexCoreLobbyType;
 
 public abstract class PlexModBase {
 	public PlexModBase() {
@@ -54,5 +54,15 @@ public abstract class PlexModBase {
 	}
 	
 	public void serverNameChanged(String name) {
+	}
+
+	public void onlineModLoop() {
+	}
+
+	public void modLoop(boolean isOnline) {
+	}
+
+	public long getLoopDelay() {
+		return 30;
 	}
 }

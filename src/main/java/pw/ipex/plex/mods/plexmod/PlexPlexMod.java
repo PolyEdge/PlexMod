@@ -15,8 +15,8 @@ import net.minecraft.util.ResourceLocation;
 import pw.ipex.plex.Plex;
 import pw.ipex.plex.ci.PlexCommandListener;
 import pw.ipex.plex.core.PlexCore;
-import pw.ipex.plex.core.PlexCoreLobbyType;
-import pw.ipex.plex.core.PlexCoreTextures;
+import pw.ipex.plex.core.mineplex.PlexCoreLobbyType;
+import pw.ipex.plex.core.render.PlexCoreTextures;
 //import pw.ipex.plex.core.PlexCoreUtils;
 import pw.ipex.plex.mod.PlexModBase;
 
@@ -32,7 +32,7 @@ public class PlexPlexMod extends PlexModBase {
 	
 	@Override
 	public void modInit() {
-		Plex.logger.info(":: Plex Mod Version " + Plex.VERSION + (Plex.PATCHID == null ? "" : "-" + Plex.PATCHID) + (Plex.RELEASENOTICE == null ? "" : " [" + Plex.PATCHID + "]") );
+		Plex.logger.info(":: Plex Mod Version " + Plex.VERSION + (Plex.PATCHID == null ? "" : "-" + Plex.PATCHID) + (Plex.RELEASENOTICE == null ? "" : " [" + Plex.RELEASENOTICE + "]") );
 
 		PlexCore.registerCommandListener(new PlexCommandListener("plex").setGlobal(true));
 		PlexCore.registerCommandHandler("plex", Plex.plexCommand);

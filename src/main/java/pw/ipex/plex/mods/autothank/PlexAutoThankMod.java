@@ -1,29 +1,23 @@
 package pw.ipex.plex.mods.autothank;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.IChatComponent;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
 import pw.ipex.plex.Plex;
 import pw.ipex.plex.ci.PlexCommandListener;
-import pw.ipex.plex.commandqueue.PlexCommandQueue;
-import pw.ipex.plex.commandqueue.PlexCommandQueueCommand;
+import pw.ipex.plex.cq.PlexCommandQueue;
 import pw.ipex.plex.core.PlexCore;
-import pw.ipex.plex.core.PlexCoreLobbyType;
+import pw.ipex.plex.core.mineplex.PlexCoreLobbyType;
 import pw.ipex.plex.core.PlexCoreUtils;
 import pw.ipex.plex.core.PlexCoreValue;
 import pw.ipex.plex.mod.PlexModBase;
@@ -65,6 +59,8 @@ public class PlexAutoThankMod extends PlexModBase {
 		gameNames.put("smash mobs", "Smash_Mobs");
 		gameNames.put("dominate", "Dominate");
 		gameNames.put("ctf", "CTF");
+		gameNames.put("event", "Event");
+		gameNames.put("nano", "Nano");
 		
 		
 		PlexCore.registerCommandListener(new PlexCommandListener("ath"));
@@ -81,9 +77,8 @@ public class PlexAutoThankMod extends PlexModBase {
 	public String getModName() {
 		return "AutoThank";
 	}
-	
-	@SubscribeEvent
-	public void onClientTick(ClientTickEvent e) {
+
+	public void onlineModLoop() {
 		if (!this.modEnabled.booleanValue) {
 			lastThankWave = 0L; // remove this in release
 			this.thankQueue.cancelAll();
@@ -95,8 +90,8 @@ public class PlexAutoThankMod extends PlexModBase {
 			return;
 		}
 		if (this.thankQueue.hasItems()) {
-			if (thankQueue.getItem(0).isCommandSent()) {
-				if (Minecraft.getSystemTime() > thankQueue.getItem(0).latestCommandSentTimestamp + thankResponseTimeout) {
+			if (thankQueue.getItem(0).isSent()) {
+				if (Minecraft.getSystemTime() > thankQueue.getItem(0).getSendTime() + thankResponseTimeout) {
 					thankQueue.getItem(0).markComplete();
 				}				
 			}
@@ -118,7 +113,7 @@ public class PlexAutoThankMod extends PlexModBase {
 		}
 		String minified = PlexCoreUtils.minimalize(e.message.getFormattedText());
 		if (thankQueue.hasItems()) {
-			if (thankQueue.getItem(0).isCommandSent()) {
+			if (thankQueue.getItem(0).isSent()) {
 				if (minified.matches(MATCH_SUCCESSFUL_TIP)) {
 					thankQueue.getItem(0).markComplete();
 					cooldownWait = false;
@@ -141,7 +136,7 @@ public class PlexAutoThankMod extends PlexModBase {
 				else if (minified.toLowerCase().startsWith("amplifier> please wait before trying that again")) {
 					e.setCanceled(true);
 					cooldownWait = true;
-					thankQueue.getItem(0).resendCommandIn(cooldownBackoffDelay);
+					thankQueue.getItem(0).resendIn(cooldownBackoffDelay);
 				}
 			}
 		}

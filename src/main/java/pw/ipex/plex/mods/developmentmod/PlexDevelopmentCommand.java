@@ -8,7 +8,7 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.util.BlockPos;
 import pw.ipex.plex.ci.PlexCommandHandler;
 import pw.ipex.plex.core.PlexCore;
-import pw.ipex.plex.core.PlexCoreChatRegex;
+import pw.ipex.plex.core.regex.PlexCoreRegex;
 import pw.ipex.plex.core.PlexCoreUtils;
 
 public class PlexDevelopmentCommand extends PlexCommandHandler {
@@ -39,7 +39,7 @@ public class PlexDevelopmentCommand extends PlexCommandHandler {
 			}
 			input = input.trim();
 			PlexCoreUtils.chatAddMessage("split of \"" + input + "\"");
-			for (String x : PlexCoreChatRegex.splitFormatRegionString(input)) {
+			for (String x : PlexCoreRegex.splitFormatRegionString(input)) {
 				PlexCoreUtils.chatAddMessage(x);
 			}
 		}

@@ -14,14 +14,16 @@ import net.minecraft.client.renderer.GlStateManager;
 import pw.ipex.plex.Plex;
 import pw.ipex.plex.core.PlexCore;
 
-import pw.ipex.plex.core.PlexCoreTextures;
+import pw.ipex.plex.core.render.PlexCoreTextures;
 import pw.ipex.plex.core.PlexCoreUtils;
+import pw.ipex.plex.core.render.PlexCoreRenderColourState;
 import pw.ipex.plex.mods.plexmod.PlexPlexMod;
+import pw.ipex.plex.ui.widget.PlexUISlider;
 
 public class PlexUIModMenuScreen extends GuiScreen {
 	public PlexUIBase baseUiScreen;
-	public PlexUIColourState colourState = new PlexUIColourState();
-	public PlexUIColourState oldColourState = null;
+	public PlexCoreRenderColourState colourState = new PlexCoreRenderColourState();
+	public PlexCoreRenderColourState oldColourState = null;
 	public List<GuiButton> internalButtonList = new ArrayList<GuiButton>();
 	public List<PlexUITabContainer> uiTabs = new ArrayList<PlexUITabContainer>();
 	public Long initializationTime;
@@ -34,7 +36,7 @@ public class PlexUIModMenuScreen extends GuiScreen {
 		this.updateChild();
 	}
 	
-	public PlexUIModMenuScreen(PlexUIBase base, PlexUIColourState oldColourState) {
+	public PlexUIModMenuScreen(PlexUIBase base, PlexCoreRenderColourState oldColourState) {
 		this(base);
 		this.oldColourState = oldColourState;
 	}
