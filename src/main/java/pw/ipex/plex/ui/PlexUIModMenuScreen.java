@@ -203,8 +203,10 @@ public class PlexUIModMenuScreen extends GuiScreen {
 	protected void keyTyped(char par1, int par2) throws IOException {
 		super.keyTyped(par1, par2);
 		if (par2 == 1) {
-			PlexCore.saveAllConfig();
-			this.mc.displayGuiScreen((GuiScreen) null);
+			if (this.baseUiScreen.escapeTyped()) {
+				PlexCore.saveAllConfig();
+				this.mc.displayGuiScreen((GuiScreen) null);
+			}
 		}
 		this.baseUiScreen.keyTyped(par1, par2);
 	}

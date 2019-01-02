@@ -26,6 +26,7 @@ public class PlexUIAutoCompleteTextField {
     public Integer currentPreviousSentMessageIndex = 0;
 
     public List<? extends PlexUIAutoCompleteItem> items = new ArrayList<>();
+    public List<? extends PlexUIAutoCompleteItem> visibleItems = new ArrayList<>();
 
     public List<String> groupsInclude = new ArrayList<>();
     public List<String> groupsExclude = new ArrayList<>();
@@ -90,15 +91,75 @@ public class PlexUIAutoCompleteTextField {
         this.items = items;
     }
 
-    private void updateAutoCompleteItems() {
-        this.autoCompleteList.items = this.items;
+    public List<? extends PlexUIAutoCompleteItem> getVisibleItems() {
+        return this.getItemsMatching(this.getLastWordInBox());
     }
+
+    public void updateItems() {
+        List<? extends PlexUIAutoCompleteItem> visibleItems = this.getVisibleItems();
+        this.visibleItems = visibleItems;
+
+        PlexUIAutoCompleteItem lastVisibleItem = null;
+        PlexUIAutoCompleteItem scrollTo = null;
+        boolean selectedFound = false;
+        boolean selectNextVisible = false;
+
+        for (PlexUIAutoCompleteItem item : this.items) {
+            if (item.selected) {
+                this.autoCompleteWithItem(item);
+                item.selected = false;
+            }
+            if (selectNextVisible && visibleItems.contains(item)) {
+                item.softSelected = true;
+                selectNextVisible = false;
+                scrollTo = item;
+                continue;
+            }
+            if (selectedFound) {
+                item.softSelected = false;
+                continue;
+            }
+            if (item.softSelected) {
+                selectedFound = true;
+                if (!visibleItems.contains(item)) {
+                    item.softSelected = false;
+                    if (lastVisibleItem != null) {
+                        lastVisibleItem.softSelected = true;
+                    }
+                    else {
+                        selectNextVisible = true;
+                    }
+                }
+            }
+            if (visibleItems.contains(item)) {
+                lastVisibleItem = item;
+            }
+        }
+
+        selectedFound = false;
+        for (PlexUIAutoCompleteItem item : visibleItems) {
+            if (item.softSelected) {
+                selectedFound = true;
+            }
+        }
+
+        this.autoCompleteList.items = visibleItems;
+
+        if (!selectedFound && visibleItems.size() != 0) {
+            visibleItems.get(0).softSelected = true;
+            scrollTo = visibleItems.get(0);
+        }
+        if (scrollTo != null) {
+            this.autoCompleteList.scrollToItemIfNotCompletelyInView(scrollTo);
+        }
+    }
+
 
     public boolean getAutoCompleteListVisible() {
         if (!this.autoCompleteListVisible) {
             return false;
         }
-        this.updateAutoCompleteItems();
+        this.updateItems();
         String lastWord = this.getLastWordInBox();
         if (lastWord.trim().equals("")) {
             //return false;
@@ -124,12 +185,8 @@ public class PlexUIAutoCompleteTextField {
         return this.autoCompleteList.getItemsMatchingSearchTerm(this.items, text, 0);
     }
 
-    public List<? extends PlexUIAutoCompleteItem> getItemsMatchingLastWord() {
-        return this.getItemsMatching(this.getLastWordInBox());
-    }
-
     public void setSelectedItem(int index) {
-        List<? extends PlexUIAutoCompleteItem> items = this.getItemsMatchingLastWord();
+        List<? extends PlexUIAutoCompleteItem> items = this.getVisibleItems();
         for (int itemIndex = 0; itemIndex < items.size(); itemIndex++) {
             items.get(itemIndex).softSelected = false;
         }
@@ -138,7 +195,7 @@ public class PlexUIAutoCompleteTextField {
     }
 
     public PlexUIAutoCompleteItem getSelectedItem() {
-        List<? extends PlexUIAutoCompleteItem> items = this.getItemsMatchingLastWord();
+        List<? extends PlexUIAutoCompleteItem> items = this.getVisibleItems();
         for (PlexUIAutoCompleteItem item : items) {
             if (item.softSelected) {
                 return item;
@@ -149,7 +206,7 @@ public class PlexUIAutoCompleteTextField {
 
     public void moveSelectedItem(int by) {
         int selectedIndex = -1;
-        List<? extends PlexUIAutoCompleteItem> items = this.getItemsMatchingLastWord();
+        List<? extends PlexUIAutoCompleteItem> items = this.getVisibleItems();
         if (items.size() == 0) {
             return;
         }
@@ -185,6 +242,10 @@ public class PlexUIAutoCompleteTextField {
             return true;
         }
         if (par2 == 15 && this.text.isFocused() && this.getAutoCompleteListVisible()) {
+            PlexUIAutoCompleteItem item = this.getSelectedItem();
+            if (item != null) {
+                this.autoCompleteWithItem(item);
+            }
             this.setAutoCompleteListVisible(false);
             return true;
         }
@@ -261,38 +322,18 @@ public class PlexUIAutoCompleteTextField {
         output = output + item.autoCompleteText + " ";
         this.text.setText(output);
         this.text.setCursorPositionEnd();
+        this.updateItems();
     }
 
     public void drawScreen(int par1, int par2, float par3) {
         //Plex.logger.info("lw " + this.getLastWordInBox());
         //Plex.logger.info("ai " + this.items.size());
-        List<? extends PlexUIAutoCompleteItem> visibleItems = this.getItemsMatchingLastWord();
-        //Plex.logger.info("si " + visibleItems.size());
-        for (PlexUIAutoCompleteItem item : this.items) {
-            if (item.selected) {
-                this.autoCompleteWithItem(item);
-                item.selected = false;
-            }
-            if (!visibleItems.contains(item)) {
-                item.softSelected = false;
-            }
-        }
-        boolean softSelectedItem = false;
-        for (PlexUIAutoCompleteItem item : this.items) {
-            if (item.softSelected) {
-                softSelectedItem = true;
-            }
-        }
-        if (!softSelectedItem && visibleItems.size() != 0) {
-            visibleItems.get(0).softSelected = true;
-            this.autoCompleteList.scrollToItemIfNotCompletelyInView(visibleItems.get(0));
-        }
+        this.updateItems();
         this.text.drawTextBox();
         //GlStateManager.disableColorLogic();
         //GlStateManager.enableTexture2D();
         boolean listVisible = this.getAutoCompleteListVisible();
         this.autoCompleteList.setVisible(listVisible);
-        this.autoCompleteList.items = visibleItems;
 
         if (listVisible) {
             Plex.renderUtils.staticDrawGradientRect(this.autoCompleteList.startX, this.autoCompleteList.startY - 2, this.autoCompleteList.endX, this.autoCompleteList.endY + 2, PlexCoreUtils.replaceColour(this.listBackgroundColour, null, null, null, 230), PlexCoreUtils.replaceColour(this.listBackgroundColour, null, null, null, 230));

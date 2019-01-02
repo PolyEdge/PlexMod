@@ -1,4 +1,4 @@
-package pw.ipex.plex.mods.messagingscreen.ui;
+package pw.ipex.plex.mods.messagingscreen;
 
 import org.lwjgl.input.Keyboard;
 
@@ -13,10 +13,10 @@ import pw.ipex.plex.Plex;
 import pw.ipex.plex.core.PlexCore;
 
 import pw.ipex.plex.core.PlexCoreUtils;
-import pw.ipex.plex.mods.messagingscreen.PlexMessagingChannelClassWrapper;
 import pw.ipex.plex.mods.messagingscreen.translate.PlexMessagingChatMessageConstructor;
-import pw.ipex.plex.mods.messagingscreen.PlexMessagingMod;
 import pw.ipex.plex.mods.messagingscreen.render.PlexMessagingMessageHoverState;
+import pw.ipex.plex.mods.messagingscreen.ui.PlexMessagingUICreateNewChatWindow;
+import pw.ipex.plex.mods.messagingscreen.ui.PlexMessagingUIMessageWindow;
 import pw.ipex.plex.ui.*;
 import pw.ipex.plex.ui.widget.*;
 import pw.ipex.plex.ui.widget.autocomplete.PlexUIAutoCompleteTextField;
@@ -252,6 +252,14 @@ public class PlexMessagingUIScreen extends PlexUIBase {
 		}
 
 		this.searchBox.keyTyped(par1, par2);
+	}
+
+	@Override
+	public boolean escapeTyped() {
+		if (this.messageField.keyTyped((char) 27, 1)) {
+			return false;
+		}
+		return true;
 	}
 
 	

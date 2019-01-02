@@ -56,6 +56,10 @@ public abstract class PlexUIBase {
 	}
 	
 	public void keyTyped(char par1, int par2) {}
+
+	public boolean escapeTyped() {
+		return true;
+	}
 	
 	public void mouseClicked(int x, int y, int btn) {}
 	

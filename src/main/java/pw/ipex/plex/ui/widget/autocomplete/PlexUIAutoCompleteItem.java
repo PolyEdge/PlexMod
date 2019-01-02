@@ -4,16 +4,63 @@ import pw.ipex.plex.Plex;
 
 import pw.ipex.plex.ui.widget.itemlist.PlexUIScrolledItem;
 
-public class PlexUIAutoCompleteItem implements PlexUIScrolledItem {
+public class PlexUIAutoCompleteItem implements PlexUIScrolledItem, Comparable<PlexUIAutoCompleteItem> {
     public boolean softSelected = false;
     public boolean selected = false;
     public String attachedPlayerHead = null;
     public String displayText = "";
     public String searchText = "";
     public String autoCompleteText = "";
-    public String id = "";
-    public String group = "";
+    public Integer localSortingIndex = null;
+    public Integer groupSortingIndex = null;
+    public String sortingString;
+    public String id;
+    public String group;
     public int defaultColour = 0xffffff;
+
+    public PlexUIAutoCompleteItem(String id, String group) {
+        this.id = id;
+        this.group = group;
+    }
+
+    public PlexUIAutoCompleteItem setDisplayText(String text) {
+        this.displayText = text;
+        return this;
+    }
+
+    public PlexUIAutoCompleteItem setSearchText(String text) {
+        this.searchText = text;
+        return this;
+    }
+
+    public PlexUIAutoCompleteItem setAutoCompleteText(String text) {
+        this.autoCompleteText = text;
+        return this;
+    }
+
+    public PlexUIAutoCompleteItem setHead(String player) {
+        this.attachedPlayerHead = player;
+        return this;
+    }
+
+    public PlexUIAutoCompleteItem setLocalSortingIndex(int index) {
+        this.localSortingIndex = index;
+        return this;
+    }
+
+    public PlexUIAutoCompleteItem setGlobalSortingIndex(int index) {
+        this.groupSortingIndex = index;
+        return this;
+    }
+
+    public PlexUIAutoCompleteItem setSortingString(String sortString) {
+        this.sortingString = sortString;
+        return this;
+    }
+
+    public String getSortingString() {
+        return this.sortingString == null || this.sortingString.trim().equals("") ? this.id : this.sortingString;
+    }
 
     @Override
     public boolean listItemIsSelected() {
@@ -72,5 +119,36 @@ public class PlexUIAutoCompleteItem implements PlexUIScrolledItem {
     @Override
     public int listItemGetForegroundColour() {
         return 0;
+    }
+
+    @Override
+    public int compareTo(PlexUIAutoCompleteItem item) {
+        if (this.group.equals(item.group)) {
+            return this.compareAsGroup(this, item);
+        }
+
+        if (this.groupSortingIndex != null || item.groupSortingIndex != null) {
+            if (this.groupSortingIndex != null && item.groupSortingIndex != null) {
+                if (this.groupSortingIndex.equals(item.groupSortingIndex)) {
+                    return this.compareAsGroup(this, item);
+                }
+                return this.groupSortingIndex.compareTo(item.groupSortingIndex);
+            }
+            return this.localSortingIndex == null ? 1 : -1;
+        }
+        return this.group.compareTo(item.group);
+    }
+
+    public int compareAsGroup(PlexUIAutoCompleteItem item1, PlexUIAutoCompleteItem item2) {
+        if (item1.localSortingIndex == null && item2.localSortingIndex == null) {
+            return item1.getSortingString().compareTo(item2.getSortingString());
+        }
+        if (item1.localSortingIndex == null || item2.localSortingIndex == null) {
+            return item1.localSortingIndex == null ? 1 : -1;
+        }
+        if (!item1.localSortingIndex.equals(item2.localSortingIndex))  {
+            return item1.localSortingIndex.compareTo(item2.localSortingIndex);
+        }
+        return item1.getSortingString().compareTo(item2.getSortingString());
     }
 }

@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
@@ -301,18 +302,41 @@ public class PlexCore {
 		try {
 			List<String> result = new ArrayList<String>();
 			for (EntityPlayer player : Plex.minecraft.theWorld.playerEntities) {
-				if (lowercase) {
-					result.add(player.getName().toLowerCase());
-				}
-				else {
-					result.add(player.getName());
-				}
+				result.add(lowercase ? player.getName().toLowerCase() : player.getName());
 			}
 			return result;
 		} 
 		catch (NullPointerException e) {
 			return null;
 		}
+	}
+
+	/**
+	 * Gets a list of players' usernames in the tablist. Equivalent to
+	 * getPlayerIGNTabList(false).
+	 *
+	 * @return List of players' usernames in the current world
+	 */
+	public static List<String> getPlayerIGNTabList() {
+		return getPlayerIGNTabList(false);
+	}
+
+	/**
+	 * Gets the list of players in the tablist, optionally lowercasing all names
+	 *
+	 * @param lowercase Make all player names lowercase
+	 * @return The list of names, or null if not in a world
+	 */
+	public static List<String> getPlayerIGNTabList(boolean lowercase) {
+		List<String> playerNameList = new ArrayList<>();
+		for (NetworkPlayerInfo player : Plex.minecraft.thePlayer.sendQueue.getPlayerInfoMap()) {
+			String name = player.getGameProfile().getName();
+			if (!name.matches("^[a-zA-Z0-9_]{1,20}$")) {
+				continue;
+			}
+			playerNameList.add(lowercase ? name.toLowerCase() : name);
+		}
+		return playerNameList;
 	}
 
 	/**

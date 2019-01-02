@@ -22,7 +22,7 @@ import pw.ipex.plex.Plex;
 import pw.ipex.plex.cq.PlexCommandQueue;
 import pw.ipex.plex.cq.PlexCommandQueueCommand;
 import pw.ipex.plex.core.mineplex.PlexCoreLobbyType;
-import pw.ipex.plex.mods.messagingscreen.ui.PlexMessagingUIScreen;
+import pw.ipex.plex.mods.messagingscreen.PlexMessagingUIScreen;
 import pw.ipex.plex.ui.PlexUIBase;
 import pw.ipex.plex.ui.PlexUIModMenuScreen;
 
