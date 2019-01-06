@@ -6,10 +6,12 @@ import pw.ipex.plex.ui.PlexUIBase;
 import pw.ipex.plex.ui.PlexUIModMenuScreen;
 import pw.ipex.plex.ui.widget.PlexUISlider;
 
+import java.util.Objects;
+
 public class PlexAutoThankUI extends PlexUIBase {
 	@Override
 	public String uiGetTitle() {
-		return "Auto Thank Amplifiers";
+		return "AutoThank";
 	}
 
 	@Override
@@ -17,13 +19,14 @@ public class PlexAutoThankUI extends PlexUIBase {
 		Integer top = ui.startingYPos(41);
 		Integer paneSize = ui.centeredPaneSize(1, 20, 160);
 		Integer pane1Pos = ui.centeredPanePos(0, 1, 20, 160);
-		ui.addElement(new GuiButton(5, pane1Pos + 5, top + 0, paneSize - 10, 20, buttonDisplayString("Auto Thank", PlexCore.getSharedValue("autoThank_enabled").booleanValue)));
+		ui.addElement(new GuiButton(5, pane1Pos + 5, top + 0, paneSize - 10, 20, buttonDisplayString("AutoThank", PlexCore.modInstance(PlexAutoThankMod.class).modEnabled)));
+		ui.addElement(new GuiButton(6, pane1Pos + 5, top + 23, paneSize - 10, 20, buttonDisplayString("Compact Messages", PlexCore.modInstance(PlexAutoThankMod.class).compactMessagesEnabled)));
+
 	}
 	
 	public String buttonDisplayString(String prefix, Boolean enabled) {
 		return prefix + ": " + (enabled ? "Enabled" : "Disabled");
 	}
-
 	
 	@Override
 	public void uiSliderInteracted(PlexUISlider slider) {
@@ -37,8 +40,12 @@ public class PlexAutoThankUI extends PlexUIBase {
 	@Override
 	public void uiButtonClicked(GuiButton button) {
 		if (button.id == 5) {
-			PlexCore.getSharedValue("autoThank_enabled").set(!PlexCore.getSharedValue("autoThank_enabled").booleanValue);
-			button.displayString = buttonDisplayString("Auto Thank", PlexCore.getSharedValue("autoThank_enabled").booleanValue);
+			PlexCore.modInstance(PlexAutoThankMod.class).modEnabled = !PlexCore.modInstance(PlexAutoThankMod.class).modEnabled;
+			button.displayString = buttonDisplayString("AutoThank", PlexCore.modInstance(PlexAutoThankMod.class).modEnabled);
+		}
+		if (button.id == 6) {
+			PlexCore.modInstance(PlexAutoThankMod.class).compactMessagesEnabled = !PlexCore.modInstance(PlexAutoThankMod.class).compactMessagesEnabled;
+			button.displayString = buttonDisplayString("Compact Messages", PlexCore.modInstance(PlexAutoThankMod.class).compactMessagesEnabled);
 		}
 	}
 }

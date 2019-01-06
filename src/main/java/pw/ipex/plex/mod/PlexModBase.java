@@ -34,7 +34,7 @@ public abstract class PlexModBase {
 		return Plex.config.get(this.getModName(), name, def);
 	}
 	
-	public abstract void saveModConfig();
+	public void saveModConfig() {}
 
 	public void joinedMineplex() {
 		MinecraftForge.EVENT_BUS.register(this);
@@ -44,10 +44,9 @@ public abstract class PlexModBase {
 		MinecraftForge.EVENT_BUS.unregister(this);
 	}
 
-	public abstract void switchedLobby(PlexCoreLobbyType lobbyType);
+	public void switchedLobby(PlexCoreLobbyType lobbyType) {};
 	
-	public void communicate(Object ...args) {
-	}
+	public void communicate(Object ...args) {}
 	
 	public Object receive(Object ...args) {
 		return null;

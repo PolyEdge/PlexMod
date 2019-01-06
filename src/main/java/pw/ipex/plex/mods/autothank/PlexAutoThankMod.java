@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.google.gson.JsonElement;
@@ -25,11 +26,13 @@ import pw.ipex.plex.mod.PlexModBase;
 public class PlexAutoThankMod extends PlexModBase {
 
 	public static String MATCH_AMPLIFIER_MESSAGE = "^amplifier> [a-zA-Z0-9_]{1,20} has activated a game amplifier on ([a-zA-Z ]+)!$";
-	public static String MATCH_SUCCESSFUL_TIP = "^tip> you thanked [a-zA-Z0-9_]{1,20}\\. they earned 5 treasure shards and you got 5 treasure shards in return!$";
+	public static String MATCH_SUCCESSFUL_TIP = "^tip> you thanked ([a-zA-Z0-9_]{1,20})\\. they earned 5 treasure shards and you got 5 treasure shards in return!$";
 	
-	public static Pattern PATTERN_AMPLIFIER_MESSAGE = Pattern.compile(MATCH_AMPLIFIER_MESSAGE);
+	public static Pattern PATTERN_SUCCESSFUL_TIP = Pattern.compile(MATCH_SUCCESSFUL_TIP, Pattern.CASE_INSENSITIVE);
 	
-	public PlexCoreValue modEnabled = new PlexCoreValue("autoThank_enabled", false);
+	public boolean modEnabled = false;
+	public boolean compactMessagesEnabled = false;
+
 	public Map<String, String> gameNames = new HashMap<String, String>();
 	public PlexCommandQueue thankQueue = new PlexCommandQueue("autoThank", Plex.plexCommandQueue);
 	public Long lastThankWave = 0L;
@@ -42,9 +45,10 @@ public class PlexAutoThankMod extends PlexModBase {
 
 	@Override
 	public void modInit() {
-		this.modEnabled.set(this.modSetting("autoThank_enabled", false).getBoolean(false));
+		this.modEnabled = this.modSetting("autoThank_enabled", false).getBoolean(false);
+		this.compactMessagesEnabled = this.modSetting("autoThank_compactMessages", false).getBoolean(false);
 
-		this.thankQueue.setPriority(3);
+		this.thankQueue.setPriority(40);
 		
 		gameNames.put("master builders", "Master_Builders");
 		gameNames.put("draw my thing", "Draw_My_Thing");
@@ -60,7 +64,7 @@ public class PlexAutoThankMod extends PlexModBase {
 		gameNames.put("dominate", "Dominate");
 		gameNames.put("ctf", "CTF");
 		gameNames.put("event", "Event");
-		gameNames.put("nano", "Nano");
+		gameNames.put("nano", "Nano_Games");
 		
 		
 		PlexCore.registerCommandListener(new PlexCommandListener("ath"));
@@ -79,7 +83,7 @@ public class PlexAutoThankMod extends PlexModBase {
 	}
 
 	public void onlineModLoop() {
-		if (!this.modEnabled.booleanValue) {
+		if (!this.modEnabled) {
 			lastThankWave = 0L; // remove this in release
 			this.thankQueue.cancelAll();
 			return;
@@ -96,7 +100,7 @@ public class PlexAutoThankMod extends PlexModBase {
 				}				
 			}
 		}
-		if (Plex.serverState.onMineplex && this.modEnabled.booleanValue) {
+		if (Plex.serverState.onMineplex && this.modEnabled) {
 			if (Minecraft.getSystemTime() > (lastThankWave + thankWaveInterval)) {
 				for (String game : gameNames.values()) {
 					thankQueue.addCommand("/amplifier thank " + game);
@@ -108,10 +112,20 @@ public class PlexAutoThankMod extends PlexModBase {
 	
 	@SubscribeEvent
 	public void onChat(ClientChatReceivedEvent e) {
-		if (!this.modEnabled.booleanValue) {
+		if (!this.modEnabled) {
 			return;
 		}
-		String minified = PlexCoreUtils.minimalize(e.message.getFormattedText());
+		String minifiedCase = PlexCoreUtils.minimalizeKeepCase(e.message.getFormattedText());
+		String minified = minifiedCase.toLowerCase();
+		if (minified.matches(MATCH_AMPLIFIER_MESSAGE) && this.compactMessagesEnabled) {
+			e.setCanceled(true);
+		}
+		if (minified.matches(MATCH_SUCCESSFUL_TIP) && this.compactMessagesEnabled) {
+			Matcher nameExtract = PATTERN_SUCCESSFUL_TIP.matcher(minifiedCase);
+			nameExtract.find();
+			PlexCoreUtils.chatAddMessage(PlexCoreUtils.chatStyleText("BLUE", thankQueue.hasItems() ? "AutoThank> " : "Thank> ") + PlexCoreUtils.chatStyleText("GRAY", "Thanked ") + PlexCoreUtils.chatStyleText("YELLOW", nameExtract.group(1)) + PlexCoreUtils.chatStyleText("GRAY", "."));
+			e.setCanceled(true);
+		}
 		if (thankQueue.hasItems()) {
 			if (thankQueue.getItem(0).isSent()) {
 				if (minified.matches(MATCH_SUCCESSFUL_TIP)) {
@@ -144,14 +158,17 @@ public class PlexAutoThankMod extends PlexModBase {
 			JsonParser messageParser = new JsonParser();
 			JsonElement messageJson = messageParser.parse(IChatComponent.Serializer.componentToJson(e.message));
 			String command = messageJson.getAsJsonObject().get("clickEvent").getAsJsonObject().get("value").getAsString();
-
+			if (this.compactMessagesEnabled) {
+				e.setCanceled(true);
+			}
 			thankQueue.addCommand(command);
 		}
 	}
 
 	@Override
 	public void saveModConfig() {
-		this.modSetting("autoThank_enabled", false).set(this.modEnabled.booleanValue);
+		this.modSetting("autoThank_enabled", false).set(this.modEnabled);
+		this.modSetting("autoThank_compactMessages", false).set(this.compactMessagesEnabled);
 	}
 
 	@Override

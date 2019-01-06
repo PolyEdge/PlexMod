@@ -79,7 +79,7 @@ public class PlexMessagingChatMessageConstructor {
 		}
 		return adapters;
 	}
-	
+
 	public static List<PlexMessagingChatMessageAdapter> getAllAdaptersForChatMessageWithRegexTag(String chatMessage, String tag) {
 		List<PlexMessagingChatMessageAdapter> adapters = new ArrayList<PlexMessagingChatMessageAdapter>();
 		for (PlexMessagingChatMessageAdapter adapter : messageHandlers) {

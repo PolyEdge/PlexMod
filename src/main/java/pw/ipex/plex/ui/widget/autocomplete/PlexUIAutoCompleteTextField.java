@@ -8,7 +8,9 @@ import pw.ipex.plex.core.PlexCoreUtils;
 import pw.ipex.plex.ui.widget.itemlist.PlexUIScrolledItemList;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class PlexUIAutoCompleteTextField {
     public GuiTextField text;
@@ -22,14 +24,16 @@ public class PlexUIAutoCompleteTextField {
 
     public Boolean autoCompleteListVisible = false;
 
+    public Boolean clearFiltersOnComplete = true;
+
     public List<String> previousSentMessages = new ArrayList<>();
     public Integer currentPreviousSentMessageIndex = 0;
 
-    public List<? extends PlexUIAutoCompleteItem> items = new ArrayList<>();
+    public List<? extends PlexUIAutoCompleteItem> allItems = new ArrayList<>();
     public List<? extends PlexUIAutoCompleteItem> visibleItems = new ArrayList<>();
 
-    public List<String> groupsInclude = new ArrayList<>();
-    public List<String> groupsExclude = new ArrayList<>();
+    public Set<String> groupsInclude = new HashSet<>();
+    public Set<String> groupsExclude = new HashSet<>();
 
     public Integer listBackgroundColour = 0x000000;
     public Integer listBorderColour = 0xff757575;
@@ -42,7 +46,7 @@ public class PlexUIAutoCompleteTextField {
         this.itemWidth = par5Width;
         this.itemHeight = par6Height;
         this.text = new GuiTextField(this.id, this.fontRendererInstance, this.xPosition, this.yPosition, this.itemWidth, this.itemHeight);
-        this.autoCompleteList = new PlexUIScrolledItemList(this.items, 0, 0, 0, 0);
+        this.autoCompleteList = new PlexUIScrolledItemList(this.allItems, 0, 0, 0, 0);
         this.autoCompleteList.setPadding(10, 0);
         this.autoCompleteList.defaultEntryHeight = 10;
         this.autoCompleteList.scrollbar.hiddenForcedScroll = 0.0F;
@@ -88,14 +92,58 @@ public class PlexUIAutoCompleteTextField {
     }
 
     public void setAutoCompleteItems(List<? extends PlexUIAutoCompleteItem> items) {
-        this.items = items;
+        this.allItems = items;
+    }
+
+    public void includeGroup(String group) {
+        this.unexcludeGroup(group);
+        this.groupsInclude.add(group);
+    }
+
+    public void unincludeGroup(String group) {
+        this.groupsInclude.remove(group);
+    }
+
+    public void includeAll() {
+        this.groupsInclude.clear();
+    }
+
+    public void excludeGroup(String group) {
+        this.unincludeGroup(group);
+        this.groupsExclude.add(group);
+    }
+
+    public void unexcludeGroup(String group) {
+        this.groupsExclude.remove(group);
+    }
+
+    public void unexcludeAll() {
+        this.groupsExclude.clear();
+    }
+
+    public void clearInclusionFilters() {
+        this.groupsInclude.clear();
+        this.groupsExclude.clear();
     }
 
     public List<? extends PlexUIAutoCompleteItem> getVisibleItems() {
-        return this.getItemsMatching(this.getLastWordInBox());
+        List<PlexUIAutoCompleteItem> items = new ArrayList<>();
+        for (PlexUIAutoCompleteItem item : this.getItemsMatching(this.getLastWordInBox())) {
+            if (this.groupsInclude.size() > 0) {
+                if (!this.groupsInclude.contains(item.group)) {
+                    continue;
+                }
+            }
+            if (this.groupsExclude.contains(item.group)) {
+                continue;
+            }
+            items.add(item);
+        }
+
+        return items;
     }
 
-    public void updateItems() {
+    private void updateItems() {
         List<? extends PlexUIAutoCompleteItem> visibleItems = this.getVisibleItems();
         this.visibleItems = visibleItems;
 
@@ -104,7 +152,7 @@ public class PlexUIAutoCompleteTextField {
         boolean selectedFound = false;
         boolean selectNextVisible = false;
 
-        for (PlexUIAutoCompleteItem item : this.items) {
+        for (PlexUIAutoCompleteItem item : this.allItems) {
             if (item.selected) {
                 this.autoCompleteWithItem(item);
                 item.selected = false;
@@ -154,7 +202,6 @@ public class PlexUIAutoCompleteTextField {
         }
     }
 
-
     public boolean getAutoCompleteListVisible() {
         if (!this.autoCompleteListVisible) {
             return false;
@@ -180,9 +227,9 @@ public class PlexUIAutoCompleteTextField {
 
     public List<? extends PlexUIAutoCompleteItem> getItemsMatching(String text) {
         if (text.trim().equals("")) {
-            return this.items;
+            return this.allItems;
         }
-        return this.autoCompleteList.getItemsMatchingSearchTerm(this.items, text, 0);
+        return this.autoCompleteList.getItemsMatchingSearchTerm(this.allItems, text, 0);
     }
 
     public void setSelectedItem(int index) {
@@ -190,7 +237,7 @@ public class PlexUIAutoCompleteTextField {
         for (int itemIndex = 0; itemIndex < items.size(); itemIndex++) {
             items.get(itemIndex).softSelected = false;
         }
-        int selectedIndex = PlexCoreUtils.intRange(index, 0, this.items.size() - 1);
+        int selectedIndex = PlexCoreUtils.intRange(index, 0, this.allItems.size() - 1);
         items.get(selectedIndex).softSelected = true;
     }
 
@@ -320,14 +367,18 @@ public class PlexUIAutoCompleteTextField {
             output = output + words[wordIndex] + " ";
         }
         output = output + item.autoCompleteText + " ";
+        item.selected = false;
         this.text.setText(output);
         this.text.setCursorPositionEnd();
+        if (this.clearFiltersOnComplete) {
+            this.clearInclusionFilters();
+        }
         this.updateItems();
     }
 
     public void drawScreen(int par1, int par2, float par3) {
         //Plex.logger.info("lw " + this.getLastWordInBox());
-        //Plex.logger.info("ai " + this.items.size());
+        //Plex.logger.info("ai " + this.allItems.size());
         this.updateItems();
         this.text.drawTextBox();
         //GlStateManager.disableColorLogic();

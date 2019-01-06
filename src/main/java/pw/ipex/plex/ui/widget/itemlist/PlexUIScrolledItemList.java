@@ -99,7 +99,11 @@ public class PlexUIScrolledItemList extends GuiScreen {
 		this.scrollbar.scrollByPixels(pixels, this.getTotalListPixels(), this.getSizeY());
 	}
 
-	public List<? extends PlexUIScrolledItem> getItems() {
+	public List<? extends PlexUIScrolledItem> getAllItems() {
+		return this.items;
+	}
+
+	public List<? extends PlexUIScrolledItem> getVisibleItems() {
 		return this.getItemsMatchingSearchTerm(this.searchText);
 	}
 	
@@ -137,7 +141,7 @@ public class PlexUIScrolledItemList extends GuiScreen {
 	}
 	
 	public int getTotalListPixels() {
-		return getTotalListPixels(this.getItems());
+		return getTotalListPixels(this.getVisibleItems());
 	}
 
 	public int getTotalListPixels(List<? extends PlexUIScrolledItem> items) {
@@ -149,13 +153,13 @@ public class PlexUIScrolledItemList extends GuiScreen {
 	}
 
 	public PlexUIScrolledItem getMouseOverItem(int mouseX, int mouseY) {
-		int scrollRange = this.getTotalListPixels(this.getItems()) - this.getSizeY();
+		int scrollRange = this.getTotalListPixels(this.getVisibleItems()) - this.getSizeY();
 		int viewportTop = (int)(scrollRange * this.scrollbar.scrollValue + 0);
 		int viewportBottom = (int)(scrollRange * this.scrollbar.scrollValue + this.getSizeY());
 		if (!(mouseX > this.startX && mouseX < this.getEndXWithScrollbar())) {
 			return null;
 		}
-		List<? extends PlexUIScrolledItem> itemsSearch = this.getItems();
+		List<? extends PlexUIScrolledItem> itemsSearch = this.getVisibleItems();
 		if (itemsSearch.size() == 0) {
 			return null;
 		}
@@ -181,7 +185,7 @@ public class PlexUIScrolledItemList extends GuiScreen {
 	}
 
 	public int getListYPositionOfItem(PlexUIScrolledItem searchItem) {
-		List<? extends PlexUIScrolledItem> itemsSearch = this.getItems();
+		List<? extends PlexUIScrolledItem> itemsSearch = this.getVisibleItems();
 		int scrollRange = this.getTotalListPixels() - this.getSizeY();
 
 		if (itemsSearch.size() == 0) {
@@ -210,7 +214,7 @@ public class PlexUIScrolledItemList extends GuiScreen {
 		if (!this.isVisible) {
 			return false;
 		}
-		List<? extends PlexUIScrolledItem> itemsSearch = this.getItems();
+		List<? extends PlexUIScrolledItem> itemsSearch = this.getVisibleItems();
 		int scrollRange = this.getTotalListPixels() - this.getSizeY();
 		int viewportTop = (int)(scrollRange * this.scrollbar.realScrollValue + 0);
 		int viewportBottom = (int)(scrollRange * this.scrollbar.realScrollValue + this.getSizeY());
@@ -225,7 +229,7 @@ public class PlexUIScrolledItemList extends GuiScreen {
 		if (!this.isVisible) {
 			return false;
 		}
-		List<? extends PlexUIScrolledItem> itemsSearch = this.getItems();
+		List<? extends PlexUIScrolledItem> itemsSearch = this.getVisibleItems();
 		int scrollRange = this.getTotalListPixels() - this.getSizeY();
 		int viewportTop = (int)(scrollRange * this.scrollbar.realScrollValue + 0);
 		int viewportBottom = (int)(scrollRange * this.scrollbar.realScrollValue + this.getSizeY());
@@ -255,7 +259,7 @@ public class PlexUIScrolledItemList extends GuiScreen {
 		if (!this.isEnabled) {
 			GlStateManager.color(0.75F, 0.75F, 0.75F, 1.0F);
 		}
-		List<? extends PlexUIScrolledItem> itemsSearch = this.getItems();
+		List<? extends PlexUIScrolledItem> itemsSearch = this.getVisibleItems();
 		this.scrollbar.setContentScale((float)this.getSizeY() / (float) this.getTotalListPixels());
 		int scrollRange = this.getTotalListPixels() - this.getSizeY();
 		int viewportTop = (int)(scrollRange * this.scrollbar.scrollValue + 0);

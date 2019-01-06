@@ -201,13 +201,14 @@ public class PlexUIModMenuScreen extends GuiScreen {
 	
 	@Override
 	protected void keyTyped(char par1, int par2) throws IOException {
-		super.keyTyped(par1, par2);
 		if (par2 == 1) {
 			if (this.baseUiScreen.escapeTyped()) {
 				PlexCore.saveAllConfig();
 				this.mc.displayGuiScreen((GuiScreen) null);
 			}
+			return;
 		}
+		super.keyTyped(par1, par2);
 		this.baseUiScreen.keyTyped(par1, par2);
 	}
 	

@@ -15,6 +15,7 @@ import pw.ipex.plex.mods.messagingscreen.channel.PlexMessagingChannelBase;
 
 public class PlexMessagingChannelManager {
 	public PlexMessagingChannelBase selectedChannel = null;
+	public boolean autoReady = true;
 	public List<PlexMessagingChannelBase> channels = new ArrayList<>();
 	public List<PlexMessagingChannelBase> displayedChannels = new ArrayList<>();
 	public Long lastChannelChange = 0L;
@@ -67,8 +68,10 @@ public class PlexMessagingChannelManager {
 		this.selectedChannel = channel;
 		if (channel != null) {
 			channel.channelLastSwitchedTo = Minecraft.getSystemTime();
-			channel.selected();		
-			channel.getChannelReady();
+			channel.selected();
+			if (this.autoReady) {
+				channel.getChannelReady();
+			}
 		}
 		lastChannelChange = Minecraft.getSystemTime();
 	}

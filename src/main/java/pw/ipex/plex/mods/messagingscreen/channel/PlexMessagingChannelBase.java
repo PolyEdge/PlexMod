@@ -135,10 +135,13 @@ public abstract class PlexMessagingChannelBase implements PlexUIScrolledItem, Co
 	}
 	
 	public void readingChannel() {
+		this.lastChannelRead = Minecraft.getSystemTime();
+	}
+
+	public void readyIfNeeded() {
 		if (!this.awaitingReady && !this.channelReady) {
 			this.getChannelReady();
 		}
-		this.lastChannelRead = Minecraft.getSystemTime();
 	}
 	
 	public List<PlexMessagingMessage> getAllMessagesSinceLastRead() {

@@ -60,8 +60,8 @@ public class Plex {
 		MinecraftForge.EVENT_BUS.register(plexListeners);
 		PlexCoreTextures.loadTextures();
 
-		PlexCore.getInternalLoop().addTask(plexListeners::handleLobbySwitching, 25);
-		PlexCore.getInternalLoop().addTask(plexCommandQueue::processQueue, 25);
+		PlexCore.getInternalLoop().addTask(plexListeners::handleLobbySwitching);
+		PlexCore.getInternalLoop().addTask(plexCommandQueue::processQueue);
 
 		PlexCore.registerMod(new PlexPlexMod());
 		//PlexCore.registerMod(new PlexFriendsListEnhancementsMod());  // (this module no longer works because they removed the offline section. press f to pay respects)
@@ -75,7 +75,7 @@ public class Plex {
 		PlexCore.registerMod(new PlexAutoGGMod());
 		PlexCore.registerMod(new PlexAutoFriendMod());
 
-		PlexCore.getInternalLoop().start();
-		PlexCore.getModLoop().setClock(20).start();
+		PlexCore.getInternalLoop().setClock(25).start();
+		PlexCore.getModLoop().setClock(50).start();
 	}
 }

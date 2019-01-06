@@ -2,11 +2,7 @@ package pw.ipex.plex.core;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import net.minecraft.client.Minecraft;
@@ -83,9 +79,19 @@ public class PlexCore {
 	 * Returns a mod
 	 * 
 	 * @param modClass The class of the mod which extends {@link PlexModBase}
-	 * @return The mod if an instance of it is loaded, null otherwise
+	 * @return The mod, a new registered instance if one is not already loaded
 	 */
 	public static <T extends PlexModBase> T modInstance(Class<T> modClass) {
+		return Objects.requireNonNull(modInstanceOrNull(modClass));
+	}
+
+	/**
+	 * Returns a mod
+	 *
+	 * @param modClass The class of the mod which extends {@link PlexModBase}
+	 * @return The instance of the mod, or null if not loaded
+	 */
+	public static <T extends PlexModBase> T modInstanceOrNull(Class<T> modClass) {
 		if (plexMods.containsKey(modClass)) {
 			try {
 				return modClass.cast(plexMods.get(modClass));
@@ -158,7 +164,9 @@ public class PlexCore {
 	 * 
 	 * @param name The name of the shared value
 	 * @return The value if it exists, null otherwise
+	 * @deprecated Use an object stored in the mod instance and retrieve it via PlexCore.modInstance() instead
 	 */
+	@Deprecated
 	public static PlexCoreValue getSharedValue(String name) {
 		if (sharedValues.containsKey(name)) {
 			return sharedValues.get(name);

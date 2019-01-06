@@ -8,15 +8,15 @@ import pw.ipex.plex.core.PlexCoreUtils;
 
 public class PlexMessagingCommunityChatChannel extends PlexMessagingChannelBase {
 
-	public PlexCommandQueue commandQueue = new PlexCommandQueue("communityChatChannel", Plex.plexCommandQueue);
+	public static PlexCommandQueue commandQueue = new PlexCommandQueue("communityChatChannel", Plex.plexCommandQueue);
 
 	@Override
 	public void channelInit() {
 		commandQueue.setPriority(2);
-		this.commandQueue.delaySet.chatOpenDelay = -1000L;
-		this.commandQueue.delaySet.lobbySwitchDelay = 0L;
-		this.commandQueue.delaySet.joinServerDelay = 500L;
-		this.commandQueue.delaySet.commandDelay = 900L;
+		commandQueue.delaySet.chatOpenDelay = -1000L;
+		commandQueue.delaySet.lobbySwitchDelay = 0L;
+		commandQueue.delaySet.joinServerDelay = 500L;
+		commandQueue.delaySet.commandDelay = 900L;
 	}
 	
 	@Override
@@ -49,7 +49,8 @@ public class PlexMessagingCommunityChatChannel extends PlexMessagingChannelBase 
 	public void readyChannel() {
 		PlexCommandQueueCommand comCommand = new PlexCommandQueueCommand("communityChatChannel", "/com chat " + this.recipientEntityName);
 		comCommand.setCompleteOnSend(true);
-		this.commandQueue.addCommand(comCommand);
+		commandQueue.cancelAll();
+		commandQueue.addCommand(comCommand);
 	}
 
 	@Override

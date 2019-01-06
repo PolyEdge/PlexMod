@@ -30,7 +30,7 @@ public class PlexCoreEventLoop {
     }
 
     private void threadTask() {
-        long lastRun = Minecraft.getSystemTime();
+        long nextRun = 0L;
         List<Runnable> previousError = new ArrayList<>();
         Map<Runnable, Long> taskClockTimes = new HashMap<>();
         while (!this.killThread.get()) {
@@ -42,17 +42,17 @@ public class PlexCoreEventLoop {
             }
             this.updatedRunLoop.set(this.runLoop.get());
             synchronized (this.loopTasks) {
+                boolean globalTaskRun = false;
                 for (Runnable task : this.loopTasks) {
-                    if (!(Minecraft.getSystemTime() >= lastRun + clockMs.get()) || !this.runLoop.get() && !customTaskClock.containsKey(task)) {
+                    if (((Minecraft.getSystemTime() < nextRun) && !customTaskClock.containsKey(task)) || !this.runLoop.get()) {
                         continue;
                     }
                     if (!customTaskClock.containsKey(task)) {
-                        lastRun = Minecraft.getSystemTime();
+                        globalTaskRun = true;
                     }
                     else if (taskClockTimes.containsKey(task) && !(Minecraft.getSystemTime() > taskClockTimes.get(task) + this.customTaskClock.get(task))) {
                         continue;
                     }
-                    taskClockTimes.put(task, Minecraft.getSystemTime());
                     try {
                         task.run();
                         while (previousError.contains(task)) {
@@ -68,7 +68,10 @@ public class PlexCoreEventLoop {
                         }
                         previousError.add(task);
                     }
-
+                    taskClockTimes.put(task, Minecraft.getSystemTime());
+                }
+                if (globalTaskRun) {
+                    nextRun = Minecraft.getSystemTime() + clockMs.get();
                 }
             }
         }
