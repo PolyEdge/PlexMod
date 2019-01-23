@@ -10,10 +10,10 @@ public class PlexMessagingMessageEventParty extends PlexMessagingMessageEventHan
         if (button == 0) {
             if (hoverState.message.parentAdapter.regexEntryName.equals("party_invite") && hoverState.message.getBreakdownItemByIndex(hoverState.globalStringOffset) != null) {
                 if (hoverState.message.getBreakdownItemByIndex(hoverState.globalStringOffset).equals("!ACCEPT_BUTTON") && hoverState.message.hasTag("invitation_sender_ign")) {
-                    Plex.minecraft.thePlayer.sendChatMessage("/party cli a " + hoverState.message.getTag("invitation_sender_ign"));
+                    Plex.minecraft.thePlayer.sendChatMessage("/party accept " + hoverState.message.getTag("invitation_sender_ign"));
                 }
                 if (hoverState.message.getBreakdownItemByIndex(hoverState.globalStringOffset).equals("!DENY_BUTTON") && hoverState.message.hasTag("invitation_sender_ign")) {
-                    Plex.minecraft.thePlayer.sendChatMessage("/party cli d " + hoverState.message.getTag("invitation_sender_ign"));
+                    Plex.minecraft.thePlayer.sendChatMessage("/party deny " + hoverState.message.getTag("invitation_sender_ign"));
                 }
             }
         }

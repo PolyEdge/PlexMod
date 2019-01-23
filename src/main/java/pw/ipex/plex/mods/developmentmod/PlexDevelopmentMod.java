@@ -58,7 +58,7 @@ public class PlexDevelopmentMod extends PlexModBase {
 	}
 
 	@Override
-	public void switchedLobby(PlexCoreLobbyType type) {
+	public void lobbyUpdated(PlexCoreLobbyType type) {
 		if (this.lobbySwitchStream.booleanValue) {
 			new Timer().schedule(new TimerTask() {
 				public void run() {

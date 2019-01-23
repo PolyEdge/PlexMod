@@ -3,7 +3,7 @@ package pw.ipex.plex.mods.messagingscreen.channel;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import pw.ipex.plex.Plex;
 
-public class PlexMessagingTeamChatChannel extends PlexMessagingChannelBase {
+public class PlexMessagingTeamChatChannel extends PlexMessagingSingleEntityChannel {
 
 	@Override
 	public void channelInit() {

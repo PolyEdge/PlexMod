@@ -184,7 +184,7 @@ public class PlexAutoGGMod extends PlexModBase {
 	}
 
 	@Override
-	public void switchedLobby(PlexCoreLobbyType type) {
+	public void lobbyUpdated(PlexCoreLobbyType type) {
 		this.gameOverTime = null;
 		this.sentGG = false;
 		this.scheduleGGatChatUnsilence = false;

@@ -9,6 +9,9 @@ public enum PlexCoreLobbyType {
 	GAME_LOBBY,
 	GAME_INGAME, 
 	OFFLINE,
-	
-	SWITCHED_SERVERS // Only used in firing events
+
+	// Only used in firing events
+	E_SWITCHED_SERVERS,
+	E_GAME_UPDATED
+
 }

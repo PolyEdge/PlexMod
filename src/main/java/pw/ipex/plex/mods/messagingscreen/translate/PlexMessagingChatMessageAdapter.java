@@ -18,11 +18,12 @@ public class PlexMessagingChatMessageAdapter {
 	public PlexCoreRegexEntry regexEntry;
 	public String contentFormatString = "";
 	public String chatGroup = "";
-	public String recipientEntityName = "";
+	public String recipientEntityName = null;
 	public String channelName = "";
 	public String author;
 	public boolean requiresChannelOpen = false;
 	public boolean requiresChatOpen = false;
+	public boolean requiresChannelExists = false;
 	public boolean sendToSelectedChannel = false;
 	public boolean enableFormatRegions = false;
 	public boolean updateRecipientEntityNameCase = false;
@@ -36,14 +37,7 @@ public class PlexMessagingChatMessageAdapter {
 	public String MATCH_DEFAULT_BREAKDOWN = "([^ ]+ ?)";
 	public Pattern PATTERN_CONDITION = Pattern.compile(MATCH_CONDITION);
 	public Pattern PATTERN_DEFAULT_BREAKDOWN = Pattern.compile(MATCH_DEFAULT_BREAKDOWN);
-	
-	public PlexMessagingChatMessageAdapter(String group, String regexEntryName, String formatString) {
-		this.chatGroup = group;
-		this.regexEntryName = regexEntryName;
-		this.contentFormatString = formatString;
-		this.regexEntry = PlexCoreRegex.getEntryNamed(regexEntryName);
-	}
-	
+
 	public PlexMessagingChatMessageAdapter(String group, String regexEntryName, String formatString, String channelName) {
 		this.chatGroup = group;
 		this.regexEntryName = regexEntryName;
@@ -108,6 +102,11 @@ public class PlexMessagingChatMessageAdapter {
 		this.requiresChannelOpen = required;
 		return this;
 	}
+
+	public PlexMessagingChatMessageAdapter setChannelExistsRequired(boolean required) {
+		this.requiresChannelExists = required;
+		return this;
+	}
 	
 	public PlexMessagingChatMessageAdapter setChatOpenedRequired(boolean required) {
 		this.requiresChatOpen = required;
@@ -146,6 +145,9 @@ public class PlexMessagingChatMessageAdapter {
 	}
 
 	public Class<? extends PlexMessagingChannelBase> getChannelClass() {
+		if (this.sendToSelectedChannel) {
+			return null;
+		}
 		return this.channelClass;
 	}
 	
@@ -156,12 +158,15 @@ public class PlexMessagingChatMessageAdapter {
 	
 	public String getChannelName(String text) {
 		if (this.sendToSelectedChannel) {
-			return "PI.Selected";
+			return null;
 		}
 		return this.formatStringWithGroups(this.channelName, text);
 	}
 	
 	public String getRecipientEntityName(String text) {
+		if (this.recipientEntityName == null) {
+			return null;
+		}
 		return this.formatStringWithGroups(this.recipientEntityName, text);
 	}
 	

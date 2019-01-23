@@ -184,7 +184,7 @@ public class PlexAutoThankMod extends PlexModBase {
 	}
 
 	@Override
-	public void switchedLobby(PlexCoreLobbyType type) {
+	public void lobbyUpdated(PlexCoreLobbyType type) {
 		if (type.equals(PlexCoreLobbyType.CLANS_SERVER)) {
 			new Timer().schedule(new TimerTask() {
 				public void run() {

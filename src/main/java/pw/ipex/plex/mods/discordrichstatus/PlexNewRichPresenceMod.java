@@ -49,12 +49,13 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 	
 	public AtomicBoolean richPresenceErrored = new AtomicBoolean();
 
-	public Boolean isAfk = false;
-	public PlexCoreValue modEnabled = new PlexCoreValue("richPresence_enabled", false);
-	public PlexCoreValue displayLobbyName = new PlexCoreValue("richPresence_showLobbies", true);
-	public PlexCoreValue displayIGN = new PlexCoreValue("richPresence_showIGN", true);
-	public PlexCoreValue timerMode = new PlexCoreValue("richPresence_timerMode", 1);
-	public PlexCoreValue showAfk = new PlexCoreValue("richPresence_showAFK", true);
+	public boolean isAfk = false;
+	public boolean modEnabled = false;
+	public boolean displayLobbyName = true;
+	public boolean displayIGN = true;
+	public int timerMode = 1;
+	public boolean showAfk = true;
+	public boolean showIP = true;
 	
 	public static Integer MAX_TIMER_MODE = 3;
 	
@@ -83,11 +84,12 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 			}
 		});
 		
-		this.modEnabled.set(this.modSetting("rich_presence_enabled", false).getBoolean(false));
-		this.displayLobbyName.set(this.modSetting("richPresence_showLobbies", true).getBoolean(true));
-		this.displayIGN.set(this.modSetting("richPresence_showIGN", true).getBoolean(true));
-		this.timerMode.set(this.modSetting("richPresence_timerMode", 1).getInt());
-		this.showAfk.set(this.modSetting("richPresence_showAFK", true).getBoolean(true));
+		this.modEnabled = this.modSetting("rich_presence_enabled", false).getBoolean(false);
+		this.displayLobbyName = this.modSetting("richPresence_showLobbies", true).getBoolean(true);
+		this.displayIGN = this.modSetting("richPresence_showIGN", true).getBoolean(true);
+		this.timerMode = this.modSetting("richPresence_timerMode", 1).getInt();
+		this.showAfk = this.modSetting("richPresence_showAFK", true).getBoolean(true);
+		this.showIP = this.modSetting("richPresence_showIP", true).getBoolean(true);
 		
 		gameIcons.put("bacon brawl", "raw_porkchop");
 		gameIcons.put("bawk bawk battles", "egg");
@@ -128,9 +130,25 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 		
 		lobbyNames.put("bld", "Master Builders");
 		lobbyNames.put("dmt", "Draw My Thing");
+		lobbyNames.put("bb", "Bacon Brawl");
+		lobbyNames.put("bl", "Bomb Lobbers");
+		lobbyNames.put("dt", "Death Tag");
+		lobbyNames.put("de", "Dragon Escape");
+		lobbyNames.put("dr", "Dragons");
+		lobbyNames.put("evo", "Evolution");
+		lobbyNames.put("gld", "Gladiators");
 		lobbyNames.put("mb", "Micro Battles");
-		lobbyNames.put("min", "Mixed Arcade");
+		lobbyNames.put("mm", "Monster Maze");
+		lobbyNames.put("oitq", "One in the Quiver");
+		lobbyNames.put("run", "Runner");
+		lobbyNames.put("sq", "Sheep Quest");
+		lobbyNames.put("sn", "Snake");
+		lobbyNames.put("sa", "Sneaky Assassins");
+		lobbyNames.put("pb", "Paintball");
+		lobbyNames.put("ss", "Spleef");
 		lobbyNames.put("tf", "Turf Wars");
+		lobbyNames.put("wa", "Wither Assault");
+		lobbyNames.put("min", "Mixed Arcade");
 		lobbyNames.put("sb", "Speed Builders");
 		lobbyNames.put("bh", "Block Hunt");
 		lobbyNames.put("cw4", "Cake Wars Standard");
@@ -187,7 +205,7 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 			return;
 		}
 		lastRPupdate = Minecraft.getSystemTime();
-		if (this.modEnabled.booleanValue && Plex.serverState.onMineplex) {
+		if (this.modEnabled && Plex.serverState.onMineplex) {
 			putRichPresence();
 		}
 	}
@@ -199,7 +217,7 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 		presence.setDetails(gameState[0]);
 		presence.setState(gameState[1]);
 		presence.setLargeImage("mineplex_logo", serverIP);
-		if (Plex.serverState.lastControlInput != -1L && (Minecraft.getSystemTime() > Plex.serverState.lastControlInput + AFK_IDLE_TIME) && this.showAfk.booleanValue) {
+		if (Plex.serverState.lastControlInput != -1L && (Minecraft.getSystemTime() > Plex.serverState.lastControlInput + AFK_IDLE_TIME) && this.showAfk) {
 			isAfk = true;
 			presence.setDetails("AFK | " + gameState[0]);
 			presence.setSmallImage("afk", "AFK | " + gameState[0]);
@@ -211,7 +229,7 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 					if (gameIcons.containsKey(Plex.serverState.currentGameName.toLowerCase())) {
 						presence.setSmallImage(gameIcons.get(Plex.serverState.currentGameName.toLowerCase()), gameState[0]);
 					}
-					if (PlexCore.getSharedValue("richPresence_timerMode").integerValue.equals(1) && (Plex.serverState.gameStartDateTime != null)) {
+					if (this.timerMode == 1 && (Plex.serverState.gameStartDateTime != null)) {
 						presence.setStartTimestamp(Plex.serverState.gameStartDateTime);
 					}
 				}
@@ -220,7 +238,7 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 				presence.setSmallImage(gameIcons.get("clans"), "Playing Clans");
 			}	
 		}
-		if (PlexCore.getSharedValue("richPresence_timerMode").integerValue.equals(2) && Plex.serverState.serverJoinDateTime != null) {
+		if (this.timerMode == 2 && Plex.serverState.serverJoinDateTime != null) {
 			presence.setStartTimestamp(Plex.serverState.serverJoinDateTime);
 		}
 		return presence.build();
@@ -228,17 +246,24 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 	
 
 	public String getServerIP() {
-		return Plex.serverState.serverHostname.startsWith("us") ? "us.mineplex.com" : (Plex.serverState.serverHostname.startsWith("eu") ? "eu.mineplex.com" : "mineplex.com");
+		if (Plex.serverState.serverHostname.startsWith("us")) {
+			return this.showIP ? "us.mineplex.com" : "Mineplex (US)";
+		}
+		if (Plex.serverState.serverHostname.startsWith("eu")) {
+			return this.showIP ? "eu.mineplex.com" : "Mineplex (EU)";
+		}
+		if (Plex.serverState.serverHostname.startsWith("clans")) {
+			return this.showIP ? "clans.mineplex.com" : "Mineplex (Clans)";
+		}
+		return this.showIP ? "mineplex.com" : "Mineplex";
 	}
 	
 	public String serverIgn(boolean addIP) {
-		Boolean showLobby = this.displayLobbyName.booleanValue && (Plex.serverState.currentLobbyName != null);
-		Boolean showIGN = this.displayIGN.booleanValue;
 		String output = "";
-		if (showLobby && Plex.serverState.currentLobbyName != null) {
+		if (this.displayLobbyName && Plex.serverState.currentLobbyName != null) {
 			output += Plex.serverState.currentLobbyName;
 		}
-		if (showIGN) {
+		if (this.displayIGN) {
 			if (!output.equals("")) {
 				output += " | ";
 			}
@@ -297,10 +322,13 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 
 	@Override
 	public void saveModConfig() {
-		this.modSetting("rich_presence_enabled", false).set(this.modEnabled.booleanValue);
-		this.modSetting("richPresence_showLobbies", false).set(this.displayLobbyName.booleanValue);
-		this.modSetting("richPresence_showIGN", false).set(this.displayIGN.booleanValue);
-		this.modSetting("richPresence_timerMode", 1).set(this.timerMode.integerValue);
+		this.modSetting("rich_presence_enabled", false).set(this.modEnabled);
+		this.modSetting("richPresence_showLobbies", false).set(this.displayLobbyName);
+		this.modSetting("richPresence_showIGN", false).set(this.displayIGN);
+		this.modSetting("richPresence_timerMode", 1).set(this.timerMode);
+		this.modSetting("richPresence_showAFK", true).set(this.showAfk);
+		this.modSetting("richPresence_showIP", true).set(this.showIP);
+
 
 		new Timer().schedule(new TimerTask() {
 			public void run() {
@@ -359,7 +387,7 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 	}
 
 	public void handleIPCClientState() {
-		if (!Plex.serverState.onMineplex || !this.modEnabled.booleanValue) {
+		if (!Plex.serverState.onMineplex || !this.modEnabled) {
 			lastConnectionAttempt.set(0);
 			try {
 				ipcClient.close();
@@ -424,8 +452,8 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 	}
 
 	@Override
-	public void switchedLobby(PlexCoreLobbyType type) {
-		if (type.equals(PlexCoreLobbyType.SWITCHED_SERVERS)) {
+	public void lobbyUpdated(PlexCoreLobbyType type) {
+		if (type.equals(PlexCoreLobbyType.E_SWITCHED_SERVERS) || type.equals(PlexCoreLobbyType.E_GAME_UPDATED) || type.equals(PlexCoreLobbyType.GAME_INGAME)) {
 			new Timer().schedule(new TimerTask() {
 				public void run() {
 					updateRichPresence();

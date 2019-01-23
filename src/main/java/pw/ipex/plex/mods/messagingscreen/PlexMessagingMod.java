@@ -13,6 +13,7 @@ import pw.ipex.plex.core.PlexCoreUtils;
 import pw.ipex.plex.mod.PlexModBase;
 import pw.ipex.plex.mods.messagingscreen.channel.PlexMessagingChannelBase;
 import pw.ipex.plex.mods.messagingscreen.channel.PlexMessagingCommunityChatChannel;
+import pw.ipex.plex.mods.messagingscreen.channel.PlexMessagingSingleEntityChannel;
 import pw.ipex.plex.mods.messagingscreen.translate.PlexMessagingChatMessageAdapter;
 import pw.ipex.plex.mods.messagingscreen.translate.PlexMessagingChatMessageConstructor;
 import pw.ipex.plex.ui.widget.autocomplete.PlexUIAutoCompleteContainer;
@@ -123,18 +124,16 @@ public class PlexMessagingMod extends PlexModBase {
 		if (messageAdapter == null) {
 			return null;
 		}
+
 		String channelName = messageAdapter.getChannelName(chatMessage);
+		Class<? extends PlexMessagingChannelBase> channelClass = messageAdapter.getChannelClass();
 		String recipientEntityName = messageAdapter.getRecipientEntityName(chatMessage);
+
 		if (!messageAdapter.meetsConditions(chatMessage)) {
 			return null;
 		}
-		if (channelName == null) {
-			if (PlexMessagingMod.channelManager.selectedChannel == null) {
-				return null;
-			}
-			channelName = PlexMessagingMod.channelManager.selectedChannel.name;
-		}
-		else if (messageAdapter.regexEntryName.equals("direct_message")) {
+
+		if (messageAdapter.regexEntryName.equals("direct_message")) {
 			recipientEntityName = messageAdapter.formatStringWithGroups("{author}", chatMessage);
 			channelName = messageAdapter.formatStringWithGroups("{author}", chatMessage);
 			if (recipientEntityName.equalsIgnoreCase(PlexCore.getPlayerIGN())) {
@@ -145,10 +144,28 @@ public class PlexMessagingMod extends PlexModBase {
 			}	
 			channelName = "PM." + channelName;
 		}
-		PlexMessagingChannelBase channel = getChannel(channelName, messageAdapter.getChannelClass(), recipientEntityName);
-		if (!channel.recipientEntityName.equals(recipientEntityName) && channel.recipientEntityName.equalsIgnoreCase(recipientEntityName) && messageAdapter.updateRecipientEntityNameCase) {
-			channel.recipientEntityName = recipientEntityName;
+
+		PlexMessagingChannelBase channel;
+		if (channelName == null) { // null when sending to open channel
+			if (PlexMessagingMod.channelManager.selectedChannel == null) {
+				return null;
+			}
+			channel = PlexMessagingMod.channelManager.selectedChannel;
 		}
+		else {
+			if (!channelExists(channelName, channelClass) && !PlexMessagingSingleEntityChannel.class.isAssignableFrom(channelClass) && (recipientEntityName == null || recipientEntityName.equals(""))) {
+				return null;
+			}
+			if (!channelExists(channelName, channelClass) && messageAdapter.requiresChannelExists) {
+				return null;
+			}
+
+			channel = getChannel(channelName, channelClass, recipientEntityName);
+			if (!channel.recipientEntityName.equals(recipientEntityName) && channel.recipientEntityName.equalsIgnoreCase(recipientEntityName) && messageAdapter.updateRecipientEntityNameCase) {
+				channel.recipientEntityName = recipientEntityName;
+			}
+		}
+
 		messageAdapter.applyChannelTags(chatMessage, channel);
 		if (!messageAdapter.meetsRequirements(PlexMessagingUIScreen.isChatOpen(), PlexMessagingMod.channelManager.selectedChannel, channel)) {
 			return null;
@@ -163,6 +180,10 @@ public class PlexMessagingMod extends PlexModBase {
 	
 	public static PlexMessagingChannelBase getChannel(String name, Class<? extends PlexMessagingChannelBase> type) {
 		return getChannel(name, type, null);
+	}
+
+	public static boolean channelExists(String name, Class<? extends PlexMessagingChannelBase> type) {
+		return channelManager.getChannel(name) != null;
 	}
 	
 	public static PlexMessagingChannelBase getChannel(String name, Class<? extends PlexMessagingChannelBase> type, String recipientEntityName) {
@@ -200,8 +221,8 @@ public class PlexMessagingMod extends PlexModBase {
 	}
 
 	@Override
-	public void switchedLobby(PlexCoreLobbyType type) {
-		if (type.equals(PlexCoreLobbyType.SWITCHED_SERVERS)) {
+	public void lobbyUpdated(PlexCoreLobbyType type) {
+		if (type.equals(PlexCoreLobbyType.E_SWITCHED_SERVERS)) {
 			channelManager.unreadyChannelsByClass(PlexMessagingCommunityChatChannel.class);
 			final PlexMessagingChannelManager finalManager = channelManager;
 			if (finalManager.selectedChannel != null) {

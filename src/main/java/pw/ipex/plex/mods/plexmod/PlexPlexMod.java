@@ -81,7 +81,7 @@ public class PlexPlexMod extends PlexModBase {
 	public void leftMineplex() {}
 
 	@Override
-	public void switchedLobby(PlexCoreLobbyType type) {
+	public void lobbyUpdated(PlexCoreLobbyType type) {
 	}
 
 }

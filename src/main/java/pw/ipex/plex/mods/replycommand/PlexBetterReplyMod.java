@@ -270,6 +270,6 @@ public class PlexBetterReplyMod extends PlexModBase {
 	}
 
 	@Override
-	public void switchedLobby(PlexCoreLobbyType type) {
+	public void lobbyUpdated(PlexCoreLobbyType type) {
 	}
 }

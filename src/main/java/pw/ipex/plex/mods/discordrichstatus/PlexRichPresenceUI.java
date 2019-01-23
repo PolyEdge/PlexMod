@@ -15,15 +15,16 @@ public class PlexRichPresenceUI extends PlexUIBase {
 
 	@Override
 	public void uiAddButtons(PlexUIModMenuScreen ui) {
-		Integer top = ui.startingYPos(107);
+		Integer top = ui.startingYPos(135);
 		Integer paneSize = ui.centeredPaneSize(1, 20, 160);
 		Integer pane1Pos = ui.centeredPanePos(0, 1, 20, 160);
-		ui.addElement(new GuiButton(5, pane1Pos + 5, top + 0, paneSize - 10, 20, enabledDisabled("Rich Presence", PlexCore.getSharedValue("richPresence_enabled").booleanValue)));
-		ui.addElement(new GuiButton(6, pane1Pos + 5, top + 23, paneSize - 10, 20, shownHidden("Current Server", PlexCore.getSharedValue("richPresence_showLobbies").booleanValue)));
-		ui.addElement(new GuiButton(7, pane1Pos + 5, top + 46, paneSize - 10, 20, shownHidden("IGN", PlexCore.getSharedValue("richPresence_showIGN").booleanValue)));
+		PlexNewRichPresenceMod instance = PlexCore.modInstance(PlexNewRichPresenceMod.class);
+		ui.addElement(new GuiButton(5, pane1Pos + 5, top + 0, paneSize - 10, 20, enabledDisabled("Rich Presence", instance.modEnabled)));
+		ui.addElement(new GuiButton(6, pane1Pos + 5, top + 23, paneSize - 10, 20, shownHidden("Current Server", instance.displayLobbyName)));
+		ui.addElement(new GuiButton(7, pane1Pos + 5, top + 46, paneSize - 10, 20, shownHidden("IGN", instance.displayIGN)));
 		ui.addElement(new GuiButton(8, pane1Pos + 5, top + 69, paneSize - 10, 20, timerMode()));
-		ui.addElement(new GuiButton(9, pane1Pos + 5, top + 92, paneSize - 10, 20, enabledDisabled("AFK Status", PlexCore.getSharedValue("richPresence_showAFK").booleanValue)));
-
+		ui.addElement(new GuiButton(9, pane1Pos + 5, top + 92, paneSize - 10, 20, enabledDisabled("AFK Status", instance.showAfk)));
+		ui.addElement(new GuiButton(10, pane1Pos + 5, top + 115, paneSize - 10, 20, shownHidden("Server IP", instance.showIP)));
 	}
 
 	public String shownHidden(String prefix, Boolean shown) {
@@ -36,7 +37,7 @@ public class PlexRichPresenceUI extends PlexUIBase {
 	
 	public String timerMode() {
 		String prefix = "Timer: ";
-		Integer mode = PlexCore.getSharedValue("richPresence_timerMode").integerValue;
+		Integer mode = PlexCore.modInstance(PlexNewRichPresenceMod.class).timerMode;
 		if (mode.equals(0)) {
 			return prefix + "Disabled";
 		}
@@ -44,7 +45,7 @@ public class PlexRichPresenceUI extends PlexUIBase {
 			return prefix + "Current Game";
 		}
 		if (mode.equals(2)) {
-			return prefix + "Server Time";
+			return prefix + "Time Online";
 		}
 		return "null";
 	}
@@ -55,25 +56,30 @@ public class PlexRichPresenceUI extends PlexUIBase {
 
 	@Override
 	public void uiButtonClicked(GuiButton button) {
+		PlexNewRichPresenceMod instance = PlexCore.modInstance(PlexNewRichPresenceMod.class);
 		if (button.id == 5) {
-			PlexCore.getSharedValue("richPresence_enabled").set(!PlexCore.getSharedValue("richPresence_enabled").booleanValue);
-			button.displayString = enabledDisabled("Rich Presence", PlexCore.getSharedValue("richPresence_enabled").booleanValue);
+			instance.modEnabled = !instance.modEnabled;
+			button.displayString = enabledDisabled("Rich Presence", instance.modEnabled);
 		}
 		if (button.id == 6) {
-			PlexCore.getSharedValue("richPresence_showLobbies").set(!PlexCore.getSharedValue("richPresence_showLobbies").booleanValue);
-			button.displayString = shownHidden("Current Server", PlexCore.getSharedValue("richPresence_showLobbies").booleanValue);
+			instance.displayLobbyName = !instance.displayLobbyName;
+			button.displayString = shownHidden("Current Server", instance.displayLobbyName);
 		}
 		if (button.id == 7) {
-			PlexCore.getSharedValue("richPresence_showIGN").set(!PlexCore.getSharedValue("richPresence_showIGN").booleanValue);
-			button.displayString = shownHidden("IGN", PlexCore.getSharedValue("richPresence_showIGN").booleanValue);
+			instance.displayIGN = !instance.displayIGN;
+			button.displayString = shownHidden("IGN", instance.displayIGN);
 		}
 		if (button.id == 8) {
-			PlexCore.getSharedValue("richPresence_timerMode").set((Integer)((PlexCore.getSharedValue("richPresence_timerMode").integerValue) + 1) % PlexNewRichPresenceMod.MAX_TIMER_MODE);
+			instance.timerMode = (instance.timerMode + 1) % PlexNewRichPresenceMod.MAX_TIMER_MODE;
 			button.displayString = timerMode();
 		}
 		if (button.id == 9) {
-			PlexCore.getSharedValue("richPresence_showAFK").set(!PlexCore.getSharedValue("richPresence_showAFK").booleanValue);
-			button.displayString = enabledDisabled("AFK Status", PlexCore.getSharedValue("richPresence_showAFK").booleanValue);
+			instance.showAfk = !instance.showAfk;
+			button.displayString = enabledDisabled("AFK Status", instance.showAfk);
+		}
+		if (button.id == 10) {
+			instance.showIP = !instance.showIP;
+			button.displayString = shownHidden("Server IP", instance.showIP);
 		}
 	}
 

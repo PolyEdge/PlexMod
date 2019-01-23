@@ -44,7 +44,7 @@ public abstract class PlexModBase {
 		MinecraftForge.EVENT_BUS.unregister(this);
 	}
 
-	public void switchedLobby(PlexCoreLobbyType lobbyType) {};
+	public void lobbyUpdated(PlexCoreLobbyType lobbyType) {};
 	
 	public void communicate(Object ...args) {}
 	

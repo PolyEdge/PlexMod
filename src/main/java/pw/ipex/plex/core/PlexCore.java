@@ -1,11 +1,8 @@
 package pw.ipex.plex.core;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
@@ -16,7 +13,6 @@ import pw.ipex.plex.Plex;
 import pw.ipex.plex.ci.PlexCommandHandler;
 import pw.ipex.plex.ci.PlexCommandListener;
 import pw.ipex.plex.core.loop.PlexCoreEventLoop;
-import pw.ipex.plex.core.loop.PlexCoreEventLoopManager;
 import pw.ipex.plex.core.mineplex.PlexCoreLobbyType;
 import pw.ipex.plex.mod.PlexModBase;
 import pw.ipex.plex.ui.PlexUIBase;
@@ -360,7 +356,7 @@ public class PlexCore {
 		}
 		if (dispatchChanged) {
 			for (PlexModBase mod : plexMods.values()) {
-				mod.switchedLobby(lobbyType);
+				mod.lobbyUpdated(lobbyType);
 			}
 		}
 	}
@@ -377,11 +373,11 @@ public class PlexCore {
 	/**
 	 * Dispatches to all mods that the lobby has been updated
 	 * 
-	 * @param lobbyType       Type of the lobby or PlexCoreLobbyType.SWITCHED_SERVERS for indiciating exactly when a change occurs.
+	 * @param lobbyType       Type of the lobby or PlexCoreLobbyType.E_SWITCHED_SERVERS for indiciating exactly when a change occurs.
 	 */
 	public static void dispatchLobbyChanged(PlexCoreLobbyType lobbyType) {
 		for (PlexModBase mod : plexMods.values()) {
-			mod.switchedLobby(lobbyType);
+			mod.lobbyUpdated(lobbyType);
 		}		
 	}
 
