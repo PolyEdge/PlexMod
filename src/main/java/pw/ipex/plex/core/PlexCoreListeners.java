@@ -57,11 +57,45 @@ public class PlexCoreListeners {
 
 
 	public PlexCoreListeners() {
+		// us.mineplex.com
 		mineplexIPs.add("173.236.67.11");
+		mineplexIPs.add("173.236.67.12");
+		mineplexIPs.add("173.236.67.14");
+		mineplexIPs.add("173.236.67.15");
 		mineplexIPs.add("173.236.67.16");
+		mineplexIPs.add("173.236.67.17");
+		mineplexIPs.add("173.236.67.23");
+		mineplexIPs.add("173.236.67.24");
+		mineplexIPs.add("173.236.67.26");
+		mineplexIPs.add("173.236.67.29");
+		mineplexIPs.add("173.236.67.31");
+		mineplexIPs.add("173.236.67.32");
+		mineplexIPs.add("173.236.67.34");
+		mineplexIPs.add("173.236.67.38");
+
+		// mineplex.com
 		mineplexIPs.add("96.45.82.193");
-		mineplexIPs.add("96.45.82.216");
+		mineplexIPs.add("96.45.82.3");
+		mineplexIPs.add("96.45.83.216");
+		mineplexIPs.add("96.45.83.38");
+
+		// clans.mineplex.com
+		mineplexIPs.add("173.236.67.101");
+		mineplexIPs.add("173.236.67.102");
+		mineplexIPs.add("173.236.67.103");
+
+		// eu.mineplex.com
+		mineplexIPs.add("107.6.151.174");
+		mineplexIPs.add("107.6.151.190");
+		mineplexIPs.add("107.6.151.206");
+		mineplexIPs.add("107.6.151.210");
+		mineplexIPs.add("107.6.151.22");
+		mineplexIPs.add("107.6.176.114");
+		mineplexIPs.add("107.6.176.122");
 		mineplexIPs.add("107.6.176.138");
+		mineplexIPs.add("107.6.176.14");
+		mineplexIPs.add("107.6.176.166");
+		mineplexIPs.add("107.6.176.194");
 
 		hostnameBlacklist.add("build.mineplex.com");
 
