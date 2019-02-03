@@ -453,7 +453,14 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 
 	@Override
 	public void lobbyUpdated(PlexCoreLobbyType type) {
-		if (type.equals(PlexCoreLobbyType.E_SWITCHED_SERVERS) || type.equals(PlexCoreLobbyType.E_GAME_UPDATED) || type.equals(PlexCoreLobbyType.GAME_INGAME)) {
+		if (type.equals(PlexCoreLobbyType.E_GAME_UPDATED)) {
+			new Timer().schedule(new TimerTask() {
+				public void run() {
+					updateRichPresence();
+				}
+			}, 250L);
+		}
+		if (type.equals(PlexCoreLobbyType.E_SWITCHED_SERVERS)) {
 			new Timer().schedule(new TimerTask() {
 				public void run() {
 					updateRichPresence();

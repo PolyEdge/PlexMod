@@ -3,6 +3,8 @@ package pw.ipex.plex.ui;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
+
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
@@ -28,12 +30,32 @@ public class PlexUIModMenuScreen extends GuiScreen {
 	public List<PlexUITabContainer> uiTabs = new ArrayList<PlexUITabContainer>();
 	public Long initializationTime;
 	public Long colourFadeTime = 500L;
+
+	public List<String> ees = new ArrayList<>();
+	public String ee;
+	public boolean ee1;
 	
 	public PlexUIModMenuScreen(PlexUIBase base) {
 		this.baseUiScreen = base;
 		this.initializationTime = Minecraft.getSystemTime();
 		this.updateColourState();
 		this.updateChild();
+
+		ees.add("Hey There!!!");
+		ees.add("Subscribe to PewDiePie");
+		ees.add("Worpp was here");
+		ees.add("what u lookin at");
+		ees.add("*wave check*");
+		ees.add("moo");
+		ees.add("insert witty easter egg here");
+		ees.add("<o/");
+		ees.add("22.flp");
+		ees.add("swag");
+		ees.add("oh yeah yeah");
+		ees.add("void u prolly find this first xd");
+
+		this.ee = ees.get(new Random().nextInt(ees.size()));
+		this.ee1 = false;
 	}
 	
 	public PlexUIModMenuScreen(PlexUIBase base, PlexCoreRenderColourState oldColourState) {
@@ -341,7 +363,7 @@ public class PlexUIModMenuScreen extends GuiScreen {
 	}
 
 	@Override
-	public void drawScreen(int par1, int par2, float par3) {
+	public void drawScreen(int mouseX, int mouseY, float par3) {
 		
 		this.updatePlexUi();
 		this.updateColourState();
@@ -354,7 +376,7 @@ public class PlexUIModMenuScreen extends GuiScreen {
 			drawRect(this.zoneStartX(), this.zoneStartY(), this.zoneEndX(), this.zoneEndY(), backgroundColour); // zone fill			
 		}
 
-		this.baseUiScreen.drawScreen(par1, par2, par3);
+		this.baseUiScreen.drawScreen(mouseX, mouseY, par3);
 		
 		if (!this.baseUiScreen.disablePlexUi()) {
 			drawGradientRect(0, 0, this.width, 25, 0xaa10100f, 0xaa10100f); // top bar
@@ -380,8 +402,20 @@ public class PlexUIModMenuScreen extends GuiScreen {
 			drawSocialMedia();
 
 			String lobbyName = Plex.serverState.updatedLobbyName;
-			if (lobbyName == null) {
+			if (!Plex.serverState.onMineplex) {
+				lobbyName = "[Not Online]";
+			}
+			else if (lobbyName == null) {
 				lobbyName = "...";
+			}
+
+			if (mouseX > this.getSocialMediaStartX() - 35 && mouseX < this.getSocialMediaStartX() - 10 && mouseY > 2 && mouseY < 24 && Mouse.isButtonDown(1)) {
+				lobbyName = ee;
+				this.ee1 = true;
+			}
+			else if (this.ee1){
+				this.ee = ees.get(new Random().nextInt(ees.size()));
+				this.ee1 = false;
 			}
 
 			Plex.renderUtils.drawScaledStringRightSide(lobbyName, this.getSocialMediaStartX() - 5, 8, 0xdf8214, 1.0F, false);
@@ -389,9 +423,9 @@ public class PlexUIModMenuScreen extends GuiScreen {
 
 		
 		for (GuiButton button : this.internalButtonList) {
-			button.drawButton(Plex.minecraft, par1, par2);
+			button.drawButton(Plex.minecraft, mouseX, mouseY);
 		}
      
-		super.drawScreen(par1, par2, par3);
+		super.drawScreen(mouseX, mouseY, par3);
 	}
 }

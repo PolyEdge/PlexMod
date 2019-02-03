@@ -12,6 +12,5 @@ public enum PlexCoreLobbyType {
 
 	// Only used in firing events
 	E_SWITCHED_SERVERS,
-	E_GAME_UPDATED
-
+	E_GAME_UPDATED,
 }

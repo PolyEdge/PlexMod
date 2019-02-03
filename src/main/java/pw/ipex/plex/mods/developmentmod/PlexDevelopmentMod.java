@@ -5,6 +5,7 @@ import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.client.event.sound.PlaySoundEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import pw.ipex.plex.Plex;
+import pw.ipex.plex.core.PlexCore;
 import pw.ipex.plex.core.mineplex.PlexCoreLobbyType;
 import pw.ipex.plex.core.PlexCoreUtils;
 import pw.ipex.plex.core.PlexCoreValue;
@@ -60,10 +61,15 @@ public class PlexDevelopmentMod extends PlexModBase {
 	@Override
 	public void lobbyUpdated(PlexCoreLobbyType type) {
 		if (this.lobbySwitchStream.booleanValue) {
+			String extra = "";
+			if (type.equals(PlexCoreLobbyType.E_GAME_UPDATED)) {
+				extra += PlexCoreUtils.chatStyleText("BLUE", "game -> " + PlexCore.getGameName());
+			}
+			final String finalExtra = extra;
 			new Timer().schedule(new TimerTask() {
 				public void run() {
 					try {
-						PlexCoreUtils.chatAddMessage(PlexCoreUtils.chatPlexPrefix() + PlexCoreUtils.chatStyleText("GREEN", "lobby -> " + type.toString()));
+						PlexCoreUtils.chatAddMessage(PlexCoreUtils.chatPlexPrefix() + PlexCoreUtils.chatStyleText("GREEN", "lobby -> " + type.toString()) + " " + finalExtra);
 					}
 					catch (Throwable ee) {}
 				}
