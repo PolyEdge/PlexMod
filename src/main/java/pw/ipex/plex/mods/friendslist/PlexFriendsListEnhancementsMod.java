@@ -66,10 +66,10 @@ public class PlexFriendsListEnhancementsMod extends PlexModBase {
 	
 	@SubscribeEvent
 	public void onChat(final ClientChatReceivedEvent e) {
-		if (!PlexCoreUtils.isChatMessage(e.type)) {
+		if (!PlexCoreUtils.chatIsMessage(e.type)) {
 			return;
 		}
-		String filtered = PlexCoreUtils.condenseChatAmpersandFilter(e.message.getFormattedText());
+		String filtered = PlexCoreUtils.chatCondenseAndAmpersand(e.message.getFormattedText());
 		if (filtered.matches(this.MATCH_LIST_BOTTOM)) {
 			if (this.searchTerm.stringValue.equals("") && this.itemTarget.stringValue.equals("") && this.listTop) {
 				this.showHiddenStats();

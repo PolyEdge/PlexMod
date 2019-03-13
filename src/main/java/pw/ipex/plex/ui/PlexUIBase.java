@@ -28,7 +28,7 @@ public abstract class PlexUIBase {
 	}
 	
 	public Integer pageBackgroundColour() {
-		return PlexCoreUtils.colourCodeFrom(255, 255, 255, 0);
+		return PlexCoreUtils.fromRGB(255, 255, 255, 0);
 	}
 	
 	public Integer pageForegroundColour() {

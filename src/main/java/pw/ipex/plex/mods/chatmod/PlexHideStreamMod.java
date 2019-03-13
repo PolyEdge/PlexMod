@@ -85,22 +85,23 @@ public class PlexHideStreamMod extends PlexModBase {
 	
 	@SubscribeEvent
 	public void onChat(final ClientChatReceivedEvent e) {
-		if (!PlexCoreUtils.isChatMessage(e.type)) {
+		if (!PlexCoreUtils.chatIsMessage(e.type)) {
 			return;
 		}
-		String message = PlexCoreUtils.condenseChatFilter(e.message.getFormattedText());
-		String ampMessage = PlexCoreUtils.condenseChatAmpersandFilter(e.message.getFormattedText());
+		String message = PlexCoreUtils.chatCondense(e.message.getFormattedText());
+		String ampMessage = PlexCoreUtils.chatCondenseAndAmpersand(e.message.getFormattedText());
 		PlexCoreRegexEntry entry = PlexCoreRegex.getEntryMatchingText(message);
 		String potentialType = "";
-		Boolean isOwnPlayer = false;
+		boolean isOwnPlayer = false;
 		if (entry != null) {
 			potentialType = entry.entryName;
-			if (entry.hasField("author")) {
-				isOwnPlayer = PlexCore.getPlayerIGN().equals(entry.getField(message, "author"));
+			String playerName = PlexCore.getPlayerIGN();
+			if (playerName != null && entry.hasField("author")) {
+				isOwnPlayer = playerName.equals(entry.getField(message, "author"));
 			}
 		}
 
-		String min = PlexCoreUtils.minimalize(e.message.getFormattedText());
+		String min = PlexCoreUtils.chatMinimalizeLowercase(e.message.getFormattedText());
 
 		//PlexCoreUtils.chatAddMessage(potentialType);
 		if (hidePlayerChat.booleanValue) {

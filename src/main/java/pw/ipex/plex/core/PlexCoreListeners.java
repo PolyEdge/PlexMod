@@ -123,7 +123,7 @@ public class PlexCoreListeners {
 	
 	@SubscribeEvent
 	public void onChat(final ClientChatReceivedEvent e) {
-		if (!PlexCoreUtils.isChatMessage(e.type) || !Plex.serverState.onMineplex) {
+		if (!PlexCoreUtils.chatIsMessage(e.type) || !Plex.serverState.onMineplex) {
 			return;
 		}
 		String message = PlexCoreUtils.chatCondenseAndAmpersand(e.message.getFormattedText());
@@ -379,7 +379,7 @@ public class PlexCoreListeners {
 			Field tabHeader = Plex.minecraft.ingameGUI.getTabList().getClass().getDeclaredField("header");
 			tabHeader.setAccessible(true);
 			IChatComponent tabHeaderText = (IChatComponent) tabHeader.get(Plex.minecraft.ingameGUI.getTabList());
-			return PlexCoreUtils.minimalizeKeepCase(tabHeaderText.getFormattedText());
+			return PlexCoreUtils.chatMinimalize(tabHeaderText.getFormattedText());
 		}
 		catch (Throwable e) {
 			return null;
@@ -462,11 +462,11 @@ public class PlexCoreListeners {
 	}
 
 	public PlexCoreLobbyType getLobbyType() {
-		String scoreboardText = this.getScoreboardTitle();
-		if (scoreboardText == null) {
+		String scoreboardTitle = this.getScoreboardTitle();
+		if (scoreboardTitle == null) {
 			return PlexCoreLobbyType.SERVER_UNKNOWN;
 		}
-		String compareText = PlexCoreUtils.removeFormatting(PlexCoreUtils.condenseChatAmpersandFilter(scoreboardText)).trim().toLowerCase();
+		String compareText = PlexCoreUtils.chatMinimalizeLowercase(scoreboardTitle);
 		PlexCoreLobbyType lobbyType = PlexCoreLobbyType.SERVER_UNKNOWN;
 		String ign = PlexCore.getPlayerIGN();
 

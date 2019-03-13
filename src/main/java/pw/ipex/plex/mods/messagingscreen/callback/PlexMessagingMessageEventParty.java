@@ -22,10 +22,10 @@ public class PlexMessagingMessageEventParty extends PlexMessagingMessageEventHan
     public void onHover(PlexMessagingMessageHoverState hoverState) {
         if (hoverState.message.parentAdapter.regexEntryName.equals("party_invite") && hoverState.message.getBreakdownItemByIndex(hoverState.globalStringOffset) != null) {
             if (hoverState.message.getBreakdownItemByIndex(hoverState.globalStringOffset).equals("!ACCEPT_BUTTON") && hoverState.message.hasTag("invitation_sender_ign")) {
-                Plex.renderUtils.staticDrawTooltip(PlexCoreUtils.ampersandToFormatCharacter("&aClick to accept the invite."), hoverState.mouseX, hoverState.mouseY);
+                Plex.renderUtils.staticDrawTooltip(PlexCoreUtils.chatFromAmpersand("&aClick to accept the invite."), hoverState.mouseX, hoverState.mouseY);
             }
             if (hoverState.message.getBreakdownItemByIndex(hoverState.globalStringOffset).equals("!DENY_BUTTON") && hoverState.message.hasTag("invitation_sender_ign")) {
-                Plex.renderUtils.staticDrawTooltip(PlexCoreUtils.ampersandToFormatCharacter("&cClick to deny the invite."), hoverState.mouseX, hoverState.mouseY);
+                Plex.renderUtils.staticDrawTooltip(PlexCoreUtils.chatFromAmpersand("&cClick to deny the invite."), hoverState.mouseX, hoverState.mouseY);
             }
         }
     }

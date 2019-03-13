@@ -53,7 +53,7 @@ public class PlexAutoFriendMod extends PlexModBase {
 		if (!this.modEnabled.booleanValue) {
 			return;
 		}
-		String minified = PlexCoreUtils.minimalize(e.message.getFormattedText());
+		String minified = PlexCoreUtils.chatMinimalizeLowercase(e.message.getFormattedText());
 		if (minified.matches(MATCH_REQUEST)) {
 			Matcher playerMatcher = PATTERN_REQUEST.matcher(minified);
 			playerMatcher.find();

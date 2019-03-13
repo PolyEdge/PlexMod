@@ -26,7 +26,7 @@ public class PlexMessagingCommunityChatChannel extends PlexMessagingChannelBase 
 	
 	@Override
 	public void chatMessage(ClientChatReceivedEvent event) {
-		String condensedMessage = PlexCoreUtils.minimalize(event.message.getFormattedText());
+		String condensedMessage = PlexCoreUtils.chatMinimalizeLowercase(event.message.getFormattedText());
 		if (condensedMessage.startsWith("communities> you are now chatting to " + this.recipientEntityName.toLowerCase())) {
 			this.setReady();
 			event.setCanceled(true);

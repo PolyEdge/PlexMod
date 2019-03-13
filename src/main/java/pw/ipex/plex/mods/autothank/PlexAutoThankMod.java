@@ -115,7 +115,7 @@ public class PlexAutoThankMod extends PlexModBase {
 		if (!this.modEnabled) {
 			return;
 		}
-		String minifiedCase = PlexCoreUtils.minimalizeKeepCase(e.message.getFormattedText());
+		String minifiedCase = PlexCoreUtils.chatMinimalize(e.message.getFormattedText());
 		String minified = minifiedCase.toLowerCase();
 		if (minified.matches(MATCH_AMPLIFIER_MESSAGE) && this.compactMessagesEnabled) {
 			e.setCanceled(true);

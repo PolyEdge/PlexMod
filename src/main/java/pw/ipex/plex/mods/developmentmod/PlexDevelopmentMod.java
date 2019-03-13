@@ -8,7 +8,6 @@ import pw.ipex.plex.Plex;
 import pw.ipex.plex.core.PlexCore;
 import pw.ipex.plex.core.mineplex.PlexCoreLobbyType;
 import pw.ipex.plex.core.PlexCoreUtils;
-import pw.ipex.plex.core.PlexCoreValue;
 import pw.ipex.plex.mod.PlexModBase;
 
 import java.util.Timer;
@@ -36,7 +35,7 @@ public class PlexDevelopmentMod extends PlexModBase {
 	
 	@SubscribeEvent
 	public void onChat(final ClientChatReceivedEvent e) {
-		if (!PlexCoreUtils.isChatMessage(e.type)) {
+		if (!PlexCoreUtils.chatIsMessage(e.type)) {
 			return;
 		}
 		if (!chatStream) {

@@ -237,7 +237,7 @@ public class PlexUIAutoCompleteTextField {
         for (int itemIndex = 0; itemIndex < items.size(); itemIndex++) {
             items.get(itemIndex).softSelected = false;
         }
-        int selectedIndex = PlexCoreUtils.intRange(index, 0, this.allItems.size() - 1);
+        int selectedIndex = PlexCoreUtils.clamp(index, 0, this.allItems.size() - 1);
         items.get(selectedIndex).softSelected = true;
     }
 
@@ -263,7 +263,7 @@ public class PlexUIAutoCompleteTextField {
             }
             items.get(itemIndex).softSelected = false;
         }
-        selectedIndex = PlexCoreUtils.intRange(selectedIndex + by, 0, items.size() - 1);
+        selectedIndex = PlexCoreUtils.clamp(selectedIndex + by, 0, items.size() - 1);
         items.get(selectedIndex).softSelected = true;
         this.autoCompleteList.scrollToItemIfNotCompletelyInView(items.get(selectedIndex));
     }

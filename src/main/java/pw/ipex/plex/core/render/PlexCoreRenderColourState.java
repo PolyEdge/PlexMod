@@ -38,7 +38,7 @@ public class PlexCoreRenderColourState {
 	}
 	
 	public Integer colourBetween(Integer colour1, Integer colour2, Float between, Integer def) {
-		between = between == null ? 1.0F : PlexCoreUtils.floatRange(between, 0.0F, 1.0F);
+		between = between == null ? 1.0F : PlexCoreUtils.clamp(between, 0.0F, 1.0F);
 		if (colour1 == null && colour2 == null) {
 			return def;
 		}
@@ -54,7 +54,7 @@ public class PlexCoreRenderColourState {
 		if (between == 1.0F) {
 			return colour2;
 		}
-		return PlexCoreUtils.betweenColours(this.getRealColour(colour1), this.getRealColour(colour2), between);
+		return PlexCoreUtils.colourBetween(this.getRealColour(colour1), this.getRealColour(colour2), between);
 	}
 	
 	public Integer colourBetweenStates(String colour, PlexCoreRenderColourState state1, PlexCoreRenderColourState state2, Float between) {
@@ -62,7 +62,7 @@ public class PlexCoreRenderColourState {
 	}
 	
 	public Integer colourBetweenStates(String colour, PlexCoreRenderColourState state1, PlexCoreRenderColourState state2, Float between, Integer def) {
-		between = between == null ? 1.0F : PlexCoreUtils.floatRange(between, 0.0F, 1.0F);
+		between = between == null ? 1.0F : PlexCoreUtils.clamp(between, 0.0F, 1.0F);
 		if ((state1 == null && state2 == null) || colour == null) {
 			return def;
 		}
@@ -84,11 +84,11 @@ public class PlexCoreRenderColourState {
 		if (state2.getColour(colour, null) == null) {
 			return state1.getColour(colour, def);
 		}
-		return PlexCoreUtils.betweenColours(state1.getColour(colour, def), state2.getColour(colour, def), between);
+		return PlexCoreUtils.colourBetween(state1.getColour(colour, def), state2.getColour(colour, def), between);
 	}
 	
 	public PlexCoreRenderColourState colourStateBetween(PlexCoreRenderColourState state1, PlexCoreRenderColourState state2, Float between) {
-		between = between == null ? 1.0F : PlexCoreUtils.floatRange(between, 0.0F, 1.0F);
+		between = between == null ? 1.0F : PlexCoreUtils.clamp(between, 0.0F, 1.0F);
 		if (state1 == null && state2 == null) {
 			return null;
 		}

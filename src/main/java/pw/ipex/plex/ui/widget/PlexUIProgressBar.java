@@ -85,10 +85,10 @@ public class PlexUIProgressBar extends GuiScreen {
 	}
 	
 	public void updateProgressBar() {
-		this.progress = PlexCoreUtils.floatRange(this.progress, 0.0F, 1.0F);
+		this.progress = PlexCoreUtils.clamp(this.progress, 0.0F, 1.0F);
 		if (this.lastProgressUpdate != null) {
 			if (this.displayProgress != this.progress) {
-				this.displayProgress = this.oldProgress + (this.progress - this.oldProgress) * ((float)PlexCoreUtils.longRange((Minecraft.getSystemTime() - this.lastProgressUpdate), 0L, (long) this.loadCycleSpeedMs) / (float) this.loadCycleSpeedMs);
+				this.displayProgress = this.oldProgress + (this.progress - this.oldProgress) * ((float)PlexCoreUtils.clamp((Minecraft.getSystemTime() - this.lastProgressUpdate), 0L, (long) this.loadCycleSpeedMs) / (float) this.loadCycleSpeedMs);
 			}			
 		}
 		else {
@@ -97,7 +97,7 @@ public class PlexUIProgressBar extends GuiScreen {
 		//this.displayProgress = this.displayProgress + (this.progress - this.displayProgress) / this.updateSpeed;
 		if (lastColourUpdate != null) {
 			if (this.displayColour != this.colour) {
-				this.displayColour = PlexCoreUtils.betweenColours(this.oldDisplayColour, this.colour, ((float)PlexCoreUtils.longRange((Minecraft.getSystemTime() - this.lastColourUpdate), 0L, (long) this.colourChangeMs) / (long) this.colourChangeMs));
+				this.displayColour = PlexCoreUtils.colourBetween(this.oldDisplayColour, this.colour, ((float)PlexCoreUtils.clamp((Minecraft.getSystemTime() - this.lastColourUpdate), 0L, (long) this.colourChangeMs) / (long) this.colourChangeMs));
 			}
 		}
 		else {

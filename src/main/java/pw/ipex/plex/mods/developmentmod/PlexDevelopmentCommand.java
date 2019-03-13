@@ -32,15 +32,18 @@ public class PlexDevelopmentCommand extends PlexCommandHandler {
 		else if (args[0].equalsIgnoreCase("chat")) {
 			devInstance.chatStream = !devInstance.chatStream;
 			PlexCoreUtils.chatAddMessage("plexdev -> " + (devInstance.chatStream ? "now showing" : "no longer showing") + " chat formatting.");
-			PlexCoreUtils.chatAddMessage("plexdev -> currently displaying " + (PlexCore.getSharedValue("_plexDev_minifyMessages").booleanValue ? "minified" : "non minified") + " messages. use the \"chatmode\" subcommand to toggle display behaviour.");
+			if (devInstance.chatStream) {
+				PlexCoreUtils.chatAddMessage("plexdev -> currently displaying " + (devInstance.chatMinify ? "condensed" : "non condensed") + " messages. use the \"chatmode\" subcommand to toggle display behaviour.");
 
+			}
 		}
 		else if (args[0].equalsIgnoreCase("chatmode")) {
-			PlexCore.getSharedValue("_plexDev_chatStreamMinify").set(!PlexCore.getSharedValue("_plexDev_chatStream").booleanValue);
-			PlexCoreUtils.chatAddMessage("plexdev -> " + (PlexCore.getSharedValue("_plexDev_soundStream").booleanValue ? "now showing" : "no longer showing") + " chat formatting");
+			devInstance.chatMinify = !devInstance.chatMinify;
+			PlexCoreUtils.chatAddMessage("plexdev -> " + (devInstance.chatMinify ? "now showing" : "no longer showing") + " messages in condensed format");
 		}
 		else if (args[0].equalsIgnoreCase("server") || args[0].equalsIgnoreCase("lobby")) {
-			PlexCore.getSharedValue("_plexDev_lobbyStream").set(!PlexCore.getSharedValue("_plexDev_lobbyStream").booleanValue);
+			devInstance.lobbySwitchStream = !devInstance.lobbySwitchStream;
+			PlexCoreUtils.chatAddMessage("plexdev -> " + (devInstance.lobbySwitchStream ? "now showing" : "no longer showing") + " lobby switch events.");
 		}
 		else if (args[0].equalsIgnoreCase("regex") && args.length > 1) {
 			String input = "";

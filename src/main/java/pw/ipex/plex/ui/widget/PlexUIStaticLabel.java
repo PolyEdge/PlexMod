@@ -163,7 +163,7 @@ public class PlexUIStaticLabel extends GuiScreen {
 	
 	public void updateLabel() {
 		if (this.lastPositionUpdate != null) {
-			float timeBetween = ((float)PlexCoreUtils.longRange((Minecraft.getSystemTime() - this.lastPositionUpdate), 0L, (long) this.movementSpeedMs) / (float) this.movementSpeedMs);
+			float timeBetween = ((float)PlexCoreUtils.clamp((Minecraft.getSystemTime() - this.lastPositionUpdate), 0L, (long) this.movementSpeedMs) / (float) this.movementSpeedMs);
 			if (this.displayX != this.startX) {
 				this.displayX = this.oldDisplayX + (float)(this.startX - this.oldDisplayX) * timeBetween;
 			}
@@ -176,7 +176,7 @@ public class PlexUIStaticLabel extends GuiScreen {
 			this.displayY = this.startY;
 		}
 		if (this.lastHeightUpdate != null) {
-			float timeBetween = ((float)PlexCoreUtils.longRange((Minecraft.getSystemTime() - this.lastPositionUpdate), 0L, (long) this.movementSpeedMs) / (float) this.movementSpeedMs);
+			float timeBetween = ((float)PlexCoreUtils.clamp((Minecraft.getSystemTime() - this.lastPositionUpdate), 0L, (long) this.movementSpeedMs) / (float) this.movementSpeedMs);
 			if (this.displayHeight != this.labelHeight) {
 				this.displayHeight = this.oldDisplayHeight + (float)(this.labelHeight - this.oldDisplayHeight) * timeBetween;
 			}			
@@ -185,7 +185,7 @@ public class PlexUIStaticLabel extends GuiScreen {
 			this.displayHeight = this.labelHeight;
 		}
 		if (this.lastTextUpdate != null) {
-			float timeBetween = ((float)PlexCoreUtils.longRange((Minecraft.getSystemTime() - this.lastTextUpdate), 0L, (long) this.textUpdateMs) / (float) this.textUpdateMs);
+			float timeBetween = ((float)PlexCoreUtils.clamp((Minecraft.getSystemTime() - this.lastTextUpdate), 0L, (long) this.textUpdateMs) / (float) this.textUpdateMs);
 			if (!this.displayText.equals(this.text) || this.displayTextWidth != this.targetTextWidth) {
 				int oldWidth = Plex.renderUtils.calculateScaledStringWidth(this.oldDisplayText, 1.0F);
 				int newWidth = Plex.renderUtils.calculateScaledStringWidth(this.text, 1.0F);
@@ -199,7 +199,7 @@ public class PlexUIStaticLabel extends GuiScreen {
 		}
 		if (lastColourUpdate != null) {
 			if (this.displayColour != this.colour) {
-				this.displayColour = PlexCoreUtils.betweenColours(this.oldDisplayColour, this.colour, ((float)PlexCoreUtils.longRange((Minecraft.getSystemTime() - this.lastColourUpdate), 0L, (long) this.colourChangeMs) / (long) this.colourChangeMs));
+				this.displayColour = PlexCoreUtils.colourBetween(this.oldDisplayColour, this.colour, ((float)PlexCoreUtils.clamp((Minecraft.getSystemTime() - this.lastColourUpdate), 0L, (long) this.colourChangeMs) / (long) this.colourChangeMs));
 			}
 		}
 		else {
@@ -207,7 +207,7 @@ public class PlexUIStaticLabel extends GuiScreen {
 		}
 		if (lastTextColourUpdate != null) {
 			if (this.textDisplayColour != this.textColour) {
-				this.textDisplayColour = PlexCoreUtils.betweenColours(this.oldTextDisplayColour, this.textColour, ((float)PlexCoreUtils.longRange((Minecraft.getSystemTime() - this.lastTextColourUpdate), 0L, (long) this.colourChangeMs) / (long) this.colourChangeMs));
+				this.textDisplayColour = PlexCoreUtils.colourBetween(this.oldTextDisplayColour, this.textColour, ((float)PlexCoreUtils.clamp((Minecraft.getSystemTime() - this.lastTextColourUpdate), 0L, (long) this.colourChangeMs) / (long) this.colourChangeMs));
 			}
 		}
 		else {

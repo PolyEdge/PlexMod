@@ -207,7 +207,7 @@ public class PlexUIScrolledItemList extends GuiScreen {
 		if (ypos == -1) {
 			return 0.0F;
 		}
-		return PlexCoreUtils.floatRange((float) ypos / (float) scrollRange, 0.0F, 1.0F);
+		return PlexCoreUtils.clamp((float) ypos / (float) scrollRange, 0.0F, 1.0F);
 	}
 
 	public boolean isItemVisibleInList(PlexUIScrolledItem scrollItem) {

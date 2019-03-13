@@ -69,7 +69,7 @@ public class PlexUIModMenuScreen extends GuiScreen {
 	
 	public Integer startingYPos(Integer contentHeight) {
 		Integer heightRange = verticalPixelCount();
-		return zoneStartY() + PlexCoreUtils.intRange(heightRange - contentHeight, 0, null) / 4;
+		return zoneStartY() + PlexCoreUtils.clamp(heightRange - contentHeight, 0, null) / 4;
 	}
 	
 	public Integer horizontalPixelCount() {
@@ -126,7 +126,7 @@ public class PlexUIModMenuScreen extends GuiScreen {
 	}
 	
 	public Integer centeredPaneSize(Integer paneCount, Integer minSize, Integer maxSize) {
-		return PlexCoreUtils.intRange(horizontalPixelCount() / paneCount, minSize, maxSize);
+		return PlexCoreUtils.clamp(horizontalPixelCount() / paneCount, minSize, maxSize);
 	}
 
 	public Integer panePosition(Integer paneNumber, Integer paneCount) {
@@ -284,17 +284,17 @@ public class PlexUIModMenuScreen extends GuiScreen {
 	public void updateColourState() {
 		this.colourState.setColour("foreground", this.baseUiScreen.pageForegroundColour());
 		this.colourState.setColour("background", this.baseUiScreen.pageBackgroundColour());
-		this.colourState.setColour("background_transparency", PlexCoreUtils.colourCodeFrom(0, 0, 0, this.baseUiScreen.pageBackgroundTransparency()));
+		this.colourState.setColour("background_transparency", PlexCoreUtils.fromRGB(0, 0, 0, this.baseUiScreen.pageBackgroundTransparency()));
 	}
 	
 	public Integer getForeground() {
-		float fadeTime = PlexCoreUtils.floatRange((float) ((Minecraft.getSystemTime() - this.initializationTime) / ((double) this.colourFadeTime)), 0.0F, 1.0F);
+		float fadeTime = PlexCoreUtils.clamp((float) ((Minecraft.getSystemTime() - this.initializationTime) / ((double) this.colourFadeTime)), 0.0F, 1.0F);
 		return this.colourState.colourBetweenStates("foreground", this.oldColourState, this.colourState, fadeTime);
 	}
 	
 	public Integer getBackground() {
-		float fadeTime = PlexCoreUtils.floatRange((float) ((Minecraft.getSystemTime() - this.initializationTime) / ((double) this.colourFadeTime)), 0.0F, 1.0F);
-		return PlexCoreUtils.replaceColour(this.colourState.colourBetweenStates("background", this.oldColourState, this.colourState, fadeTime), null, null, null, PlexCoreUtils.rgbCodeFrom(this.colourState.colourBetweenStates("background_transparency", this.oldColourState, this.colourState, fadeTime))[3]);
+		float fadeTime = PlexCoreUtils.clamp((float) ((Minecraft.getSystemTime() - this.initializationTime) / ((double) this.colourFadeTime)), 0.0F, 1.0F);
+		return PlexCoreUtils.replaceColour(this.colourState.colourBetweenStates("background", this.oldColourState, this.colourState, fadeTime), null, null, null, PlexCoreUtils.toRGB(this.colourState.colourBetweenStates("background_transparency", this.oldColourState, this.colourState, fadeTime))[3]);
 	}
 	
 	public void clickSocialMedia(int mouseX, int mouseY) {

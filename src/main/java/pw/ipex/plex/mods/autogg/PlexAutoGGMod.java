@@ -112,7 +112,7 @@ public class PlexAutoGGMod extends PlexModBase {
 		if (!this.modEnabled.booleanValue) {
 			return;
 		}
-		String minified = PlexCoreUtils.minimalize(e.message.getFormattedText());
+		String minified = PlexCoreUtils.chatMinimalizeLowercase(e.message.getFormattedText());
 		if (this.gameOverTime == null) {
 			if (minified.matches("^1st place -? ?(.*)$")) {
 				this.gameOverTime = Minecraft.getSystemTime();

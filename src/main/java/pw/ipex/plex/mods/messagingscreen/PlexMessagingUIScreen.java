@@ -20,7 +20,6 @@ import pw.ipex.plex.mods.messagingscreen.ui.PlexMessagingUICreateNewChatWindow;
 import pw.ipex.plex.mods.messagingscreen.ui.PlexMessagingUIMessageWindow;
 import pw.ipex.plex.ui.*;
 import pw.ipex.plex.ui.widget.*;
-import pw.ipex.plex.ui.widget.autocomplete.PlexUIAutoCompleteItem;
 import pw.ipex.plex.ui.widget.autocomplete.PlexUIAutoCompleteTextField;
 import pw.ipex.plex.ui.widget.itemlist.PlexUIScrolledItem;
 import pw.ipex.plex.ui.widget.itemlist.PlexUIScrolledItemList;
@@ -629,7 +628,7 @@ public class PlexMessagingUIScreen extends PlexUIBase {
 				selectedIndex = itemIndex;
 			}
 		}
-		PlexUIScrolledItem selectItem = items.get(PlexCoreUtils.intRange(selectedIndex + by, 0, items.size() - 1));
+		PlexUIScrolledItem selectItem = items.get(PlexCoreUtils.clamp(selectedIndex + by, 0, items.size() - 1));
 		for (PlexUIScrolledItem item : list.getAllItems()) {
 			if (item.equals(selectItem)) {
 				if (!item.listItemIsSelected() || reselect) {

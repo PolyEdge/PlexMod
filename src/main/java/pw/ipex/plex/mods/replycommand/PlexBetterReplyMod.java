@@ -221,10 +221,10 @@ public class PlexBetterReplyMod extends PlexModBase {
 	
 	@SubscribeEvent
 	public void onChat(final ClientChatReceivedEvent e) {
-		if (!PlexCoreUtils.isChatMessage(e.type)) {
+		if (!PlexCoreUtils.chatIsMessage(e.type)) {
 			return;
 		}
-		String filtered = PlexCoreUtils.condenseChatAmpersandFilter(e.message.getFormattedText());
+		String filtered = PlexCoreUtils.chatCondenseAndAmpersand(e.message.getFormattedText());
 		if (filtered.matches(this.MATCH_DIRECT_MESSAGE)) {
 			Matcher matcher = PATTERN_DIRECT_MESSAGE.matcher(filtered);
 			matcher.find();

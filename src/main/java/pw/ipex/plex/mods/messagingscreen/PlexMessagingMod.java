@@ -53,8 +53,8 @@ public class PlexMessagingMod extends PlexModBase {
 	
 	@SubscribeEvent
 	public void onChat(ClientChatReceivedEvent event) {
-		String chatMessageContent = PlexCoreUtils.condenseChatFilter(event.message.getFormattedText());
-		if (PlexCoreUtils.minimalize(event.message.getFormattedText()).startsWith("communities> you are now chatting to")) {
+		String chatMessageContent = PlexCoreUtils.chatCondense(event.message.getFormattedText());
+		if (PlexCoreUtils.chatMinimalizeLowercase(event.message.getFormattedText()).startsWith("communities> you are now chatting to")) {
 			channelManager.unreadyChannelsByClass(PlexMessagingCommunityChatChannel.class);
 		}
 		this.handleMessage(chatMessageContent);
@@ -62,19 +62,19 @@ public class PlexMessagingMod extends PlexModBase {
 
 	public void refreshAutoCompleteList() {
 		PlexUIAutoCompleteItem serverItem = autoCompleteContainer.getItemOrNew("server", "server_id");
-		serverItem.setAutoCompleteText("null").setSearchText("@server").setDisplayText(PlexCoreUtils.ampersandToFormatCharacter("&dCurrent Server - &3" + "null")).setGlobalSortingIndex(0);
+		serverItem.setAutoCompleteText("null").setSearchText("@server").setDisplayText(PlexCoreUtils.chatFromAmpersand("&dCurrent Server - &3" + "null")).setGlobalSortingIndex(0);
 		autoCompleteContainer.addItem(serverItem);
 
 		if (Plex.serverState.currentLobbyName != null) {
-			serverItem.setAutoCompleteText(Plex.serverState.currentLobbyName).setDisplayText(PlexCoreUtils.ampersandToFormatCharacter("&dCurrent Server - &3" + Plex.serverState.currentLobbyName));
+			serverItem.setAutoCompleteText(Plex.serverState.currentLobbyName).setDisplayText(PlexCoreUtils.chatFromAmpersand("&dCurrent Server - &3" + Plex.serverState.currentLobbyName));
 		}
 		else {
-			serverItem.setAutoCompleteText("").setDisplayText(PlexCoreUtils.ampersandToFormatCharacter("&dCurrent Server - &e" + "determining..."));
+			serverItem.setAutoCompleteText("").setDisplayText(PlexCoreUtils.chatFromAmpersand("&dCurrent Server - &e" + "determining..."));
 		}
 
 		for (String emoteName : Plex.serverState.emotesList.keySet()) {
 			PlexUIAutoCompleteItem emoteItem = autoCompleteContainer.getItemOrNew("emote", emoteName);
-			emoteItem.setAutoCompleteText(":" + emoteName + ":").setSearchText(":" + emoteName + ":").setDisplayText(PlexCoreUtils.ampersandToFormatCharacter("&7:" + emoteName + ": &e" + Plex.serverState.emotesList.get(emoteName)));
+			emoteItem.setAutoCompleteText(":" + emoteName + ":").setSearchText(":" + emoteName + ":").setDisplayText(PlexCoreUtils.chatFromAmpersand("&7:" + emoteName + ": &e" + Plex.serverState.emotesList.get(emoteName)));
 			autoCompleteContainer.addItem(emoteItem);
 		}
 

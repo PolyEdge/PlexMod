@@ -8,7 +8,6 @@ import java.util.*;
 //import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
-import akka.actor.SupervisorStrategy;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
@@ -27,14 +26,14 @@ import net.minecraft.util.ResourceLocation;
 import pw.ipex.plex.Plex;
 
 public class PlexCoreUtils {
-	public static ConcurrentHashMap<String, String> nameToUuid = new ConcurrentHashMap<String, String>();
-	public static ConcurrentHashMap<String, String> uuidToName = new ConcurrentHashMap<String, String>();
-	public static ConcurrentHashMap<String, Long> uuidLookupTimes = new ConcurrentHashMap<String, Long>();
-	public static ConcurrentHashMap<String, Long> nameLookupTimes = new ConcurrentHashMap<String, Long>();
-	public static ConcurrentHashMap<String, Long> skinLookupTimes = new ConcurrentHashMap<String, Long>();
-	public static ConcurrentHashMap<String, ResourceLocation> uuidToTexture = new ConcurrentHashMap<String, ResourceLocation>();
-	public static ConcurrentHashMap<String, ResourceLocation> nameDefaultSkins = new ConcurrentHashMap<String, ResourceLocation>();
-	public static ConcurrentHashMap<String, ResourceLocation> uuidDefaultSkins = new ConcurrentHashMap<String, ResourceLocation>();
+	public static ConcurrentHashMap<String, String> nameToUuid = new ConcurrentHashMap<>();
+	public static ConcurrentHashMap<String, String> uuidToName = new ConcurrentHashMap<>();
+	public static ConcurrentHashMap<String, Long> uuidLookupTimes = new ConcurrentHashMap<>();
+	public static ConcurrentHashMap<String, Long> nameLookupTimes = new ConcurrentHashMap<>();
+	public static ConcurrentHashMap<String, Long> skinLookupTimes = new ConcurrentHashMap<>();
+	public static ConcurrentHashMap<String, ResourceLocation> uuidToTexture = new ConcurrentHashMap<>();
+	public static ConcurrentHashMap<String, ResourceLocation> nameDefaultSkins = new ConcurrentHashMap<>();
+	public static ConcurrentHashMap<String, ResourceLocation> uuidDefaultSkins = new ConcurrentHashMap<>();
 	public static Map<String, Integer> colourCode = new HashMap<>();
 	
 	public static String FORMAT_SYMBOL = Character.toString ((char) 167);
@@ -65,6 +64,7 @@ public class PlexCoreUtils {
 			sender.addChatMessage(new ChatComponentText(message));
 		}
 		catch (NullPointerException e) {
+			//
 		}
 	}
 	
@@ -74,6 +74,10 @@ public class PlexCoreUtils {
 		}
 		catch (NullPointerException e) {
 		}
+	}
+
+	public static Boolean chatIsMessage(byte messageType) {
+		return (messageType == (byte) 0) || (messageType == (byte) 1);
 	}
 	
 	public static String chatStyleText(String ...args) {
@@ -102,7 +106,7 @@ public class PlexCoreUtils {
 	public static String chatPlexPrefix() {
 		return chatStyleText("GOLD", "Plex") + chatStyleText("BLACK", ">") + " ";
 	}
-	
+
 	public static String getUiChatMessage(String message) {
 		if (message.equalsIgnoreCase("plex.modInfo")) {
 			return chatPlexPrefix() + chatStyleText("GRAY", "Plex v" + Plex.VERSION + (Plex.PATCHID == null ? "" : "-" + Plex.PATCHID) + " ") + chatStyleText("GRAY", ">> ") + chatStyleText("GOLD", "@PolyEdge/cysk ")  + "\n" + 
@@ -216,7 +220,7 @@ public class PlexCoreUtils {
 	 * @param input The chat message
 	 * @return the chat message, valid ampersands converted to formatting codes
 	 */
-	public String chatFromAmpersand(String input) {
+	public static String chatFromAmpersand(String input) {
 		return chatFromAmpersand(input, false);
 	}
 
@@ -228,7 +232,7 @@ public class PlexCoreUtils {
 	 * @param escape Determines whether backslashes used to escape ampersands will be removed.
 	 * @return the chat message, valid ampersands converted to formatting codes
 	 */
-	public String chatFromAmpersand(String input, boolean escape) {
+	public static String chatFromAmpersand(String input, boolean escape) {
 		input = input.replaceAll("(?<!\\\\)(?:((?:\\\\\\\\)*))&([0-9a-fA-FkKlLmMnNoOrR])", "$1" + FORMAT_SYMBOL + "$2");
 		if (escape) {
 			input = input.replaceAll("\\\\(&[0-9a-fA-FkKlLmMnNoOrR])", "$1");
@@ -237,35 +241,33 @@ public class PlexCoreUtils {
 	}
 
 	/*    old poorly written chat management
-	
+
 	public static String condenseChatAmpersandFilter(String text) {
 		return text.replace(FORMAT_SYMBOL, "&").replaceAll("\\&f|\\&r", "");
 	}
-	
+
 	public static String condenseChatFilter(String text) {
 		return text.replace(FORMAT_SYMBOL + "f", "").replace(FORMAT_SYMBOL + "r", "");
 	}
-	
+
 	public static String ampersandToFormatCharacter(String input) {
 		return input.replace("&", FORMAT_SYMBOL);
 	}
-	
+
 	public static String removeFormatting(String text) {
 		return text.replaceAll("&[0-9a-zA-Z]", "");
 	}
-	
+
 	public static String minimalize(String text) {
 		return removeFormatting(condenseChatAmpersandFilter(text)).trim().toLowerCase();
 	}
-	
+
 	public static String minimalizeKeepCase(String text) {
 		return removeFormatting(condenseChatAmpersandFilter(text)).trim();
 	} */
-	
-	public static Boolean isChatMessage(byte messageType) {
-		return (messageType == (byte) 0) || (messageType == (byte) 1);
-	}
-	
+
+	// command builder
+
 	public static String buildCommand(List<String> args) {
 	    StringJoiner joiner = new StringJoiner(" ", "", "");
 	    for (String arg : args) {
@@ -281,98 +283,92 @@ public class PlexCoreUtils {
 	    }
 	    return joiner.toString();
 	}
+
+	// clamping
 	
-	public static Integer intRange(Integer num, Integer min, Integer max) {
+	public static Integer clamp(Integer num, Integer min, Integer max) {
 		return ((min == null && max == null) ? num : (min == null ? (num <= max ? num : max) : (max == null ? (num >= min ? num : min) : (num >= min ? (num <= max ? num : max) : min))));
 	}
 	
-	public static Float floatRange(Float num, Float min, Float max) {
+	public static Float clamp(Float num, Float min, Float max) {
 		return ((min == null && max == null) ? num : (min == null ? (num <= max ? num : max) : (max == null ? (num >= min ? num : min) : (num >= min ? (num <= max ? num : max) : min))));
 	}
 	
-	public static Long longRange(Long num, Long min, Long max) {
+	public static Long clamp(Long num, Long min, Long max) {
 		return ((min == null && max == null) ? num : (min == null ? (num <= max ? num : max) : (max == null ? (num >= min ? num : min) : (num >= min ? (num <= max ? num : max) : min))));
 	}
-	
-	public static Integer colourCodeFrom(Integer r, Integer g, Integer b, Integer a) {
+
+	// colour operations
+
+	public static int fromRGB(int r, int g, int b, int a) {
+		r = clamp(r, 0, 255);
+		g = clamp(g, 0, 255);
+		b = clamp(b, 0, 255);
+		a = clamp(a, 0, 255);
 		return (r << 16) + (g << 8) + (b) + (a << 24);
 	}
-	
-	public static Integer[] rgbCodeFrom(Integer colourCode) {
-		Integer[] values = {((colourCode >> 16) & 255), ((colourCode >> 8) & 255), (colourCode & 255), ((colourCode >> 24) & 255)};
-		return values;
+
+	public static int[] toRGB(int colour) {
+		return new int[] {((colour >> 16) & 255), ((colour >> 8) & 255), (colour & 255), ((colour >> 24) & 255)};
 	}
-	
-	public static Integer betweenColours(Integer colour1, Integer colour2, Float between) {
-		Integer[] rgbsColour1 = PlexCoreUtils.rgbCodeFrom(colour1);
-		Integer[] rgbsColour2 = PlexCoreUtils.rgbCodeFrom(colour2);
-		Integer colourR = rgbsColour1[0] + ((int) (between * (rgbsColour2[0] - rgbsColour1[0])));
-		Integer colourG = rgbsColour1[1] + ((int) (between * (rgbsColour2[1] - rgbsColour1[1])));
-		Integer colourB = rgbsColour1[2] + ((int) (between * (rgbsColour2[2] - rgbsColour1[2])));
-		Integer colourA = rgbsColour1[3] + ((int) (between * (rgbsColour2[3] - rgbsColour1[3])));
-		return colourCodeFrom(colourR, colourG, colourB, colourA);
+
+	public static Integer colourBetween(int colour1, int colour2, float between) {
+		between = clamp(between, 0.0F, 1.0F);
+		int[] rgb1 = toRGB(colour1);
+		int[] rgb2 = toRGB(colour2);
+		int colourR = rgb1[0] + ((int) (between * (rgb2[0] - rgb1[0])));
+		int colourG = rgb1[1] + ((int) (between * (rgb2[1] - rgb1[1])));
+		int colourB = rgb1[2] + ((int) (between * (rgb2[2] - rgb1[2])));
+		int colourA = rgb1[3] + ((int) (between * (rgb2[3] - rgb1[3])));
+		return fromRGB(colourR, colourG, colourB, colourA);
 	}
-	
-	public static Integer betweenColours(Integer colour1, Integer colour2, Double between) {
-		if (between < 0) {
-			between = 0.0D;
-		}
-		if (between > 1) {
-			between = 1.0D;
-		}
-		Integer[] rgbsColour1 = PlexCoreUtils.rgbCodeFrom(colour1);
-		Integer[] rgbsColour2 = PlexCoreUtils.rgbCodeFrom(colour2);
-		Integer colourR = rgbsColour1[0] + ((int) (between * (rgbsColour2[0] - rgbsColour1[0])));
-		Integer colourG = rgbsColour1[1] + ((int) (between * (rgbsColour2[1] - rgbsColour1[1])));
-		Integer colourB = rgbsColour1[2] + ((int) (between * (rgbsColour2[2] - rgbsColour1[2])));
-		Integer colourA = rgbsColour1[3] + ((int) (between * (rgbsColour2[3] - rgbsColour1[3])));
-		return colourCodeFrom(colourR, colourG, colourB, colourA);
+
+	public static int replaceColour(int colour, Integer r, Integer g, Integer b, Integer a) {
+		int[] rgba = toRGB(colour);
+		return fromRGB(r == null ? rgba[0] : r, g == null ? rgba[1] : g, b == null ? rgba[2] : b, a == null ? rgba[3] : a);
 	}
-	
-	public static Integer replaceColour(Integer colour, Integer r, Integer g, Integer b, Integer a) {
-		Integer[] rgba = rgbCodeFrom(colour);
-		return colourCodeFrom(r == null ? rgba[0] : r, g == null ? rgba[1] : g, b == null ? rgba[2] : b, a == null ? rgba[3] : a);
-	}
-	
-	public static Integer[] getChromaRGB(Double i) {
-		Integer i2 = (int) (i % 1531);
+
+	public static int[] getChromaRGB(double i) {
+		int i2 = (int) (i % 1531);
 		return getChromaRGB(i2);
 	}
-	
-	public static Integer[] getChromaRGB(int i) {
+
+	public static int[] getChromaRGB(int i) {
 		i = i % 1531;
-		Integer red = 0;
-		Integer green = 0;
-		Integer blue = 0;
+		int red = 0;
+		int green = 0;
+		int blue = 0;
 		if (i <= 510) {
 			red = i <= 255 ? 255 : (510 - i);
-			green = i <= 255 ? i : 255;			
+			green = i <= 255 ? i : 255;
 		}
 		if ((i > 510) && (i <= 1020)) {
 			green = i <= 765 ? 255 : (1020 - i);
-			blue = i <= 765 ? i - 510 : 255;			
+			blue = i <= 765 ? i - 510 : 255;
 		}
 		if ((i > 1020) && (i <= 1530)) {
 			blue = i <= 1275 ? 255 : (1530 - i);
 			red = i <= 1275 ? i - 1020 : 255;
 		}
-		return new Integer[] {red, green, blue};
+		return new int[] {red, green, blue};
 	}
-	
-	public static Integer globalChromaCycle() {
-		Integer[] chromaRGB = getChromaRGB((Minecraft.getSystemTime() / 100.0D * 20.0D));
-		return PlexCoreUtils.colourCodeFrom(chromaRGB[0], chromaRGB[1], chromaRGB[2], 255);
+
+	public static int globalChromaCycle() {
+		int[] chromaRGB = getChromaRGB((Minecraft.getSystemTime() / 100.0D * 20.0D));
+		return fromRGB(chromaRGB[0], chromaRGB[1], chromaRGB[2], 255);
 	}
-	
-	public static Integer multiplyColour(int colour, float mul) {
+
+	public static int multiplyColour(int colour, float mul) {
 		return multiplyColour(colour, mul, false);
 	}
-	
-	public static Integer multiplyColour(int colour, float mul, boolean alpha) {
-		Integer[] newColour = PlexCoreUtils.rgbCodeFrom(colour);
-		return PlexCoreUtils.colourCodeFrom(PlexCoreUtils.intRange((int)(newColour[0] * mul), 0, 255), PlexCoreUtils.intRange((int)(newColour[1] * mul), 0, 255), PlexCoreUtils.intRange((int)(newColour[2] * mul), 0, 255), alpha ? PlexCoreUtils.intRange((int)(newColour[3] * mul), 0, 255) : newColour[3]);
+
+	public static int multiplyColour(int colour, float mul, boolean alpha) {
+		int[] rgb = toRGB(colour);
+		return fromRGB((int) (mul * rgb[0]), (int) (mul * rgb[1]), (int) (mul * rgb[2]), alpha ? (int) (mul * rgb[3]) : rgb[3]);
 	}
-	
+
+	// misc
+
 	public static List<String> matchStringToList(String input, List<String> list) {
 		ArrayList<String> matches = new ArrayList<String>();
 		for (String item : list) {
@@ -415,6 +411,8 @@ public class PlexCoreUtils {
 		}
 		return (time / 31536000000L) + "y";
 	}
+
+	// pages
 	
 	public static <T> List<T> listPage(Integer page, Integer pageSize, List<T> list) {
 		List<T> output = new ArrayList<T>();
@@ -428,19 +426,21 @@ public class PlexCoreUtils {
 		return output;
 	}
 	
-	public static <T> Integer listPageCount(Integer pageSize, List<T> list) {
+	public static <T> int listPageCount(Integer pageSize, List<T> list) {
 		if (list.size() == 0) {
 			return 1;
 		}
-		return 1 + (int) Math.floor((Double.valueOf(list.size()) - 1.0D) / Double.valueOf(pageSize));
+		return 1 + (int) Math.floor(((double) list.size() - 1.0D) / Double.valueOf(pageSize));
 	}
 	
-	public static Integer listSizePage(Integer pageSize, Integer itemCount) {
+	public static int listSizePage(Integer pageSize, Integer itemCount) {
 		if (itemCount == 0) {
 			return 1;
 		}
 		return 1 + (int) Math.floor((Double.valueOf(itemCount) - 1.0D) / Double.valueOf(pageSize));
 	}
+
+	// network
 	
 	public static void openWebsite(String url) {
 		try {
@@ -459,6 +459,8 @@ public class PlexCoreUtils {
 		}
 		catch (Exception e) {}
 	}
+
+	// player information and textures
 	
 	public static ResourceLocation getDefaultSkin() {
 		return DefaultPlayerSkin.getDefaultSkinLegacy();
