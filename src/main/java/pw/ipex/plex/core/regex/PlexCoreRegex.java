@@ -12,12 +12,13 @@ public class PlexCoreRegex {
 	
 	public static String MATCH_PLAYER_CHAT = "^(?:&7Dead )?(?:(?:&[0-9a-fA-Fklmnor])*([0-9]{1,3}) ) *(?:(?:&[0-9a-fA-Fklmnor])*&l(ULTRA|HERO|LEGEND|TITAN|ETERNAL|YT|YOUTUBE|ARTIST|TRAINEE|SUPPORT|MOD|SR\\.MOD|MAPPER|BUILDER|MAPLEAD|JR\\.DEV|DEV|ADMIN|LEADER|OWNER))? *(?:&[0-9a-fA-Fklmnor])* *([a-zA-Z0-9_-]+) *(?:&[0-9a-fA-Fklmnor])* *(.*)$";
 	public static String MATCH_PLAYER_MPS_CHAT = "^(?:&7Dead )?(?:(?:&[0-9a-fA-Fklmnor])*([0-9]{1,3}) )? *(?:(?:&[0-9a-fA-Fklmnor])*&l(ULTRA|HERO|LEGEND|TITAN|ETERNAL|YT|YOUTUBE|ARTIST|TRAINEE|SUPPORT|MOD|SR\\.MOD|MAPPER|BUILDER|MAPLEAD|JR\\.DEV|DEV|ADMIN|LEADER|OWNER))? *(?:&[0-9a-fA-Fkmnor])* *([a-zA-Z0-9_-]+) *(?:&[0-9a-fA-Fklmnor])* *(.*)$"; // there are no levels in mps, so a weaker regex is given (player's name cannot be bold)
-	public static String MATCH_PARTY_CHAT_OLD = "^(?:(?:&[0-9a-fA-Fklmnor]){1,3}([0-9]{1,3}) )? ?(?:&5&lParty) ()?(?:&[0-9a-fA-Fklmnor]){0,4}([a-zA-Z0-9_-]{1,16}) ?(?:&[0-9a-fA-Fklmnor]){0,4} ?(.*)$";
-	public static String MATCH_PARTY_CHAT = "^(?:(?:&[0-9a-fA-Fklmnor]){1,3}([0-9]{1,3}) )? ?(?:&5&l(?:Party|PARTY)) ()?(?:&[0-9a-fA-Fklmnor]){0,4}([a-zA-Z0-9_-]{1,16}) ?&d(.*)$";
+	public static String MATCH_PARTY_CHAT_OLDER = "^(?:(?:&[0-9a-fA-Fklmnor]){1,3}([0-9]{1,3}) )? ?(?:&5&lParty) ()?(?:&[0-9a-fA-Fklmnor]){0,4}([a-zA-Z0-9_-]{1,16}) ?(?:&[0-9a-fA-Fklmnor]){0,4} ?(.*)$";
+	public static String MATCH_PARTY_CHAT_OLD = "^(?:(?:&[0-9a-fA-Fklmnor]){1,3}([0-9]{1,3}) )? ?(?:&5&l(?:Party|PARTY)) ()?(?:&[0-9a-fA-Fklmnor]){0,4}([a-zA-Z0-9_-]{1,16}) ?&d(.*)$";
+	public static String MATCH_PARTY_CHAT = "^(?:(?:&[0-9a-fA-Fklmnor]){1,3}([0-9]{1,3}) )? ?(?:&5&l(?:Party|PARTY)) (?:(?:&[0-9a-fA-Fklmnor]){1,3}([0-9]{1,3}) )? ?(?:&[0-9a-fA-Fklmnor]){0,4}([a-zA-Z0-9_-]{1,16}) ?&d(.*)$";
 	public static String MATCH_TEAM_CHAT = "^&l(?:Team|TEAM) (?:&7Dead )?(?:(?:&[0-9a-fA-Fklmnor]){1,3}([0-9]{1,3}) )?(?:&[0-9a-fA-Fklmnor]){0,4}(ULTRA|HERO|LEGEND|TITAN|ETERNAL|YT|YOUTUBE|ARTIST|TRAINEE|SUPPORT|MOD|SR\\.MOD|MAPPER|BUILDER|MAPLEAD|JR\\.DEV|DEV|ADMIN|LEADER|OWNER)? ?(?:&[0-9a-fA-Fklmnor]){0,4}([a-zA-Z0-9_-]{1,16}) ?(?:&[0-9a-fA-Fklmnor]){0,4} ?(.*)$";
 	public static String MATCH_DIRECT_MESSAGE = "^&6&l([a-zA-Z0-9 _]+) > ([a-zA-Z0-9 _]+)&e &e&l(.*)$";
-	public static String MATCH_COMMUNITY_CHAT = "^&([0-9a-f]?)&l([a-zA-Z0-9_]+) &([0-9a-f]?)&l([a-zA-Z0-9_]+) &([0-9a-f]?)(.+)$";
-	public static String MATCH_COMMUNITY_CHAT_FIX = "^(?:&([0-9a-f]))?&l([a-zA-Z0-9_]+) (?:&([0-9a-f]))?&l([a-zA-Z0-9_]+) (?:&([0-9a-f]?))?(.+)$";
+	public static String MATCH_COMMUNITY_CHAT_OLD = "^(?:&([0-9a-f]))?&l([a-zA-Z0-9_]+) (?:&([0-9a-f]))?&l([a-zA-Z0-9_]+) (?:&([0-9a-f]?))?(.+)$";
+	public static String MATCH_COMMUNITY_CHAT = "^(?:&([0-9a-f]))?&l([a-zA-Z0-9_]+) ?(?:(?:&([0-9a-f]))?&l(Trainee|Support|Mod|Sr\\.Mod|Mapper|Builder|Maplead|Jr\\.Dev|Dev|Admin|Leader|Owner) |(?:&([0-9a-f]))?&l)([a-zA-Z0-9_]+) (?:&([0-9a-f]))?(.+)$";
 
 	public static String MATCH_PARTY_CREATE = "^&9Party> &7You don't seem to have a party, so I've created a new one for you!$";
 	public static String MATCH_PARTY_DISBAND = "^&9Party> &7The party has been disbanded\\.?$";
@@ -47,10 +48,10 @@ public class PlexCoreRegex {
 	static {
 		addEntry("player_chat", MATCH_PLAYER_CHAT).addField(1, "level").addField(2, "rank").addField(3, "author").addField(4, "message").tag("chatMessage");
 		addEntry("player_chat_mps", MATCH_PLAYER_MPS_CHAT).addField(1, "level").addField(2, "rank").addField(3, "author").addField(4, "message");
-		addEntry("party_chat", MATCH_PARTY_CHAT, "party").addField(1, "level").addField(2, "rank").addField(3, "author").addField(4, "message").tag("chatMessage");
+		addEntry("party_chat", MATCH_PARTY_CHAT, "party").addField(1, "level").addField(2, "level2").addField(3, "author").addField(4, "message").addField(5, "rank").tag("chatMessage");
 		addEntry("team_chat", MATCH_TEAM_CHAT).addField(1, "level").addField(2, "rank").addField(3, "author").addField(4, "message").tag("chatMessage");
 		addEntry("direct_message", MATCH_DIRECT_MESSAGE).addField(1, "author").addField(2, "destination").addField(3, "message").tag("chatMessage");
-		addEntry("community_chat", MATCH_COMMUNITY_CHAT_FIX).addField(1, "com_name_colour").addField(2, "community").addField(3, "author_colour").addField(4, "author").addField(5, "message_colour").addField(6, "message").tag("chatMessage");
+		addEntry("community_chat_staff", MATCH_COMMUNITY_CHAT).addField(1, "com_name_colour").addField(2, "community").addField(3, "rank_colour").addField(4, "rank").addField(5, "author_colour").addField(6, "author").addField(7, "message_colour").addField(8, "message").tag("chatMessage");
 
 		addEntry("party_create", MATCH_PARTY_CREATE, "party");
 		addEntry("party_disband", MATCH_PARTY_DISBAND, "party");

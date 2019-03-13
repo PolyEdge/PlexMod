@@ -21,6 +21,8 @@ import pw.ipex.plex.ui.widget.autocomplete.PlexUIAutoCompleteItem;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class PlexMessagingMod extends PlexModBase {
 	//private static ResourceLocation sendIcon = new ResourceLocation("PolyEdge_Plex", "chat/send.png");
@@ -227,7 +229,12 @@ public class PlexMessagingMod extends PlexModBase {
 			final PlexMessagingChannelManager finalManager = channelManager;
 			if (finalManager.selectedChannel != null) {
 				if (!finalManager.selectedChannel.awaitingReady && !finalManager.selectedChannel.channelReady) {
-					finalManager.selectedChannel.getChannelReady();
+					new Timer().schedule(new TimerTask() {
+						@Override
+						public void run() {
+							finalManager.selectedChannel.getChannelReady();
+						}
+					}, 500L);
 				}
 			}
 		}

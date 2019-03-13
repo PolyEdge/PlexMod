@@ -112,6 +112,9 @@ public class PlexCoreListeners {
 
 	@SubscribeEvent
 	public void onCommand(CommandEvent e) {
+		if (e.sender.getCommandSenderEntity() == null || Plex.minecraft.ingameGUI.getChatGUI().getSentMessages().size() == 0) {
+			return;
+		}
 		String message = Plex.minecraft.ingameGUI.getChatGUI().getSentMessages().get(Plex.minecraft.ingameGUI.getChatGUI().getSentMessages().size() - 1);
 		if (!message.startsWith("/")) {
 			e.setCanceled(true);
@@ -123,8 +126,8 @@ public class PlexCoreListeners {
 		if (!PlexCoreUtils.isChatMessage(e.type) || !Plex.serverState.onMineplex) {
 			return;
 		}
-		String message = PlexCoreUtils.condenseChatAmpersandFilter(e.message.getFormattedText());
-		String min = PlexCoreUtils.minimalizeKeepCase(e.message.getFormattedText());
+		String message = PlexCoreUtils.chatCondenseAndAmpersand(e.message.getFormattedText());
+		String min = PlexCoreUtils.chatMinimalize(e.message.getFormattedText());
 
 		if (message.matches(this.MATCH_GAME_NAME)) {
 			Matcher gameMatcher = this.PATTERN_GAME_NAME.matcher(message);

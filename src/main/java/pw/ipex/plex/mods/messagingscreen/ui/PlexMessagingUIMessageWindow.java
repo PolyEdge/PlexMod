@@ -28,22 +28,37 @@ public final class PlexMessagingUIMessageWindow extends GuiScreen {
 	
 	public int renderBorderTop = 5;
 	public int renderBorderBottom = 5;
-	
-	public int backgroundColour = 0x99252525;
+
+	// chat element scaling - for your custom experience (tm)
+	// ###########################################
+
 	public float messageTextScale = 1.0F;
 	public float authorTextScale = 0.6F;
+
 	public float maxChatMessageWidthPercent = 0.75F;
-	public float maxSystemMessageWidthPercent = 0.5F;
-	public float messageContentPaddingPercent = 0.75F; // message is 75% text 25% padding - relative to FontRenderer.FONT_HEIGHT
-	public int extraMessageXPadding = 2;
-	public int messageAuthorSeparator = 1;
+	public float maxSystemMessageWidthPercent = 0.65F;
+
+	public float messagePaddingPercentX = 0.0F;
+	public float messagePaddingPercentY = 0.125F;
+
+	public float messageTopShiftPercent = 0.115F;
+
+	public int extraMessagePaddingX = 2;
+	public int extraMessagePaddingY = 0;
+
+	public int messageAuthorSeparatorSize = 1;
+
 	public float messageLineSpacingFontHeightPercent = 1.0F;
+
 	public int extraChatMessageLineSpacing = 1;
 	public int extraSystemMessageLineSpacing = 1;
+
 	public int messageSpacingDifferentAuthor = 3;
 	public int messageSpacingSameAuthor = 2;
 	
 	public int playerHeadMessageSpacing = 2;
+
+	// ###########################################
 
 	public int mouseWheelScrollPixelAmount = 40;
 	
@@ -75,6 +90,8 @@ public final class PlexMessagingUIMessageWindow extends GuiScreen {
 	public void setChannel(PlexMessagingChannelBase channel) {
 		this.displayedChannel = channel;
 	}
+
+
 	
 	public int getWidth() {
 		return this.endX - this.startX;
@@ -124,34 +141,38 @@ public final class PlexMessagingUIMessageWindow extends GuiScreen {
 		return (int) (this.getChatAreaWidth() * this.maxSystemMessageWidthPercent);
 	}
 
+
+
+	public int getXPaddingByScaledTextHeight(int textHeight, float scale) {
+		return (int) (textHeight * scale * this.messagePaddingPercentX) + this.extraMessagePaddingX;
+	}
+
+	public int getYPaddingByScaledTextHeight(int textHeight, float scale) {
+		return (int) (textHeight * scale * this.messagePaddingPercentY) + this.extraMessagePaddingY;
+	}
+
 	public int getXPaddingByTextHeight(int textHeight) {
-		return this.getYPaddingByTextHeight(textHeight) + this.extraMessageXPadding;
+		return this.getXPaddingByScaledTextHeight(textHeight, 1.0F);
 	}
 	
 	public int getYPaddingByTextHeight(int textHeight) {
-		return (int)(((textHeight / this.messageContentPaddingPercent) - textHeight) / 2);
+		return this.getYPaddingByScaledTextHeight(textHeight, 1.0F);
 	}
 	
-	public int getDefaultBackdropSizeByTextHeight(int textHeight) {
-		return (int) (textHeight / this.messageContentPaddingPercent);
+	public int getMessageTopShiftByScaledTextHeight(int textHeight, float scale) {
+		return (int) (textHeight * scale * this.messageTopShiftPercent);
 	}
-	
-	public int getXPaddingByScaledTextHeight(int textHeight, float scale) {
-		return this.getYPaddingByTextHeight((int) (textHeight * scale)) + this.extraMessageXPadding;
-	}
-	
-	public int getYPaddingByScaledTextHeight(int textHeight, float scale) {
-		return (int)((((textHeight * scale) / this.messageContentPaddingPercent) - textHeight) / 2);
-	}
-	
+
 	public int getDefaultBackdropSizeByScaledTextHeight(int textHeight, float scale) {
-		return (int) ((textHeight * scale) + this.getYPaddingByTextHeight((int) (Plex.minecraft.fontRendererObj.FONT_HEIGHT * scale)) * 2) ;
+		return (int) ((textHeight * scale) + (this.getYPaddingByScaledTextHeight(textHeight, scale) * 2));
 	}
-	
+
+
+
 	public int addToNonZero(int number, int add) {
 		return number == 0 ? 0 : number + add; 
 	}
-	
+
 	public boolean messageListContainsHeads(List<PlexMessagingMessage> messages) {
 		for (PlexMessagingMessage message : messages) {
 			if (message.playerHead != null) {
@@ -179,7 +200,7 @@ public final class PlexMessagingUIMessageWindow extends GuiScreen {
 			int backdropWidth = 0;
 			int headSize = getDefaultBackdropSizeByScaledTextHeight(Plex.minecraft.fontRendererObj.FONT_HEIGHT, this.messageTextScale);
 			boolean headsShown = renderState.RENDER_HEADS_SHOWN;
-			int authorExtra = renderState.RENDER_AUTHOR_ENABLED ? (int)(Plex.minecraft.fontRendererObj.FONT_HEIGHT * this.authorTextScale) + this.messageAuthorSeparator : 0;
+			int authorExtra = renderState.RENDER_AUTHOR_ENABLED ? (int)(Plex.minecraft.fontRendererObj.FONT_HEIGHT * this.authorTextScale) + this.messageAuthorSeparatorSize : 0;
 			int authorWidth = renderState.RENDER_AUTHOR_ENABLED ? Plex.renderUtils.calculateScaledStringWidth(message.author, this.authorTextScale) : 0;
 			int playerHeadExtra = !headsShown ? 0 : getDefaultBackdropSizeByScaledTextHeight(Plex.minecraft.fontRendererObj.FONT_HEIGHT, this.messageTextScale) + this.playerHeadMessageSpacing;
 			
@@ -208,11 +229,11 @@ public final class PlexMessagingUIMessageWindow extends GuiScreen {
 				}
 			}
 
-			int y = authorExtra;
+			int y = authorExtra + this.getYPaddingByScaledTextHeight(Plex.minecraft.fontRendererObj.FONT_HEIGHT, this.messageTextScale) + this.getMessageTopShiftByScaledTextHeight(Plex.minecraft.fontRendererObj.FONT_HEIGHT, this.messageTextScale);
 			for (int lineNo = 0; lineNo < textLines.size(); lineNo++) {
 				int lineSize = Plex.renderUtils.calculateScaledStringWidth(textLines.get(lineNo), this.messageTextScale); // text width
 				lineSize += (this.getXPaddingByScaledTextHeight(Plex.minecraft.fontRendererObj.FONT_HEIGHT, this.messageTextScale) * 2); // padding
-				renderData.addTextLine(textLines.get(lineNo), this.messageTextScale, this.getXPaddingByScaledTextHeight(Plex.minecraft.fontRendererObj.FONT_HEIGHT, this.messageTextScale) + (message.position == message.POSITION_LEFT ? playerHeadExtra : 0), y + this.getYPaddingByScaledTextHeight(Plex.minecraft.fontRendererObj.FONT_HEIGHT, this.messageTextScale), lineSize, message.getColour(), lineCharPos.get(lineNo));
+				renderData.addTextLine(textLines.get(lineNo), this.messageTextScale, this.getXPaddingByScaledTextHeight(Plex.minecraft.fontRendererObj.FONT_HEIGHT, this.messageTextScale) + (message.position == message.POSITION_LEFT ? playerHeadExtra : 0), y, lineSize, message.getColour(), lineCharPos.get(lineNo));
 				if (lineSize > backdropWidth) {
 					backdropWidth = lineSize;
 				}
@@ -220,7 +241,7 @@ public final class PlexMessagingUIMessageWindow extends GuiScreen {
 			}
 			int backdropHeight = (int) ((Plex.minecraft.fontRendererObj.FONT_HEIGHT * this.messageTextScale * this.messageLineSpacingFontHeightPercent) * textLines.size()); // text line spacing
 			backdropHeight += (this.extraChatMessageLineSpacing * (textLines.size() - 1)); // extra line spacing
-			backdropHeight += this.getYPaddingByTextHeight((int) (Plex.minecraft.fontRendererObj.FONT_HEIGHT * this.messageTextScale)) * 2; // top and bottom padding
+			backdropHeight += this.getYPaddingByScaledTextHeight((int) (Plex.minecraft.fontRendererObj.FONT_HEIGHT * this.messageTextScale), this.messageTextScale) * 2; // top and bottom padding
 			renderData.textBackdropHeight = backdropHeight;
 			renderData.textBackdropWidth = backdropWidth;
 			totalHeight += backdropHeight;
@@ -587,7 +608,9 @@ public final class PlexMessagingUIMessageWindow extends GuiScreen {
 			int lineY = renderData.getItemYPosition(positionY, line.y);
 			if (lineY + (Plex.minecraft.fontRendererObj.FONT_HEIGHT * line.scale) > this.getRenderBorderTop() && lineY < this.getRenderBorderBottom()) {
 				Plex.renderUtils.drawScaledString(line.text, lineX, lineY, line.colour, line.scale, false);
-			}			
+			}
+			//Plex.renderUtils.drawScaledHorizontalLine(lineX, lineX + line.width, lineY, 0.5F, 0xffffffff);
+			//Plex.renderUtils.drawScaledHorizontalLine(lineX, lineX + line.width, lineY + line.getHeight(), 0.5F, 0xffffffff);
 		}
 		return renderData.totalHeight;
 	}

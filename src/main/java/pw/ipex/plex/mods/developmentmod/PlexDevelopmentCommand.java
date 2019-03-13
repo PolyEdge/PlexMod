@@ -21,18 +21,28 @@ public class PlexDevelopmentCommand extends PlexCommandHandler {
 	@Override
 	public void processCommand(ICommandSender sender, String namespace, String[] args) throws CommandException {
 		if (args.length == 0) {
+			PlexCoreUtils.chatAddMessage("plexdev -> ?");
 			return;
 		}
+		PlexDevelopmentMod devInstance = PlexCore.modInstance(PlexDevelopmentMod.class);
 		if (args[0].equalsIgnoreCase("sounds")) {
-			PlexCore.getSharedValue("_plexDev_soundStream").set(!PlexCore.getSharedValue("_plexDev_soundStream").booleanValue);
+			devInstance.soundStream = (!devInstance.soundStream);
+			PlexCoreUtils.chatAddMessage("plexdev -> " + (devInstance.soundStream ? "now showing" : "no longer showing") + " sound information.");
 		}
-		if (args[0].equalsIgnoreCase("chat")) {
-			PlexCore.getSharedValue("_plexDev_chatStream").set(!PlexCore.getSharedValue("_plexDev_chatStream").booleanValue);
+		else if (args[0].equalsIgnoreCase("chat")) {
+			devInstance.chatStream = !devInstance.chatStream;
+			PlexCoreUtils.chatAddMessage("plexdev -> " + (devInstance.chatStream ? "now showing" : "no longer showing") + " chat formatting.");
+			PlexCoreUtils.chatAddMessage("plexdev -> currently displaying " + (PlexCore.getSharedValue("_plexDev_minifyMessages").booleanValue ? "minified" : "non minified") + " messages. use the \"chatmode\" subcommand to toggle display behaviour.");
+
 		}
-		if (args[0].equalsIgnoreCase("server") || args[0].equalsIgnoreCase("lobby")) {
+		else if (args[0].equalsIgnoreCase("chatmode")) {
+			PlexCore.getSharedValue("_plexDev_chatStreamMinify").set(!PlexCore.getSharedValue("_plexDev_chatStream").booleanValue);
+			PlexCoreUtils.chatAddMessage("plexdev -> " + (PlexCore.getSharedValue("_plexDev_soundStream").booleanValue ? "now showing" : "no longer showing") + " chat formatting");
+		}
+		else if (args[0].equalsIgnoreCase("server") || args[0].equalsIgnoreCase("lobby")) {
 			PlexCore.getSharedValue("_plexDev_lobbyStream").set(!PlexCore.getSharedValue("_plexDev_lobbyStream").booleanValue);
 		}
-		if (args[0].equalsIgnoreCase("regex") && args.length > 1) {
+		else if (args[0].equalsIgnoreCase("regex") && args.length > 1) {
 			String input = "";
 			for (int x = 1; x < args.length; x++) {
 				input = input + args[x] + " ";
@@ -42,6 +52,9 @@ public class PlexDevelopmentCommand extends PlexCommandHandler {
 			for (String x : PlexCoreRegex.splitFormatRegionString(input)) {
 				PlexCoreUtils.chatAddMessage(x);
 			}
+		}
+		else {
+			PlexCoreUtils.chatAddMessage("plexdev -> ?");
 		}
 	}
 

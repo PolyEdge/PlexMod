@@ -2,13 +2,13 @@
 {
   "modid": "PolyEdge_Plex",
   "name": "Plex",
-  "description": "A modpack containing cosmetic enhancements for Mineplex\n\nIf you have any concerns regarding the mod or want to request a feature, contact me on discord at Dylan#2439",
+  "description": "Provides QoL enhancements on Mineplex.\n\nOptions Menu: /plex\nQuestions? Join the discord by clicking the discord icon in the options menu.",
   "version": "0.4",
   "mcversion": "1.8.9",
-  "url": "",
+  "url": "https://dyspore.cc",
   "updateUrl": "",
-  "authorList": ["@PolyEdge"],
-  "credits": "@PolyEdge/cysk",
+  "authorList": ["@Dyspore"],
+  "credits": "",
   "logoFile": "",
   "screenshots": [],
   "dependencies": []

@@ -51,13 +51,13 @@ public class PlexHideStreamMod extends PlexModBase {
 		AD_MATCHERS.add("\\$[0-9]+\\.[0-9]{2}");
 		AD_MATCHERS.add("[0-9]{1,3}\\% off");
 		
-		BAR_REDUCTION.add(new java.util.AbstractMap.SimpleEntry<Integer, Integer>(8, 8));
-		BAR_REDUCTION.add(new java.util.AbstractMap.SimpleEntry<Integer, Integer>(8, 7));
-		BAR_REDUCTION.add(new java.util.AbstractMap.SimpleEntry<Integer, Integer>(8, 6));
-		BAR_REDUCTION.add(new java.util.AbstractMap.SimpleEntry<Integer, Integer>(8, 5));
-		BAR_REDUCTION.add(new java.util.AbstractMap.SimpleEntry<Integer, Integer>(8, 4));
-		BAR_REDUCTION.add(new java.util.AbstractMap.SimpleEntry<Integer, Integer>(8, 3));
-		BAR_REDUCTION.add(new java.util.AbstractMap.SimpleEntry<Integer, Integer>(8, 2));
+		BAR_REDUCTION.add(new java.util.AbstractMap.SimpleEntry<>(8, 8));
+		BAR_REDUCTION.add(new java.util.AbstractMap.SimpleEntry<>(8, 7));
+		BAR_REDUCTION.add(new java.util.AbstractMap.SimpleEntry<>(8, 6));
+		BAR_REDUCTION.add(new java.util.AbstractMap.SimpleEntry<>(8, 5));
+		BAR_REDUCTION.add(new java.util.AbstractMap.SimpleEntry<>(8, 4));
+		BAR_REDUCTION.add(new java.util.AbstractMap.SimpleEntry<>(8, 3));
+		BAR_REDUCTION.add(new java.util.AbstractMap.SimpleEntry<>(8, 2));
 		MAX_BAR_REDUCTION = BAR_REDUCTION.size() - 1;
 		
 		this.hidePlayerChat.set(this.modSetting("hide_player_chat", false).getBoolean());

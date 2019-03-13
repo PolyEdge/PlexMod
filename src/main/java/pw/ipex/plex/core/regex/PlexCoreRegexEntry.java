@@ -11,38 +11,78 @@ public class PlexCoreRegexEntry {
 	public String entryName;
 	public String regexString;
 	public Pattern regexPattern;
+	public boolean hideWhite = true;
+	public boolean hideReset = true;
 	public Map<String, Integer> patternNames = new HashMap<>();
 	public List<String> identifierTags = new ArrayList<>();
 	public char FORMAT_SYMBOL_CHAR = (char) 167;
 	public String FORMAT_SYMBOL = String.valueOf(FORMAT_SYMBOL_CHAR);
-	
-	public String formatInput(String input) {
-		if (input.indexOf((char) 167) == -1) {
-			input = input.replace('&', FORMAT_SYMBOL_CHAR);
-		}
-		return input;
+
+	public PlexCoreRegexEntry() {
+		this.regexString = "";
 	}
-	
+
 	public PlexCoreRegexEntry(String name, String pattern) {
-		pattern = this.formatInput(pattern);
+		pattern = this.fromAmpersand(pattern);
 		this.entryName = name;
 		this.regexString = pattern;
 		this.regexPattern = Pattern.compile(pattern);
 	}
-	
+
 	public PlexCoreRegexEntry(String name, String pattern, String idTag) {
-		pattern = this.formatInput(pattern);
+		pattern = this.fromAmpersand(pattern);
 		this.entryName = name;
 		this.regexString = pattern;
 		this.regexPattern = Pattern.compile(pattern);
 		this.tag(idTag);
 	}
-	
+
+	public String fromAmpersand(String input) {
+		if (input.indexOf((char) 167) == -1) {
+			input = input.replaceAll("(?<!\\\\)(?:((?:\\\\\\\\)*))&([0-9a-fA-FkKlLmMnNoOrR])", "$1" + FORMAT_SYMBOL + "$2");
+		}
+		return input;
+	}
+
+	public String clear(String input, boolean white, boolean reset) {
+		if (white) {
+			input = input.replace(FORMAT_SYMBOL + "f", "");
+		}
+		if (reset) {
+			input = input.replace(FORMAT_SYMBOL + "r", "");
+		}
+		return input;
+	}
+
+	public String getMinified(String input) {
+		return this.clear(input, this.hideWhite, this.hideReset);
+	}
+
+	public String prepareInputString(String input) {
+		return this.getMinified(this.fromAmpersand(input));
+	}
+
+	public PlexCoreRegexEntry setHideWhite(boolean hideWhite) {
+		this.hideWhite = hideWhite;
+		return this;
+	}
+
+	public PlexCoreRegexEntry setHideReset(boolean hideReset) {
+		this.hideReset = hideReset;
+		return this;
+	}
+
+	public PlexCoreRegexEntry setMinified(boolean minified) {
+		this.hideWhite = minified;
+		this.hideReset = minified;
+		return this;
+	}
+
 	public PlexCoreRegexEntry tag(String name) {
 		this.identifierTags.add(name);
 		return this;
 	}
-	
+
 	public boolean hasTag(String name) {
 		return this.identifierTags.contains(name);
 	}
@@ -51,13 +91,13 @@ public class PlexCoreRegexEntry {
 		this.patternNames.put(name, group);
 		return this;
 	}
+
+	public boolean hasField(String field) {
+		return this.patternNames.keySet().contains(field);
+	}
 	
 	public boolean matches(String string) {
 		return string.matches(this.regexString);
-	}
-	
-	public boolean hasField(String field) {
-		return this.patternNames.keySet().contains(field);
 	}
 	
 	public String getField(String input, String field) {
@@ -71,7 +111,7 @@ public class PlexCoreRegexEntry {
 	
 	public Map<String, String> getAllFields(String input) {
 		Map<String, String> output = new HashMap<>();
-		Matcher matcher = this.regexPattern.matcher(input);
+		Matcher matcher = this.regexPattern.matcher(this.prepareInputString(input));
 		matcher.find();
 		for (String groupName : patternNames.keySet()) {
 			try {
@@ -85,8 +125,8 @@ public class PlexCoreRegexEntry {
 	}
 	
 	public String formatStringWithGroups(String messageInput, String formattingString) {
-		messageInput = this.formatInput(messageInput);
-		formattingString = this.formatInput(formattingString);
+		messageInput = this.prepareInputString(messageInput);
+		formattingString = this.fromAmpersand(formattingString);
 		Map<String, String> groups = this.getAllFields(messageInput);
 		for (String groupName : groups.keySet()) {
 			formattingString = formattingString.replace("{" + groupName + "}", groups.get(groupName) != null ? groups.get(groupName) : "");

@@ -8,6 +8,7 @@ import java.util.*;
 //import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
+import akka.actor.SupervisorStrategy;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
@@ -36,7 +37,7 @@ public class PlexCoreUtils {
 	public static ConcurrentHashMap<String, ResourceLocation> uuidDefaultSkins = new ConcurrentHashMap<String, ResourceLocation>();
 	public static Map<String, Integer> colourCode = new HashMap<>();
 	
-	public static String FORMAT_CHARACTER = Character.toString ((char) 167);
+	public static String FORMAT_SYMBOL = Character.toString ((char) 167);
 
 	static {
 		colourCode.put(null, 0xffffff);
@@ -111,7 +112,7 @@ public class PlexCoreUtils {
 			return chatPlexPrefix() + chatStyleText("DARK_RED", "Log on to Mineplex and try again!");
 		}
 		if (message.equalsIgnoreCase("plex.unsupportedServerStrangeAddress")) {
-			return chatPlexPrefix() + chatStyleText("DARK_RED", "Log on to Mineplex and try again!") + 
+			return chatPlexPrefix() + chatStyleText("DARK_RED", "Log on to Mineplex and try again!") +
 					chatPlexPrefix() + chatStyleText("DARK_RED", "Please note that the server address you're connecting to must contain mineplex.com for the mod to work");
 		}
 		if (message.equalsIgnoreCase("plex.nullModCommand")) {
@@ -119,17 +120,134 @@ public class PlexCoreUtils {
 		}
 		return chatPlexPrefix() + chatStyleText("GRAY", message);
 	}
+
+	/**
+	 * Removes all formatting from a chat message
+	 *
+	 * @param text The chat message
+	 * @return the chat message, formatting removed
+	*/
+	public static String chatRemoveFormatting(String text) {
+		return text.replaceAll(FORMAT_SYMBOL + "[0-9a-zA-Z]", "");
+	}
+
+	/**
+	 * Removes WHITE (f) and RESET (r) chat formatting codes from a chat message
+	 *
+	 * @param text The chat message
+	 * @return the chat message, WHITE and RESET codes removed
+	 */
+	public static String chatCondense(String text) {
+		return text.replace(FORMAT_SYMBOL + "f", "").replace(FORMAT_SYMBOL + "r", "");
+	}
+
+	/**
+	 * Replaces formatting symbols in a chat message with ampersands (&)s
+	 * [Shortcut method to chatAmpersandFilter(text, escape) with escape set to false]
+	 *
+	 * @param text The chat message
+	 * @return the chat message, formatting symbols replaced with ampersands.
+	 */
+	public static String chatAmpersandFilter(String text) {
+		return chatAmpersandFilter(text, false);
+	}
+
+	/**
+	 * Replaces formatting symbols in a chat message with ampersands (&)s
+	 *
+	 * @param text The chat message
+	 * @param escape Determines whether existing ampersands in the message will be escaped with a backslash.
+	 * @return the chat message, formatting symbols replaced with ampersands.
+	 */
+	public static String chatAmpersandFilter(String text, boolean escape) {
+		if (escape) {
+			text = text.replace("&", "\\&");
+		}
+		return text.replace(FORMAT_SYMBOL, "&");
+	}
+
+	/**
+	 * Shortcut function that puts the input string through both chatCondense() and chatAmpersandFilter() in respective order.
+	 * [Shortcut method to chatCondenseAndAmpersand(text, escape) with escape set to false]
+	 *
+	 * @param text The chat message
+	 * @return the chat message, put through chatCondense() and chatAmpersandFilter().
+	 */
+	public static String chatCondenseAndAmpersand(String text) {
+		return chatCondenseAndAmpersand(text, false);
+	}
+
+	/**
+	 * Shortcut function that puts the input string through both chatCondense() and chatAmpersandFilter() in respective order.
+	 * [Shortcut method to chatCondenseAndAmpersand(text, escape) with escape set to false]
+	 *
+	 * @param text The chat message
+	 * @param escape Determines whether existing ampersands in the message will be escaped with a backslash
+	 * @return the chat message, put through chatCondense() and chatAmpersandFilter().
+	 */
+	public static String chatCondenseAndAmpersand(String text, boolean escape) {
+		return chatAmpersandFilter(chatCondense(text), escape);
+	}
+
+	/**
+	 * Removes all formatting from a message and trims it.
+	 *
+	 * @param text The chat message
+	 * @return the chat message, formatting removed and trimmed
+	 */
+	public static String chatMinimalize(String text) {
+		return chatRemoveFormatting(text).trim();
+	}
+
+	/**
+	 * Returns the output of chatMinimalize() converted to lowercase
+	 *
+	 * @param text The chat message
+	 * @return the chat message, formatting removed, lowercase and trimmed
+	 */
+	public static String chatMinimalizeLowercase(String text) {
+		return chatMinimalize(text).toLowerCase();
+	}
+
+	/**
+	 * Converts non-escaped ampersands with a subsequent valid formatting character in a string to formatting codes
+	 * [Shortcut method to chatFromAmpersand(text, escape) with escape set to false]
+	 *
+	 * @param input The chat message
+	 * @return the chat message, valid ampersands converted to formatting codes
+	 */
+	public String chatFromAmpersand(String input) {
+		return chatFromAmpersand(input, false);
+	}
+
+	/**
+	 * Converts non-escaped ampersands with a subsequent valid formatting character in a string to formatting codes
+	 * [Shortcut method to chatFromAmpersand(text, escape) with escape set to false]
+	 *
+	 * @param input The chat message
+	 * @param escape Determines whether backslashes used to escape ampersands will be removed.
+	 * @return the chat message, valid ampersands converted to formatting codes
+	 */
+	public String chatFromAmpersand(String input, boolean escape) {
+		input = input.replaceAll("(?<!\\\\)(?:((?:\\\\\\\\)*))&([0-9a-fA-FkKlLmMnNoOrR])", "$1" + FORMAT_SYMBOL + "$2");
+		if (escape) {
+			input = input.replaceAll("\\\\(&[0-9a-fA-FkKlLmMnNoOrR])", "$1");
+		}
+		return input;
+	}
+
+	/*    old poorly written chat management
 	
 	public static String condenseChatAmpersandFilter(String text) {
-		return text.replace(FORMAT_CHARACTER, "&").replaceAll("\\&f|\\&r", "");
+		return text.replace(FORMAT_SYMBOL, "&").replaceAll("\\&f|\\&r", "");
 	}
 	
 	public static String condenseChatFilter(String text) {
-		return text.replace(FORMAT_CHARACTER + "f", "").replace(FORMAT_CHARACTER + "r", "");
+		return text.replace(FORMAT_SYMBOL + "f", "").replace(FORMAT_SYMBOL + "r", "");
 	}
 	
 	public static String ampersandToFormatCharacter(String input) {
-		return input.replace("&", FORMAT_CHARACTER);
+		return input.replace("&", FORMAT_SYMBOL);
 	}
 	
 	public static String removeFormatting(String text) {
@@ -142,7 +260,7 @@ public class PlexCoreUtils {
 	
 	public static String minimalizeKeepCase(String text) {
 		return removeFormatting(condenseChatAmpersandFilter(text)).trim();
-	}
+	} */
 	
 	public static Boolean isChatMessage(byte messageType) {
 		return (messageType == (byte) 0) || (messageType == (byte) 1);

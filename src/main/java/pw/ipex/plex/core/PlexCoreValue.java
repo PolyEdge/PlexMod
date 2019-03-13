@@ -2,12 +2,12 @@ package pw.ipex.plex.core;
 
 public class PlexCoreValue {
 	public String name;
-	public Boolean booleanValue;
-	public String stringValue;
-	public Float floatValue;
-	public Integer integerValue;
-	public Long longValue;
-	public Double doubleValue;
+	public Boolean booleanValue = false;
+	public String stringValue = "";
+	public Float floatValue = 0.0F;
+	public Integer integerValue = 0;
+	public Long longValue = 0L;
+	public Double doubleValue = 0.0D;
 	public Object objectValue;
 	
 	public PlexCoreValue(String name) {

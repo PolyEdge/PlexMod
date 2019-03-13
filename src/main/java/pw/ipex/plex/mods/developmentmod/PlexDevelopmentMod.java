@@ -15,14 +15,14 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class PlexDevelopmentMod extends PlexModBase {
-	
-	public PlexCoreValue chatStream = new PlexCoreValue("_plexDev_chatStream", false);
-	public PlexCoreValue soundStream = new PlexCoreValue("_plexDev_soundStream", false);
-	public PlexCoreValue lobbySwitchStream = new PlexCoreValue("_plexDev_lobbyStream", false);
+	public boolean chatStream = false;
+	public boolean chatMinify = false;
+	public boolean soundStream = false;
+	public boolean lobbySwitchStream = false;
 
 	@Override
 	public String getModName() {
-		return "plex_development_mod";
+		return "DevelopmentTools";
 	}
 	
 	@Override
@@ -39,42 +39,49 @@ public class PlexDevelopmentMod extends PlexModBase {
 		if (!PlexCoreUtils.isChatMessage(e.type)) {
 			return;
 		}
-		if (!chatStream.booleanValue) {
+		if (!chatStream) {
 			return;
 		}
 		Plex.logger.info(IChatComponent.Serializer.componentToJson(e.message));
-		String filtered = PlexCoreUtils.condenseChatAmpersandFilter(e.message.getFormattedText());
-		PlexCoreUtils.chatAddMessage("[plexDev] chat: " + filtered);
+		String filtered;
+		if (this.chatMinify) {
+			filtered = PlexCoreUtils.chatCondenseAndAmpersand(e.message.getFormattedText());
+		}
+		else {
+			filtered = PlexCoreUtils.chatAmpersandFilter(e.message.getFormattedText());
+		}
+		PlexCoreUtils.chatAddMessage(PlexCoreUtils.chatStyleText("GOLD", "[plexdev chat]: ") + filtered);
 	}
 	
 	@SubscribeEvent 
 	public void onSound(final PlaySoundEvent e) {
-		if (!soundStream.booleanValue) {
+		if (!soundStream) {
 			return;
 		}
 		if (e.name.contains("step") || e.name.contains("rain")) {
 			return;
 		}
-		PlexCoreUtils.chatAddMessage("[plexDev] sound: " + e.name + ": " + e.sound.getPitch());
+		PlexCoreUtils.chatAddMessage(PlexCoreUtils.chatStyleText("GOLD", "[plexdev sound]: ") + e.name + ": " + e.sound.getPitch());
 	}
 
 	@Override
 	public void lobbyUpdated(PlexCoreLobbyType type) {
-		if (this.lobbySwitchStream.booleanValue) {
-			String extra = "";
-			if (type.equals(PlexCoreLobbyType.E_GAME_UPDATED)) {
-				extra += PlexCoreUtils.chatStyleText("BLUE", "game -> " + PlexCore.getGameName());
-			}
-			final String finalExtra = extra;
-			new Timer().schedule(new TimerTask() {
-				public void run() {
-					try {
-						PlexCoreUtils.chatAddMessage(PlexCoreUtils.chatPlexPrefix() + PlexCoreUtils.chatStyleText("GREEN", "lobby -> " + type.toString()) + " " + finalExtra);
-					}
-					catch (Throwable ee) {}
-				}
-			}, 2000L);
+		if (!this.lobbySwitchStream) {
+			return ;
 		}
+		String extra = "";
+		if (type.equals(PlexCoreLobbyType.E_GAME_UPDATED)) {
+			extra += PlexCoreUtils.chatStyleText("BLUE", "game -> " + PlexCore.getGameName());
+		}
+		final String finalExtra = extra;
+		new Timer().schedule(new TimerTask() {
+			public void run() {
+				try {
+					PlexCoreUtils.chatAddMessage(PlexCoreUtils.chatPlexPrefix() + PlexCoreUtils.chatStyleText("GREEN", "lobby -> " + type.toString()) + " " + finalExtra);
+				} catch (Throwable ee) {
+				}
+			}
+		}, 2000L);
 	}
 
 }

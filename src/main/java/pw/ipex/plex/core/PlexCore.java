@@ -167,7 +167,7 @@ public class PlexCore {
 		if (sharedValues.containsKey(name)) {
 			return sharedValues.get(name);
 		}
-		return null;
+		return new PlexCoreValue(name);
 	}
 
 	/**

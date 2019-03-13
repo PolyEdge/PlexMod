@@ -20,6 +20,7 @@ public class PlexMessagingChatMessageConstructor {
 		addAdapter("chatMessage", "party_chat", "{$message}", "@Party").setChannelClass(getGroupChannelClass("party").channelClass).setDefaultMessageType(0).setAuthor("{author}").setBumpsChannelActivity(true);
 		addAdapter("chatMessage", "team_chat", "{$message}", "#Team").setChannelClass(getGroupChannelClass("team").channelClass).setDefaultMessageType(0).setAuthor("{author}").setBumpsChannelActivity(true);
 		addAdapter("chatMessage", "community_chat", "{$message}", "!{community}").setChannelClass(getGroupChannelClass("community").channelClass).setDefaultMessageType(0).setAuthor("{author}").setRecipientEntityName("{community}").setChannelTag("comColour", "{com_name_colour}").setUpdatesRecipientEntityNameCase(true).setBumpsChannelActivity(true);
+		addAdapter("chatMessage", "community_chat_staff", "{$message}", "!{community}").setChannelClass(getGroupChannelClass("community").channelClass).setDefaultMessageType(0).setAuthor("{author}").setRecipientEntityName("{community}").setChannelTag("comColour", "{com_name_colour}").setUpdatesRecipientEntityNameCase(true).setBumpsChannelActivity(true);
 		addAdapter("chatMessage", "direct_message", "{$message}", "PM.{author}").setChannelClass(getGroupChannelClass("direct_message").channelClass).setDefaultMessageType(0).setAuthor("{author}").setUpdatesRecipientEntityNameCase(true).setBumpsChannelActivity(true);
 
 		addAdapter("party", "party_create", "&7You created a new party.", "@Party");
