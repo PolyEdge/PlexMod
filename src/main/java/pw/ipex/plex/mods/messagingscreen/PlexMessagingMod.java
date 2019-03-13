@@ -53,7 +53,7 @@ public class PlexMessagingMod extends PlexModBase {
 	
 	@SubscribeEvent
 	public void onChat(ClientChatReceivedEvent event) {
-		String chatMessageContent = PlexCoreUtils.chatCondense(event.message.getFormattedText());
+		String chatMessageContent = event.message.getFormattedText();
 		if (PlexCoreUtils.chatMinimalizeLowercase(event.message.getFormattedText()).startsWith("communities> you are now chatting to")) {
 			channelManager.unreadyChannelsByClass(PlexMessagingCommunityChatChannel.class);
 		}
@@ -101,12 +101,14 @@ public class PlexMessagingMod extends PlexModBase {
 	}
 	
 	public void handleChatMessasge(String chatMessage) {
-		PlexMessagingChatMessageAdapter messageAdapter = PlexMessagingChatMessageConstructor.getAdapterForChatMessageWithRegexTag(chatMessage, "chatMessage");
-		PlexMessagingMessage message = this.processChatMessageWithAdapter(chatMessage, messageAdapter);
-		if (message == null) {
-			return;
+		List<PlexMessagingChatMessageAdapter> messageAdapters = PlexMessagingChatMessageConstructor.getAdaptersForChatMessageWithRegexTag(chatMessage, "chatMessage");
+		for (PlexMessagingChatMessageAdapter adapter : messageAdapters) {
+			PlexMessagingMessage message = this.processChatMessageWithAdapter(chatMessage, adapter);
+			if (message == null) {
+				continue;
+			}
+			message.channel.addMessage(message);
 		}
-		message.channel.addMessage(message);
 	}
 	
 	public void handleOtherMessage(String chatMessage) {

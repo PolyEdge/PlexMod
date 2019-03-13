@@ -229,12 +229,12 @@ public class PlexCoreUtils {
 	 * [Shortcut method to chatFromAmpersand(text, escape) with escape set to false]
 	 *
 	 * @param input The chat message
-	 * @param escape Determines whether backslashes used to escape ampersands will be removed.
+	 * @param unescape Determines whether backslashes used to escape ampersands will be removed.
 	 * @return the chat message, valid ampersands converted to formatting codes
 	 */
-	public static String chatFromAmpersand(String input, boolean escape) {
+	public static String chatFromAmpersand(String input, boolean unescape) {
 		input = input.replaceAll("(?<!\\\\)(?:((?:\\\\\\\\)*))&([0-9a-fA-FkKlLmMnNoOrR])", "$1" + FORMAT_SYMBOL + "$2");
-		if (escape) {
+		if (unescape) {
 			input = input.replaceAll("\\\\(&[0-9a-fA-FkKlLmMnNoOrR])", "$1");
 		}
 		return input;

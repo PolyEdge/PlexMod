@@ -1,5 +1,7 @@
 package pw.ipex.plex.core.regex;
 
+import pw.ipex.plex.Plex;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,23 +25,33 @@ public class PlexCoreRegexEntry {
 	}
 
 	public PlexCoreRegexEntry(String name, String pattern) {
-		pattern = this.fromAmpersand(pattern);
+		pattern = this.anyFromAmpersand(pattern, true);
 		this.entryName = name;
 		this.regexString = pattern;
 		this.regexPattern = Pattern.compile(pattern);
 	}
 
 	public PlexCoreRegexEntry(String name, String pattern, String idTag) {
-		pattern = this.fromAmpersand(pattern);
-		this.entryName = name;
-		this.regexString = pattern;
-		this.regexPattern = Pattern.compile(pattern);
+		this(name, pattern);
 		this.tag(idTag);
 	}
 
-	public String fromAmpersand(String input) {
+	public String anyFromAmpersand(String input, boolean unescape) {
+		if (input.indexOf((char) 167) == -1) {
+			input = input.replaceAll("(?<!\\\\)(?:((?:\\\\\\\\)*))&", "$1" + FORMAT_SYMBOL);
+			if (unescape) {
+				input = input.replaceAll("\\\\&", "&");
+			}
+		}
+		return input;
+	}
+
+	public String smartFromAmpersand(String input, boolean unescape) {
 		if (input.indexOf((char) 167) == -1) {
 			input = input.replaceAll("(?<!\\\\)(?:((?:\\\\\\\\)*))&([0-9a-fA-FkKlLmMnNoOrR])", "$1" + FORMAT_SYMBOL + "$2");
+			if (unescape) {
+				input = input.replaceAll("\\\\(&[0-9a-fA-FkKlLmMnNoOrR])", "$1");
+			}
 		}
 		return input;
 	}
@@ -59,7 +71,7 @@ public class PlexCoreRegexEntry {
 	}
 
 	public String prepareInputString(String input) {
-		return this.getMinified(this.fromAmpersand(input));
+		return this.getMinified(this.smartFromAmpersand(input, true));
 	}
 
 	public PlexCoreRegexEntry setHideWhite(boolean hideWhite) {
@@ -95,9 +107,11 @@ public class PlexCoreRegexEntry {
 	public boolean hasField(String field) {
 		return this.patternNames.keySet().contains(field);
 	}
-	
+
 	public boolean matches(String string) {
-		return string.matches(this.regexString);
+		//Plex.logger.info("comparing " + this.entryName + ": " + this.regexString);
+		//Plex.logger.info("to: " + this.prepareInputString(string));
+		return this.prepareInputString(string).matches(this.regexString);
 	}
 	
 	public String getField(String input, String field) {
@@ -126,7 +140,7 @@ public class PlexCoreRegexEntry {
 	
 	public String formatStringWithGroups(String messageInput, String formattingString) {
 		messageInput = this.prepareInputString(messageInput);
-		formattingString = this.fromAmpersand(formattingString);
+		formattingString = this.smartFromAmpersand(formattingString, true);
 		Map<String, String> groups = this.getAllFields(messageInput);
 		for (String groupName : groups.keySet()) {
 			formattingString = formattingString.replace("{" + groupName + "}", groups.get(groupName) != null ? groups.get(groupName) : "");

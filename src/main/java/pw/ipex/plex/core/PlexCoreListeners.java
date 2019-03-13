@@ -112,7 +112,13 @@ public class PlexCoreListeners {
 
 	@SubscribeEvent
 	public void onCommand(CommandEvent e) {
-		if (e.sender.getCommandSenderEntity() == null || Plex.minecraft.ingameGUI.getChatGUI().getSentMessages().size() == 0) {
+		if (e.sender.getCommandSenderEntity() == null) {
+			return;
+		}
+		if (!e.sender.getCommandSenderEntity().equals(Plex.minecraft.thePlayer)) {
+			return;
+		}
+		if (Plex.minecraft.ingameGUI.getChatGUI().getSentMessages().size() == 0) {
 			return;
 		}
 		String message = Plex.minecraft.ingameGUI.getChatGUI().getSentMessages().get(Plex.minecraft.ingameGUI.getChatGUI().getSentMessages().size() - 1);

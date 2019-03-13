@@ -6,7 +6,6 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Matcher;
 
 public abstract class PlexCoreRegexParsedEntry extends PlexCoreRegexEntry {
     public PlexCoreRegexParsedEntry() {
@@ -52,7 +51,7 @@ public abstract class PlexCoreRegexParsedEntry extends PlexCoreRegexEntry {
     }
 
     public String formatStringWithGroups(String messageInput, String formattingString) {
-        formattingString = this.fromAmpersand(formattingString);
+        formattingString = this.smartFromAmpersand(formattingString, true);
         Map<String, String> groups = this.getAllFields(messageInput);
         for (String groupName : groups.keySet()) {
             formattingString = formattingString.replace("{" + groupName + "}", groups.get(groupName) != null ? groups.get(groupName) : "");

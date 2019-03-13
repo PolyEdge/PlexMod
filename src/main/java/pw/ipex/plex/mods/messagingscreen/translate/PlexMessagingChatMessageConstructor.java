@@ -68,13 +68,14 @@ public class PlexMessagingChatMessageConstructor {
 		return null;
 	}
 	
-	public static PlexMessagingChatMessageAdapter getAdapterForChatMessageWithRegexTag(String chatMessage, String tag) {
+	public static List<PlexMessagingChatMessageAdapter> getAdaptersForChatMessageWithRegexTag(String chatMessage, String tag) {
+		List<PlexMessagingChatMessageAdapter> adapters = new ArrayList<PlexMessagingChatMessageAdapter>();
 		for (PlexMessagingChatMessageAdapter adapter : messageHandlers) {
 			if (adapter.matchesMessage(chatMessage) && adapter.regexEntryHasTag(tag)) {
-				return adapter;
+				adapters.add(adapter);
 			}
 		}
-		return null;
+		return adapters;
 	}
 	
 	public static List<PlexMessagingChatMessageAdapter> getAllAdaptersForChatMessage(String chatMessage) {
