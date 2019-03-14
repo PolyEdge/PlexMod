@@ -116,11 +116,9 @@ public class PlexAutoGGMod extends PlexModBase {
 		if (this.gameOverTime == null) {
 			if (minified.matches("^1st place -? ?(.*)$")) {
 				this.gameOverTime = Minecraft.getSystemTime();
-				Plex.logger.info("autoggmatch");
 			}
 			else if (minified.matches("^([a-z]+) (.* )?won the game!$")) {
 				this.gameOverTime = Minecraft.getSystemTime();
-				Plex.logger.info("autoggmatch");
 			}
 		}
 		if (minified.contains("chat> chat is no longer silenced")) {

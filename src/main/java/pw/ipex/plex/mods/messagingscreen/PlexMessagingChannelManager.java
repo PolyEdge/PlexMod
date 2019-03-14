@@ -67,7 +67,7 @@ public class PlexMessagingChannelManager {
 		}
 		this.selectedChannel = channel;
 		if (channel != null) {
-			channel.channelLastSwitchedTo = Minecraft.getSystemTime();
+			channel.lastChannelSwitchedTo = Minecraft.getSystemTime();
 			channel.selected();
 			if (this.autoReady) {
 				channel.getChannelReady();

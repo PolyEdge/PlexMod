@@ -365,8 +365,15 @@ public class PlexMessagingUIScreen extends PlexUIBase {
 				PlexMessagingMod.channelManager.selectedChannel.readingChannel();
 				PlexMessagingMod.channelManager.selectedChannel.readyIfNeeded();
 			}
-
-			if (!this.isSelectedChannelReady()) { //&& PlexMessagingMod.channelManager.selectedChannel.awaitingReady) {
+			if (this.isSelectedChannelErrored()) {
+				this.channelProgressBar.setColour(this.progressColourFailed);
+				this.channelStatusLabel.setText("Connection to " + PlexMessagingMod.channelManager.selectedChannel.getDisplayName() + " failed.");
+				this.channelStatusLabel.setPosition(this.parentUI.zoneStartX() + 2, this.parentUI.zoneStartY() + 2, false);
+				this.channelStatusLabel.setTextColour(this.progressColourFailed, true);
+				this.contactsList.setEnabled(true);
+				this.sendButton.enabled = false;
+			}
+			else if (!this.isSelectedChannelReady()) { //&& PlexMessagingMod.channelManager.selectedChannel.awaitingReady) {
 				if (this.hasControlSwitch) {
 					this.channelProgressBar.setColour(this.progressColourLoading);
 					this.channelStatusLabel.setText("Release Control to connect to " + PlexMessagingMod.channelManager.selectedChannel.getDisplayName() + "");
@@ -383,30 +390,35 @@ public class PlexMessagingUIScreen extends PlexUIBase {
 					this.contactsList.setEnabled(true);
 					this.sendButton.enabled = false;
 				}
-				else if (Minecraft.getSystemTime() > PlexMessagingMod.channelManager.selectedChannel.getSelectTime() + 5000L) {
-					this.channelProgressBar.setColour(this.progressColourUnresponsive);
-					this.channelStatusLabel.setText("Connection to " + PlexMessagingMod.channelManager.selectedChannel.getDisplayName() + " taking too long...");
-					this.channelStatusLabel.setPosition(this.parentUI.zoneStartX() + 2, this.parentUI.zoneStartY() + 2, false);
-					this.channelStatusLabel.setTextColour(this.progressColourUnresponsive, true);
-					this.contactsList.setEnabled(true);
-					this.sendButton.enabled = false;
+				else if ((Minecraft.getSystemTime() > PlexMessagingMod.channelManager.selectedChannel.lastConnectionAttempt + 1750L) || PlexMessagingMod.channelManager.selectedChannel.connectionAttempts > 1) {
+					if (PlexMessagingMod.channelManager.selectedChannel.connectionAttempts < 4) {
+						if (Minecraft.getSystemTime() > PlexMessagingMod.channelManager.selectedChannel.lastConnectionAttempt + 1750L) {
+							PlexMessagingMod.channelManager.selectedChannel.getChannelReady();
+						}
+						this.channelProgressBar.setColour(this.progressColourUnresponsive);
+						this.channelStatusLabel.setText("Connecting to > " + PlexMessagingMod.channelManager.selectedChannel.getDisplayName() + " [attempt " +PlexMessagingMod.channelManager.selectedChannel.connectionAttempts + "]");
+						this.channelStatusLabel.setPosition(this.parentUI.zoneStartX() + 2, this.parentUI.zoneStartY() + 2, false);
+						this.channelStatusLabel.setTextColour(this.progressColourUnresponsive, true);
+						this.contactsList.setEnabled(true);
+						this.sendButton.enabled = false;
+					}
+					else {
+						this.channelProgressBar.setColour(this.progressColourFailed);
+						this.channelStatusLabel.setText("Max attempts exceeded to connect to " + PlexMessagingMod.channelManager.selectedChannel.getDisplayName());
+						this.channelStatusLabel.setPosition(this.parentUI.zoneStartX() + 2, this.parentUI.zoneStartY() + 2, false);
+						this.channelStatusLabel.setTextColour(this.progressColourFailed, true);
+						this.contactsList.setEnabled(true);
+						this.sendButton.enabled = false;
+					}
 				}
 				else {
 					this.channelProgressBar.setColour(this.progressColourLoading);
 					this.channelStatusLabel.setText("Connecting to channel > " + PlexMessagingMod.channelManager.selectedChannel.getDisplayName() + "...");
 					this.channelStatusLabel.setPosition(this.parentUI.zoneStartX() + 2, this.parentUI.zoneStartY() + 2, false);
 					this.channelStatusLabel.setTextColour(this.progressColourLoading, true);
-					this.contactsList.setEnabled(false);
+					this.contactsList.setEnabled(true);
 					this.sendButton.enabled = false;
 				}
-			}
-			else if (this.isSelectedChannelErrored()) {
-				this.channelProgressBar.setColour(this.progressColourFailed);
-				this.channelStatusLabel.setText("Connection to " + PlexMessagingMod.channelManager.selectedChannel.getDisplayName() + " failed.");
-				this.channelStatusLabel.setPosition(this.parentUI.zoneStartX() + 2, this.parentUI.zoneStartY() + 2, false);
-				this.channelStatusLabel.setTextColour(this.progressColourUnresponsive, true);
-				this.contactsList.setEnabled(true);
-				this.sendButton.enabled = false;
 			}
 			else if (this.isSelectedChannelReady()) {
 				this.contactsList.setEnabled(true);

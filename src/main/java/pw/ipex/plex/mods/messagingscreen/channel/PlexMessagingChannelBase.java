@@ -22,18 +22,23 @@ public abstract class PlexMessagingChannelBase implements PlexUIScrolledItem, Co
 	public String name = "channel" + Minecraft.getSystemTime();
 	public Map<String, String> channelTags = new HashMap<>();
 	public String recipientEntityName = "";
-	public String lastTextTyped = "";
-	public Float lastMessagesScroll = 1.0F;
+
 	public Boolean awaitingReady = false;
 	public Boolean channelReady = false;
 	public Boolean connectFailed = false;
+
 	public Boolean hiddenFromList = false;
-	public Long selectTime = null;
-	public Long deselectTime = null;
-	public Long readyTime;
-	public Long channelLastSwitchedTo;
+
+	public String lastTextTyped = "";
+	public Long lastChannelSwitchedTo;
 	public Float lastChannelScroll = 1.0F;
-	
+
+	public Long selectTime = null;
+	public Long readyTime = null;
+
+	public Long lastConnectionAttempt = 0L;
+	public int connectionAttempts = 0;
+
 	public List<PlexMessagingMessage> channelMessages = new ArrayList<PlexMessagingMessage>();
 	
 	public void setName(String name) {
@@ -86,6 +91,7 @@ public abstract class PlexMessagingChannelBase implements PlexUIScrolledItem, Co
 		this.selectTime = null;
 		this.awaitingReady = false;
 		this.channelReady = false;
+		this.connectionAttempts = 0;
 		this.channelDeselected();
 	}
 	
@@ -93,6 +99,8 @@ public abstract class PlexMessagingChannelBase implements PlexUIScrolledItem, Co
 		this.awaitingReady = true;
 		this.channelReady = false;
 		this.connectFailed = false;
+		this.lastConnectionAttempt = Minecraft.getSystemTime();
+		this.connectionAttempts += 1;
 		this.readyChannel();
 	}
 	
@@ -116,7 +124,7 @@ public abstract class PlexMessagingChannelBase implements PlexUIScrolledItem, Co
 		}
 		return this.selectTime;
 	}
-	
+
 	public void addMessage(PlexMessagingMessage message) {
 		channelMessages.add(message);
 		message.channel = this;
@@ -139,7 +147,7 @@ public abstract class PlexMessagingChannelBase implements PlexUIScrolledItem, Co
 	}
 
 	public void readyIfNeeded() {
-		if (!this.awaitingReady && !this.channelReady) {
+		if (!this.awaitingReady && !this.channelReady && !this.connectFailed) {
 			this.getChannelReady();
 		}
 	}

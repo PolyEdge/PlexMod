@@ -24,8 +24,8 @@ public class PlexCoreRegex {
 	public static String MATCH_PARTY_DISBAND = "^&9Party> &7The party has been disbanded\\.?$";
 	public static String MATCH_PARTY_INVITE = "^&9Party> &e([a-zA-Z0-9_]+)&7 has invited you to join their party on &e([a-zA-Z0-9_-]+)&7\\.?$";
 	public static String MATCH_PARTY_INVITE_LOCAL = "^&9Party> &e([a-zA-Z0-9_]+)&7 has invited you to join their party\\.?$";
-	public static String MATCH_PARTY_SEARCH = "^&9Party> Searching for &e([a-zA-Z0-9_]+)&7 across the network\\.\\.\\.$";
-	public static String MATCH_PARTY_SEARCH_SENT = "^&9Party> You invited &e([a-zA-Z0-9_]+)&7 to the party\\.?$";
+	public static String MATCH_PARTY_SEARCH = "^&9Party> &7Searching for &e([a-zA-Z0-9_]+)&7 across the network\\.\\.\\.$";
+	public static String MATCH_PARTY_SEARCH_SENT = "^&9Party> &7You invited &e([a-zA-Z0-9_]+)&7 to the party\\.?$";
 	public static String MATCH_PARTY_REPLY = "^&9Party> &7Click to &a&lACCEPT&7 or &c&lDENY&7 in the next 2 minutes\\.?$";
 	public static String MATCH_PARTY_JOIN  = "^&9Party> &e([a-zA-Z0-9_]+)&7 has joined the party\\.?$";
 	public static String MATCH_PARTY_REMOVE = "^&9Party> &e([a-zA-Z0-9_]+)&7 has been removed from the party\\.?$";
