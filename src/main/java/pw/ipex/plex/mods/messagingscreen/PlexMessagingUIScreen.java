@@ -105,10 +105,10 @@ public class PlexMessagingUIScreen extends PlexUIBase {
 		Integer startX = ui.zoneStartX() + 6;
 		Integer sizeX = ui.horizontalPixelCount() - (getContactsPaneSize()) - 8 - 24;
 		
-		PlexMessagingMod.channelManager.deleteMessageRenderCache();
+		this.getChannelManager().deleteMessageRenderCache();
 		
 		this.messageField = new PlexUIAutoCompleteTextField(6, this.parentUI.getFontRenderer(), startX, bottom - 21, sizeX, 18);
-		this.messageField.setAutoCompleteItems(PlexMessagingMod.autoCompleteContainer.autoCompleteItems);
+		this.messageField.setAutoCompleteItems(this.getMessagingMod().autoCompleteContainer.autoCompleteItems);
 		this.messageField.text.setMaxStringLength(100);
 		this.messageField.text.setFocused(true);
 		this.messageField.text.setCanLoseFocus(false);
@@ -128,7 +128,7 @@ public class PlexMessagingUIScreen extends PlexUIBase {
 		this.hideChannelButton = new PlexUIScaledButton(12, (ui.zoneEndX() - 16), ui.zoneStartY() + 4, 14, 14, null, "-", false);
 		this.parentUI.addElement(this.hideChannelButton);
 		
-		this.contactsList = new PlexUIScrolledItemList(PlexMessagingMod.channelManager.displayedChannels, this.parentUI.zoneEndX() - this.getContactsPaneSize(), this.parentUI.zoneStartY() + 22, this.parentUI.zoneEndX(), this.parentUI.zoneEndY() - 22);
+		this.contactsList = new PlexUIScrolledItemList(this.getChannelManager().displayedChannels, this.parentUI.zoneEndX() - this.getContactsPaneSize(), this.parentUI.zoneStartY() + 22, this.parentUI.zoneEndX(), this.parentUI.zoneEndY() - 22);
 		this.contactsList.setPadding(10, 0);
 		this.contactsList.scrollbar.setScroll(lastContactsScroll, true);
 		this.contactsList.scrollbar.hiddenForcedScroll = 0.0F;
@@ -163,8 +163,16 @@ public class PlexMessagingUIScreen extends PlexUIBase {
 		
 		//for (int i = 0; i < 8; i++) {
 		//	PlexMessagingPartyChatChannel pchannel = new PlexMessagingPartyChatChannel();
-		//	PlexMessagingMod.channelManager.addChannel(pchannel);
+		//	this.getChannelManager().addChannel(pchannel);
 		//}
+	}
+
+	public PlexMessagingMod getMessagingMod() {
+		return PlexCore.modInstance(PlexMessagingMod.class);
+	}
+	
+	public PlexMessagingChannelManager getChannelManager() {
+		return this.getMessagingMod().channelManager;
 	}
 	
 	public Integer getContactsPaneSize() {
@@ -183,20 +191,20 @@ public class PlexMessagingUIScreen extends PlexUIBase {
 
 	@Override
 	public void uiButtonClicked(GuiButton button) {
-		if (button.id == 10 && PlexMessagingMod.channelManager.selectedChannel != null) {
+		if (button.id == 10 && this.getChannelManager().selectedChannel != null) {
 			this.handleSendButton();
 		}
-		if (button.id == 11 && PlexMessagingMod.channelManager.selectedChannel != null) {
-			PlexMessagingMod.channelManager.deselectChannel();
+		if (button.id == 11 && this.getChannelManager().selectedChannel != null) {
+			this.getChannelManager().deselectChannel();
 			this.setMessageFieldNextFrame = this.searchBox.text.getText();
 			this.searchBox.text.setText("");
 			this.searchBox.text.setFocused(false);
 			this.messageField.text.setFocused(true);
 			return;
 		}
-		if (button.id == 12 && PlexMessagingMod.channelManager.selectedChannel != null) {
-			PlexMessagingMod.channelManager.selectedChannel.hiddenFromList = true;
-			PlexMessagingMod.channelManager.setSelectedChannel(null);
+		if (button.id == 12 && this.getChannelManager().selectedChannel != null) {
+			this.getChannelManager().selectedChannel.hiddenFromList = true;
+			this.getChannelManager().setSelectedChannel(null);
 		}
 	}
 
@@ -239,14 +247,14 @@ public class PlexMessagingUIScreen extends PlexUIBase {
 	public void handleMouseInput(int x, int y) {
 		int wheel = Mouse.getEventDWheel() != 0 ? (0 - (Mouse.getEventDWheel() / Math.abs(Mouse.getEventDWheel()))) : 0;
 		if (Keyboard.isKeyDown(29) && wheel != 0) {
-			PlexMessagingMod.channelManager.autoReady = false;
+			this.getChannelManager().autoReady = false;
 			this.hasControlSwitch = true;
 			this.scrollContactsBy(wheel);
 			this.selectMessageField();
 			return;
 		}
 		if (!Keyboard.isKeyDown(29)) {
-			PlexMessagingMod.channelManager.autoReady = true;
+			this.getChannelManager().autoReady = true;
 			this.hasControlSwitch = false;
 		}
 		this.messageField.handleMouseInput(x, y);
@@ -254,7 +262,7 @@ public class PlexMessagingUIScreen extends PlexUIBase {
 		this.newConversationWindow.handleMouseInput(x, y);
 		if (!this.messageField.getAutoCompleteListVisible()) {
 			this.chatWindow.handleMouseInput(x, y);
-			if (PlexMessagingMod.channelManager.selectedChannel == null && wheel != 0) {
+			if (this.getChannelManager().selectedChannel == null && wheel != 0) {
 				this.selectMessageField();
 				this.scrollChatSelectionBy(wheel);
 			}
@@ -263,11 +271,11 @@ public class PlexMessagingUIScreen extends PlexUIBase {
 	
 	@Override
 	public void keyTyped(char par1, int par2) {
-		if (((Integer) par2).equals(PlexMessagingMod.toggleChatUI.getKeyCode()) && !Character.isLetterOrDigit(par1)) {
+		if (((Integer) par2).equals(this.getMessagingMod().toggleChatUI.getKeyCode()) && !Character.isLetterOrDigit(par1)) {
 			this.uiClosed();
 			PlexCore.displayUIScreen(null);
 		}
-		if (((Integer) par2).equals(PlexMessagingMod.quickChat.getKeyCode()) && !Character.isLetterOrDigit(par1)) {
+		if (((Integer) par2).equals(this.getMessagingMod().quickChat.getKeyCode()) && !Character.isLetterOrDigit(par1)) {
 			this.uiClosed();
 			PlexCore.displayUIScreen(null);
 		}
@@ -287,12 +295,12 @@ public class PlexMessagingUIScreen extends PlexUIBase {
 		if (par2 == 200 || par2 == 208) {
 			if (Keyboard.isKeyDown(29)) {
 				this.hasControlSwitch = true;
-				PlexMessagingMod.channelManager.autoReady = false;
+				this.getChannelManager().autoReady = false;
 				this.selectMessageField();
 				this.scrollContactsBy(par2 == 200 ? -1 : 1);
 				return;
 			}
-			if (PlexMessagingMod.channelManager.selectedChannel == null && !this.messageField.getAutoCompleteListVisible()) {
+			if (this.getChannelManager().selectedChannel == null && !this.messageField.getAutoCompleteListVisible()) {
 				this.selectMessageField();
 				this.scrollChatSelectionBy(par2 == 200 ? -1 : 1);
 				return;
@@ -314,7 +322,7 @@ public class PlexMessagingUIScreen extends PlexUIBase {
 		}
 		if (((Integer) par2).equals(28)) {
 			if (this.searchBox.text.isFocused()) {
-				PlexMessagingMod.channelManager.deselectChannel();
+				this.getChannelManager().deselectChannel();
 				this.setMessageFieldNextFrame = this.searchBox.text.getText();
 				this.searchBox.text.setText("");
 				this.searchBox.text.setFocused(false);
@@ -350,70 +358,58 @@ public class PlexMessagingUIScreen extends PlexUIBase {
 
 		if (!Keyboard.isKeyDown(29)) {
 			this.hasControlSwitch = false;
-			PlexMessagingMod.channelManager.autoReady = true;
+			this.getChannelManager().autoReady = true;
 		}
 
-		PlexMessagingMod.channelManager.updateDisplayedChannels();
+		this.getChannelManager().updateDisplayedChannels();
 		this.contactsList.searchText = this.searchBox.text.getText();
 
-		if (PlexMessagingMod.channelManager.selectedChannel != null) {
+		if (this.getChannelManager().selectedChannel != null) {
 			this.chatWindow.isEnabled = true;
 			this.newConversationWindow.isEnabled = false;
 			this.newConversationButton.enabled = true;
 			this.hideChannelButton.enabled = true;
 			if (!this.hasControlSwitch) {
-				PlexMessagingMod.channelManager.selectedChannel.readingChannel();
-				PlexMessagingMod.channelManager.selectedChannel.readyIfNeeded();
+				this.getChannelManager().selectedChannel.readingChannel();
+				this.getChannelManager().selectedChannel.loopReady();
 			}
 			if (this.isSelectedChannelErrored()) {
 				this.channelProgressBar.setColour(this.progressColourFailed);
-				this.channelStatusLabel.setText("Connection to " + PlexMessagingMod.channelManager.selectedChannel.getDisplayName() + " failed.");
+				this.channelStatusLabel.setText("Connection to " + this.getChannelManager().selectedChannel.getDisplayName() + " failed.");
 				this.channelStatusLabel.setPosition(this.parentUI.zoneStartX() + 2, this.parentUI.zoneStartY() + 2, false);
 				this.channelStatusLabel.setTextColour(this.progressColourFailed, true);
 				this.contactsList.setEnabled(true);
 				this.sendButton.enabled = false;
 			}
-			else if (!this.isSelectedChannelReady()) { //&& PlexMessagingMod.channelManager.selectedChannel.awaitingReady) {
+			else if (!this.isSelectedChannelReady()) { //&& this.getChannelManager().selectedChannel.awaitingReady) {
 				if (this.hasControlSwitch) {
 					this.channelProgressBar.setColour(this.progressColourLoading);
-					this.channelStatusLabel.setText("Release Control to connect to " + PlexMessagingMod.channelManager.selectedChannel.getDisplayName() + "");
+					this.channelStatusLabel.setText("Release Control to connect to " + this.getChannelManager().selectedChannel.getDisplayName() + "");
 					this.channelStatusLabel.setPosition(this.parentUI.zoneStartX() + 2, this.parentUI.zoneStartY() + 2, false);
 					this.channelStatusLabel.setTextColour(this.progressColourLoading, true);
 					this.contactsList.setEnabled(true);
 					this.sendButton.enabled = false;
 				}
-				else if (!PlexMessagingMod.channelManager.autoReady) {
+				else if (!this.getChannelManager().autoReady) {
 					this.channelProgressBar.setColour(this.progressColourFailed);
-					this.channelStatusLabel.setText("Not scheduled to connect to " + PlexMessagingMod.channelManager.selectedChannel.getDisplayName() + "");
+					this.channelStatusLabel.setText("Not scheduled to connect to " + this.getChannelManager().selectedChannel.getDisplayName() + "");
 					this.channelStatusLabel.setPosition(this.parentUI.zoneStartX() + 2, this.parentUI.zoneStartY() + 2, false);
 					this.channelStatusLabel.setTextColour(this.progressColourFailed, true);
 					this.contactsList.setEnabled(true);
 					this.sendButton.enabled = false;
 				}
-				else if ((Minecraft.getSystemTime() > PlexMessagingMod.channelManager.selectedChannel.lastConnectionAttempt + 1750L) || PlexMessagingMod.channelManager.selectedChannel.connectionAttempts > 1) {
-					if (PlexMessagingMod.channelManager.selectedChannel.connectionAttempts < 4) {
-						if (Minecraft.getSystemTime() > PlexMessagingMod.channelManager.selectedChannel.lastConnectionAttempt + 1750L) {
-							PlexMessagingMod.channelManager.selectedChannel.getChannelReady();
-						}
-						this.channelProgressBar.setColour(this.progressColourUnresponsive);
-						this.channelStatusLabel.setText("Connecting to > " + PlexMessagingMod.channelManager.selectedChannel.getDisplayName() + " [attempt " +PlexMessagingMod.channelManager.selectedChannel.connectionAttempts + "]");
-						this.channelStatusLabel.setPosition(this.parentUI.zoneStartX() + 2, this.parentUI.zoneStartY() + 2, false);
-						this.channelStatusLabel.setTextColour(this.progressColourUnresponsive, true);
-						this.contactsList.setEnabled(true);
-						this.sendButton.enabled = false;
-					}
-					else {
-						this.channelProgressBar.setColour(this.progressColourFailed);
-						this.channelStatusLabel.setText("Max attempts exceeded to connect to " + PlexMessagingMod.channelManager.selectedChannel.getDisplayName());
-						this.channelStatusLabel.setPosition(this.parentUI.zoneStartX() + 2, this.parentUI.zoneStartY() + 2, false);
-						this.channelStatusLabel.setTextColour(this.progressColourFailed, true);
-						this.contactsList.setEnabled(true);
-						this.sendButton.enabled = false;
-					}
+				else if (this.getChannelManager().selectedChannel.connectionAttempts > 1) {
+					this.channelProgressBar.setColour(this.progressColourUnresponsive);
+					this.channelStatusLabel.setText("Connecting to > " + this.getChannelManager().selectedChannel.getDisplayName() + " [attempt " + this.getChannelManager().selectedChannel.connectionAttempts + "]");
+					this.channelStatusLabel.setPosition(this.parentUI.zoneStartX() + 2, this.parentUI.zoneStartY() + 2, false);
+					this.channelStatusLabel.setTextColour(this.progressColourUnresponsive, true);
+					this.contactsList.setEnabled(true);
+					this.sendButton.enabled = false;
+
 				}
 				else {
 					this.channelProgressBar.setColour(this.progressColourLoading);
-					this.channelStatusLabel.setText("Connecting to channel > " + PlexMessagingMod.channelManager.selectedChannel.getDisplayName() + "...");
+					this.channelStatusLabel.setText("Connecting to channel > " + this.getChannelManager().selectedChannel.getDisplayName() + "...");
 					this.channelStatusLabel.setPosition(this.parentUI.zoneStartX() + 2, this.parentUI.zoneStartY() + 2, false);
 					this.channelStatusLabel.setTextColour(this.progressColourLoading, true);
 					this.contactsList.setEnabled(true);
@@ -426,7 +422,7 @@ public class PlexMessagingUIScreen extends PlexUIBase {
 				this.channelStatusLabel.setText("Channel Ready!");
 				this.channelStatusLabel.setTextColour(this.progressColourReady, true);
 				this.sendButton.enabled = true;
-				if (Minecraft.getSystemTime() > PlexMessagingMod.channelManager.selectedChannel.readyTime + 500L) {
+				if (Minecraft.getSystemTime() > this.getChannelManager().selectedChannel.readyTime + 500L) {
 					this.channelStatusLabel.setPosition(this.parentUI.zoneStartX() + 2, this.parentUI.zoneStartY() - 12, false);
 				}
 				else {
@@ -453,14 +449,14 @@ public class PlexMessagingUIScreen extends PlexUIBase {
 			this.channelProgressBar.setColour(progressColourIdle);
 		}
 		
-		this.chatWindow.setChannel(PlexMessagingMod.channelManager.selectedChannel);
+		this.chatWindow.setChannel(this.getChannelManager().selectedChannel);
 		
-		if (PlexMessagingMod.channelManager.lastChannelChange != this.lastChannelChange) {
-			this.lastChannelChange = PlexMessagingMod.channelManager.lastChannelChange;
+		if (this.getChannelManager().lastChannelChange != this.lastChannelChange) {
+			this.lastChannelChange = this.getChannelManager().lastChannelChange;
 			this.messageField.resetSentMessagesIndex();
-			if (PlexMessagingMod.channelManager.selectedChannel != null) {
-				this.messageField.text.setText(PlexMessagingMod.channelManager.selectedChannel.lastTextTyped);
-				this.chatWindow.scrollbar.setScroll(PlexMessagingMod.channelManager.selectedChannel.lastChannelScroll, true);
+			if (this.getChannelManager().selectedChannel != null) {
+				this.messageField.text.setText(this.getChannelManager().selectedChannel.lastTextTyped);
+				this.chatWindow.scrollbar.setScroll(this.getChannelManager().selectedChannel.lastChannelScroll, true);
 			}
 			else {
 				if (this.setMessageFieldNextFrame != null) {
@@ -544,9 +540,9 @@ public class PlexMessagingUIScreen extends PlexUIBase {
 		lastContactsScroll = this.contactsList.scrollbar.realScrollValue;
 		this.lastSearchText = this.searchBox.text.getText();
 		
-		if (PlexMessagingMod.channelManager.selectedChannel != null) {
-			PlexMessagingMod.channelManager.selectedChannel.lastTextTyped = this.messageField.text.getText();
-			PlexMessagingMod.channelManager.selectedChannel.lastChannelScroll = this.chatWindow.scrollbar.realScrollValue;
+		if (this.getChannelManager().selectedChannel != null) {
+			this.getChannelManager().selectedChannel.lastTextTyped = this.messageField.text.getText();
+			this.getChannelManager().selectedChannel.lastChannelScroll = this.chatWindow.scrollbar.realScrollValue;
 		}
 	}
 
@@ -568,7 +564,7 @@ public class PlexMessagingUIScreen extends PlexUIBase {
 	}
 
 	public void handleSendButton() {
-		if (PlexMessagingMod.channelManager.selectedChannel == null) {
+		if (this.getChannelManager().selectedChannel == null) {
 			PlexMessagingChannelClassWrapper selectedType = this.newConversationWindow.getSelectedItem();
 			if (selectedType == null) {
 				return;
@@ -576,8 +572,8 @@ public class PlexMessagingUIScreen extends PlexUIBase {
 			String text = this.messageField.text.getText().trim();
 			String channelName = selectedType.getChannelNameFromText(text);
 			String recipientEntityName = selectedType.getRecipientEntityNameFromText(text);
-			PlexMessagingMod.channelManager.setSelectedChannel(PlexMessagingMod.getChannel(channelName, selectedType.channelClass, recipientEntityName));
-			PlexMessagingMod.channelManager.selectedChannel.hiddenFromList = false;
+			this.getChannelManager().setSelectedChannel(this.getMessagingMod().getChannel(channelName, selectedType.channelClass, recipientEntityName));
+			this.getChannelManager().selectedChannel.hiddenFromList = false;
 			if (selectedType.getAutoCommandFromText(text) != null) {
 				Plex.minecraft.thePlayer.sendChatMessage(selectedType.getAutoCommandFromText(text));
 			}
@@ -592,27 +588,27 @@ public class PlexMessagingUIScreen extends PlexUIBase {
 	}
 	
 	public void sendMessage() {
-		if (PlexMessagingMod.channelManager.selectedChannel != null) {
-			if (PlexMessagingMod.channelManager.selectedChannel.channelReady) {
-				PlexMessagingMod.channelManager.selectedChannel.sendMessage(this.messageField.text.getText());
+		if (this.getChannelManager().selectedChannel != null) {
+			if (this.getChannelManager().selectedChannel.channelReady) {
+				this.getChannelManager().selectedChannel.sendMessage(this.messageField.text.getText());
 				this.messageField.addToSentMessages(this.messageField.text.getText());
 				this.messageField.text.setText("");
 				this.messageField.resetSentMessagesIndex();
-				PlexMessagingMod.channelManager.selectedChannel.lastTextTyped = "";
+				this.getChannelManager().selectedChannel.lastTextTyped = "";
 			}
 		}
 	}
 	
 	public Boolean isSelectedChannelReady() {
-		if (PlexMessagingMod.channelManager.selectedChannel != null) {
-			return PlexMessagingMod.channelManager.selectedChannel.channelReady;
+		if (this.getChannelManager().selectedChannel != null) {
+			return this.getChannelManager().selectedChannel.channelReady;
 		}
 		return false;
 	}
 
 	public Boolean isSelectedChannelErrored() {
-		if (PlexMessagingMod.channelManager.selectedChannel != null) {
-			return PlexMessagingMod.channelManager.selectedChannel.connectFailed;
+		if (this.getChannelManager().selectedChannel != null) {
+			return this.getChannelManager().selectedChannel.connectFailed;
 		}
 		return false;
 	}

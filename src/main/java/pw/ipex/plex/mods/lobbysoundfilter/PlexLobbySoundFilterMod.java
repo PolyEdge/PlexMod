@@ -11,7 +11,7 @@ import pw.ipex.plex.core.mineplex.PlexCoreLobbyType;
 import pw.ipex.plex.core.PlexCoreUtils;
 import pw.ipex.plex.core.PlexCoreValue;
 import pw.ipex.plex.mod.PlexModBase;
-import pw.ipex.plex.mods.chatmod.PlexHideStreamCommand;
+import pw.ipex.plex.mods.chatmod.PlexChatStreamCommand;
 
 public class PlexLobbySoundFilterMod extends PlexModBase {
 	public static Integer MAX_LOBBY_FILTRATION = 5;
@@ -45,8 +45,8 @@ public class PlexLobbySoundFilterMod extends PlexModBase {
 		this.minSoundInRadiusLevel.set(this.modSetting("levels_allowed_within", 0).getInt());
 
 		PlexCore.registerCommandListener(new PlexCommandListener("ts"));
-		PlexCore.registerCommandHandler("ts", new PlexHideStreamCommand());
-		Plex.plexCommand.registerPlexCommand("sounds", new PlexHideStreamCommand());
+		PlexCore.registerCommandHandler("ts", new PlexChatStreamCommand());
+		Plex.plexCommand.registerPlexCommand("sounds", new PlexChatStreamCommand());
 	}
 	
 	public void addSound(Integer level, String sound) {

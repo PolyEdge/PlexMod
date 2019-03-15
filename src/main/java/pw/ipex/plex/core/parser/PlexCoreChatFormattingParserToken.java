@@ -1,6 +1,4 @@
-package pw.ipex.plex.core.regex.parser;
-
-import net.minecraft.util.EnumChatFormatting;
+package pw.ipex.plex.core.parser;
 
 public class PlexCoreChatFormattingParserToken {
     public String SYM_RESET = "r";

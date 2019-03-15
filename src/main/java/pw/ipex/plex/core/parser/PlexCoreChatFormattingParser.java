@@ -1,4 +1,4 @@
-package pw.ipex.plex.core.regex.parser;
+package pw.ipex.plex.core.parser;
 
 import java.util.ArrayList;
 import java.util.List;

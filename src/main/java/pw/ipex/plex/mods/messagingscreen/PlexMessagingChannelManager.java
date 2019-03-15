@@ -23,14 +23,14 @@ public class PlexMessagingChannelManager {
 	public PlexMessagingChannelManager() {
 		MinecraftForge.EVENT_BUS.register(this);
 	}
-	
-	@SubscribeEvent
-	public void onMessage(ClientChatReceivedEvent e) {
-		if (!Plex.serverState.onMineplex || selectedChannel == null) {
+
+	public void chatEvent(ClientChatReceivedEvent e) {
+		if (!Plex.serverState.onMineplex || this.selectedChannel == null) {
 			return;
 		}
-		if (selectedChannel.awaitingReady) {
-			selectedChannel.chatMessage(e);
+		if (this.selectedChannel.awaitingReady) {
+			Plex.logger.info("test");
+			this.selectedChannel.chatMessage(e);
 		}
 	}
 	
@@ -96,12 +96,10 @@ public class PlexMessagingChannelManager {
 		channel.bumpActivityNow();
 	}
 
-	public void unreadyChannelsByClass(Class<? extends PlexMessagingChannelBase> channelClass) {
+	public void unreadyChannelsByClass(Class<? extends PlexMessagingChannelBase> channelClass, boolean readyOnly) {
 		for (PlexMessagingChannelBase channel : this.channels) {
-			if (channel.getClass().equals(channelClass)) {
-				channel.awaitingReady = false;
-				channel.channelReady = false;
-				channel.selectTime = null;
+			if (channel.getClass().equals(channelClass) && (channel.channelReady || !readyOnly)) {
+				channel.setUnready();
 			}
 		}
 	}

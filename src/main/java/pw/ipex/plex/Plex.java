@@ -8,7 +8,6 @@ import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 //import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import pw.ipex.plex.core.loop.PlexCoreEventLoop;
 import pw.ipex.plex.core.loop.PlexCoreEventLoopManager;
 import pw.ipex.plex.cq.PlexCommandQueueManager;
 import pw.ipex.plex.core.*;
@@ -18,9 +17,9 @@ import pw.ipex.plex.core.render.PlexCoreTextures;
 import pw.ipex.plex.mods.autofriend.PlexAutoFriendMod;
 import pw.ipex.plex.mods.autogg.PlexAutoGGMod;
 import pw.ipex.plex.mods.autothank.PlexAutoThankMod;
+import pw.ipex.plex.mods.chatmod.PlexChatStreamMod;
 import pw.ipex.plex.mods.replycommand.PlexBetterReplyMod;
 import pw.ipex.plex.mods.developmentmod.PlexDevelopmentMod;
-import pw.ipex.plex.mods.chatmod.PlexHideStreamMod;
 import pw.ipex.plex.mods.messagingscreen.PlexMessagingMod;
 import pw.ipex.plex.mods.plexmod.PlexPlexCommand;
 import pw.ipex.plex.mods.plexmod.PlexPlexMod;
@@ -67,7 +66,7 @@ public class Plex {
 		//PlexCore.registerMod(new PlexFriendsListEnhancementsMod());  // (this module no longer works because they removed the offline section. press f to pay respects)
 		PlexCore.registerMod(new PlexBetterReplyMod());
 		PlexCore.registerMod(new PlexMessagingMod());
-		PlexCore.registerMod(new PlexHideStreamMod());
+		PlexCore.registerMod(new PlexChatStreamMod());
 		PlexCore.registerMod(new PlexAutoThankMod());
 		PlexCore.registerMod(new PlexDevelopmentMod());
 		//PlexCore.registerMod(new PlexRichPresenceMod()); // (the old jar file is excluded from the git repository because the libraries it uses are no longer included and it will not compile)

@@ -15,7 +15,7 @@ import java.util.TimerTask;
 
 public class PlexDevelopmentMod extends PlexModBase {
 	public boolean chatStream = false;
-	public boolean chatMinify = false;
+	public boolean chatMinify = true;
 	public boolean soundStream = false;
 	public boolean lobbySwitchStream = false;
 

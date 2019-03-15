@@ -3,6 +3,7 @@ package pw.ipex.plex.mods.messagingscreen;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent.KeyInputEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
@@ -27,10 +28,10 @@ import java.util.TimerTask;
 public class PlexMessagingMod extends PlexModBase {
 	//private static ResourceLocation sendIcon = new ResourceLocation("PolyEdge_Plex", "chat/send.png");
 
-	public static PlexMessagingChannelManager channelManager = new PlexMessagingChannelManager();
-	public static KeyBinding toggleChatUI;
-	public static KeyBinding quickChat;
-	public static PlexUIAutoCompleteContainer autoCompleteContainer = new PlexUIAutoCompleteContainer();
+	public PlexMessagingChannelManager channelManager = new PlexMessagingChannelManager();
+	public KeyBinding toggleChatUI;
+	public KeyBinding quickChat;
+	public PlexUIAutoCompleteContainer autoCompleteContainer = new PlexUIAutoCompleteContainer();
 	
 	@Override
 	public String getModName() {
@@ -51,12 +52,13 @@ public class PlexMessagingMod extends PlexModBase {
 	public void saveModConfig() {
 	}
 	
-	@SubscribeEvent
+	@SubscribeEvent(priority=EventPriority.HIGHEST)
 	public void onChat(ClientChatReceivedEvent event) {
 		String chatMessageContent = event.message.getFormattedText();
 		if (PlexCoreUtils.chatMinimalizeLowercase(event.message.getFormattedText()).startsWith("communities> you are now chatting to")) {
-			channelManager.unreadyChannelsByClass(PlexMessagingCommunityChatChannel.class);
+			this.channelManager.unreadyChannelsByClass(PlexMessagingCommunityChatChannel.class, true);
 		}
+		this.channelManager.chatEvent(event);
 		this.handleMessage(chatMessageContent);
 	}
 
@@ -119,7 +121,7 @@ public class PlexMessagingMod extends PlexModBase {
 			PlexMessagingMessage message = this.processChatMessageWithAdapter(chatMessage, messageAdapter);
 			if (message != null) {
 				message.channel.addMessage(message);
-				//channelManager.bumpChannelToTop(message.channel);
+				//this.channelManager.bumpChannelToTop(message.channel);
 			}
 		}
 	}
@@ -151,10 +153,10 @@ public class PlexMessagingMod extends PlexModBase {
 
 		PlexMessagingChannelBase channel;
 		if (channelName == null) { // null when sending to open channel
-			if (PlexMessagingMod.channelManager.selectedChannel == null) {
+			if (this.channelManager.selectedChannel == null) {
 				return null;
 			}
-			channel = PlexMessagingMod.channelManager.selectedChannel;
+			channel = this.channelManager.selectedChannel;
 		}
 		else {
 			if (!channelExists(channelName, channelClass) && !PlexMessagingSingleEntityChannel.class.isAssignableFrom(channelClass) && (recipientEntityName == null || recipientEntityName.equals(""))) {
@@ -171,7 +173,7 @@ public class PlexMessagingMod extends PlexModBase {
 		}
 
 		messageAdapter.applyChannelTags(chatMessage, channel);
-		if (!messageAdapter.meetsRequirements(PlexMessagingUIScreen.isChatOpen(), PlexMessagingMod.channelManager.selectedChannel, channel)) {
+		if (!messageAdapter.meetsRequirements(PlexMessagingUIScreen.isChatOpen(), PlexMessagingMod.this.channelManager.selectedChannel, channel)) {
 			return null;
 		}
 		PlexMessagingMessage message = messageAdapter.getIncompleteMessageFromText(chatMessage).setNow().setHead(messageAdapter.formatStringWithGroups("{author}", chatMessage));
@@ -182,29 +184,29 @@ public class PlexMessagingMod extends PlexModBase {
 		return message;
 	}
 	
-	public static PlexMessagingChannelBase getChannel(String name, Class<? extends PlexMessagingChannelBase> type) {
+	public PlexMessagingChannelBase getChannel(String name, Class<? extends PlexMessagingChannelBase> type) {
 		return getChannel(name, type, null);
 	}
 
-	public static boolean channelExists(String name, Class<? extends PlexMessagingChannelBase> type) {
-		return channelManager.getChannel(name) != null;
+	public boolean channelExists(String name, Class<? extends PlexMessagingChannelBase> type) {
+		return this.channelManager.getChannel(name) != null;
 	}
 	
-	public static PlexMessagingChannelBase getChannel(String name, Class<? extends PlexMessagingChannelBase> type, String recipientEntityName) {
+	public PlexMessagingChannelBase getChannel(String name, Class<? extends PlexMessagingChannelBase> type, String recipientEntityName) {
 		if (recipientEntityName == null) {
 			recipientEntityName = "";
 		}
-		if (channelManager.getChannel(name) == null) {
+		if (this.channelManager.getChannel(name) == null) {
 			PlexMessagingChannelBase channel;
 			try {
 				channel = type.newInstance();
 				channel.setName(name);
 				channel.setRecipientEntityName(recipientEntityName);
-				channelManager.addChannel(channel);
+				this.channelManager.addChannel(channel);
 			} 
 			catch (InstantiationException | IllegalAccessException e) {}
 		}
-		return channelManager.getChannel(name);
+		return this.channelManager.getChannel(name);
 	}
 
 	@SubscribeEvent
@@ -227,8 +229,8 @@ public class PlexMessagingMod extends PlexModBase {
 	@Override
 	public void lobbyUpdated(PlexCoreLobbyType type) {
 		if (type.equals(PlexCoreLobbyType.E_SWITCHED_SERVERS)) {
-			channelManager.unreadyChannelsByClass(PlexMessagingCommunityChatChannel.class);
-			final PlexMessagingChannelManager finalManager = channelManager;
+			this.channelManager.unreadyChannelsByClass(PlexMessagingCommunityChatChannel.class, false);
+			final PlexMessagingChannelManager finalManager = this.channelManager;
 			if (finalManager.selectedChannel != null) {
 				if (!finalManager.selectedChannel.awaitingReady && !finalManager.selectedChannel.channelReady) {
 					new Timer().schedule(new TimerTask() {

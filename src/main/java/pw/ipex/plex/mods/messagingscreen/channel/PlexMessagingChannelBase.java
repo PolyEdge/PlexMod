@@ -11,7 +11,9 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import pw.ipex.plex.Plex;
 
+import pw.ipex.plex.core.PlexCore;
 import pw.ipex.plex.core.PlexCoreUtils;
+import pw.ipex.plex.mods.messagingscreen.PlexMessagingChannelManager;
 import pw.ipex.plex.mods.messagingscreen.PlexMessagingMessage;
 import pw.ipex.plex.mods.messagingscreen.PlexMessagingMod;
 import pw.ipex.plex.ui.widget.itemlist.PlexUIScrolledItem;
@@ -36,7 +38,11 @@ public abstract class PlexMessagingChannelBase implements PlexUIScrolledItem, Co
 	public Long selectTime = null;
 	public Long readyTime = null;
 
-	public Long lastConnectionAttempt = 0L;
+	public int maxConnectionAttempts = 3;
+	public long connectionAttemptDelay = 1750;
+	public boolean errorOnMaxAttempts = true;
+
+	public long lastConnectionAttempt = 0L;
 	public int connectionAttempts = 0;
 
 	public List<PlexMessagingMessage> channelMessages = new ArrayList<PlexMessagingMessage>();
@@ -92,6 +98,7 @@ public abstract class PlexMessagingChannelBase implements PlexUIScrolledItem, Co
 		this.awaitingReady = false;
 		this.channelReady = false;
 		this.connectionAttempts = 0;
+		this.lastConnectionAttempt = 0;
 		this.channelDeselected();
 	}
 	
@@ -110,6 +117,12 @@ public abstract class PlexMessagingChannelBase implements PlexUIScrolledItem, Co
 		}
 		this.awaitingReady = false;
 		this.channelReady = true;
+	}
+
+	public void setUnready() {
+		this.channelReady = false;
+		this.connectionAttempts = 0;
+		this.lastConnectionAttempt = 0;
 	}
 
 	public void setError() {
@@ -146,11 +159,21 @@ public abstract class PlexMessagingChannelBase implements PlexUIScrolledItem, Co
 		this.lastChannelRead = Minecraft.getSystemTime();
 	}
 
-	public void readyIfNeeded() {
+	public void loopReady() {
 		if (!this.awaitingReady && !this.channelReady && !this.connectFailed) {
-			this.getChannelReady();
+			if (Minecraft.getSystemTime() > this.lastConnectionAttempt + this.connectionAttemptDelay) {
+				if (this.connectionAttempts < this.maxConnectionAttempts) {
+					this.getChannelReady();
+				}
+				else {
+					if (errorOnMaxAttempts) {
+						this.setError();
+					}
+				}
+			}
 		}
 	}
+
 	
 	public List<PlexMessagingMessage> getAllMessagesSinceLastRead() {
 		List<PlexMessagingMessage> messages = new ArrayList<PlexMessagingMessage>();
@@ -184,7 +207,7 @@ public abstract class PlexMessagingChannelBase implements PlexUIScrolledItem, Co
 
 	@Override
 	public boolean listItemIsSelected() {
-		return PlexMessagingMod.channelManager.selectedChannel == this;
+		return PlexCore.modInstance(PlexMessagingMod.class).channelManager.selectedChannel == this;
 	}
 
 	@Override
@@ -198,10 +221,10 @@ public abstract class PlexMessagingChannelBase implements PlexUIScrolledItem, Co
 	@Override
 	public void listItemSelect() {
 		if (this.listItemIsSelected()) {
-			PlexMessagingMod.channelManager.setSelectedChannel(null);
+			PlexCore.modInstance(PlexMessagingMod.class).channelManager.setSelectedChannel(null);
 		}
 		else {
-			PlexMessagingMod.channelManager.setSelectedChannel(this);
+			PlexCore.modInstance(PlexMessagingMod.class).channelManager.setSelectedChannel(this);
 		}
 	}
 

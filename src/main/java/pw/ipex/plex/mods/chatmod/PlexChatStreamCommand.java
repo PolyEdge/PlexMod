@@ -9,7 +9,7 @@ import net.minecraft.util.BlockPos;
 import pw.ipex.plex.ci.PlexCommandHandler;
 import pw.ipex.plex.core.PlexCore;
 
-public class PlexHideStreamCommand extends PlexCommandHandler {
+public class PlexChatStreamCommand extends PlexCommandHandler {
 
 	@Override
 	public List<String> tabCompletion(ICommandSender sender, String namespace, String[] args, BlockPos pos) {
@@ -19,7 +19,7 @@ public class PlexHideStreamCommand extends PlexCommandHandler {
 	@Override
 	public void processCommand(ICommandSender sender, String namespace, String[] args) throws CommandException {
 		if (args.length == 0) {
-			PlexCore.displayUIScreen(new PlexHideStreamUI());
+			PlexCore.displayUIScreen(new PlexChatStreamUI());
 		}
 	}
 
