@@ -190,7 +190,7 @@ public class PlexAutoThankMod extends PlexModBase {
 				public void run() {
 					PlexCoreUtils.chatAddMessage(PlexCoreUtils.chatPlexPrefix() + PlexCoreUtils.chatStyleText("DARK_GRAY", "Note: AutoThank does not work on clans servers and is inactive until you leave this clans game."));	
 				}
-			}, 2000L);
+			}, 8000L);
 		}
 	}
 }

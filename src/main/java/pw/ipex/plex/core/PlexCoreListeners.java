@@ -486,6 +486,7 @@ public class PlexCoreListeners {
 			lobbyType = PlexCoreLobbyType.CLANS_HUB;
 		}
 		else if (compareText.contains("clans season")) {
+			Plex.serverState.clansSeason = compareText.replace("clans season", "").trim();
 			lobbyType = PlexCoreLobbyType.CLANS_SERVER;
 		}
 		else if (compareText.contains("waiting for players") || compareText.contains("waiting for game") || compareText.contains("starting in") || compareText.contains("vote") || compareText.contains("voting") || compareText.contains("game over")) {

@@ -20,6 +20,7 @@ public class PlexCoreServerState {
 	public String updatedLobbyName = null;
 	
 	public String currentGameName = null;
+	public String clansSeason = null;
 	public long gameStartTime = -1;
 	public OffsetDateTime gameStartDateTime = null;
 	public boolean isGameSpectator = false;

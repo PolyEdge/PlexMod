@@ -7,7 +7,6 @@ import pw.ipex.plex.Plex;
 import pw.ipex.plex.core.PlexCore;
 import pw.ipex.plex.core.mineplex.PlexCoreLobbyType;
 import pw.ipex.plex.core.PlexCoreUtils;
-import pw.ipex.plex.core.PlexCoreValue;
 import pw.ipex.plex.mod.PlexModBase;
 
 import java.util.HashMap;
@@ -116,9 +115,10 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 		gameIcons.put("block hunt", "grass_block");
 		gameIcons.put("draw my thing", "book_and_quill");
 		gameIcons.put("master builders", "oak_wood_planks");
-		gameIcons.put("mine-strike", "tnt");
+		gameIcons.put("minestrike", "tnt");
 		gameIcons.put("speed builders", "quartz_block");
 		gameIcons.put("super smash mobs", "creeper_head");
+		gameIcons.put("super smash mobs teams", "creeper_head");
 		gameIcons.put("the bridges", "iron_pickaxe");
 		gameIcons.put("skywars", "feather");
 		gameIcons.put("skywars teams", "feather");
@@ -127,7 +127,9 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 		gameIcons.put("survival games", "diamond_sword");
 		gameIcons.put("survival games teams", "diamond_sword");
 		gameIcons.put("clans", "iron_sword");
-		
+
+		lobbyNames.put("lobby", "$Main Hub");
+
 		lobbyNames.put("bld", "Master Builders");
 		lobbyNames.put("dmt", "Draw My Thing");
 		lobbyNames.put("bb", "Bacon Brawl");
@@ -139,7 +141,7 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 		lobbyNames.put("gld", "Gladiators");
 		lobbyNames.put("mb", "Micro Battles");
 		lobbyNames.put("mm", "Monster Maze");
-		lobbyNames.put("oitq", "One in the Quiver");
+		lobbyNames.put("oitq", "OITQ");
 		lobbyNames.put("run", "Runner");
 		lobbyNames.put("sq", "Sheep Quest");
 		lobbyNames.put("sn", "Snake");
@@ -155,14 +157,14 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 		lobbyNames.put("cw2", "Cake Wars Duos");
 		lobbyNames.put("hg", "Survival Games");
 		lobbyNames.put("sg", "Survival Games"); // just in case
-		lobbyNames.put("hg2", "Survival Games Teams"); // just in case
-		lobbyNames.put("sg2", "Survival Games Teams");
+		lobbyNames.put("hg2", "SG Teams"); // just in case
+		lobbyNames.put("sg2", "SG Teams");
 		lobbyNames.put("sky", "Skywars");
 		lobbyNames.put("sky2", "Skywars Teams");
 		lobbyNames.put("br", "Bridges");
 		lobbyNames.put("ms", "MineStrike");
 		lobbyNames.put("ssm", "Super Smash Mobs");
-		lobbyNames.put("ssm2", "Super Smash Mobs Teams");
+		lobbyNames.put("ssm2", "SSM Teams");
 		lobbyNames.put("dom", "Dominate");
 		lobbyNames.put("ctf", "CTF");
 		lobbyNames.put("retro", "Retro");
@@ -257,8 +259,35 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 		}
 		return this.showIP ? "mineplex.com" : "Mineplex";
 	}
+
+	public String getLobbyRepresentation() {
+		if (Plex.serverState.currentLobbyName == null) {
+			return null;
+		}
+		if (!Plex.serverState.currentLobbyName.matches(MATCH_SERVER_NAME)) {
+			return null;
+		}
+		Matcher serverIDmatcher = PATTERN_SERVER_NAME.matcher(Plex.serverState.currentLobbyName);
+		serverIDmatcher.find();
+		String serverID = serverIDmatcher.group(1);
+		if (lobbyNames.containsKey(serverID.toLowerCase())) {
+			return lobbyNames.get(serverID.toLowerCase());
+		}
+		return null;
+	}
+
+	public String wrappedLobbyRepresentation(String def, String prefix, String suffix) {
+		String rep = this.getLobbyRepresentation();
+		if (rep == null) {
+			return def;
+		}
+		if (rep.startsWith("$")) {
+			return rep.substring(1);
+		}
+		return prefix + rep + suffix;
+	}
 	
-	public String serverIgn(boolean addIP) {
+	public String serverIGN(boolean addIP) {
 		String output = "";
 		if (this.displayLobbyName && Plex.serverState.currentLobbyName != null) {
 			output += Plex.serverState.currentLobbyName;
@@ -279,37 +308,31 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 	}
 	
 	public String[] getPresenceStrings() {
-		String state = serverIgn(true);
+		String state = serverIGN(true);
 		if (Plex.serverState.currentLobbyType == null) {
-			return new String[] {"Playing on " + getServerIP(), serverIgn(false)};
+			return new String[] {"Playing on " + getServerIP(), serverIGN(false)};
 		}
 		if (Plex.serverState.currentLobbyType.equals(PlexCoreLobbyType.SERVER_UNDETERMINED) || Plex.serverState.currentLobbyType.equals(PlexCoreLobbyType.SERVER_UNKNOWN)) {
-			return new String[] {"Playing on " + getServerIP(), serverIgn(false)};
-		}
-		if (Plex.serverState.currentLobbyType.equals(PlexCoreLobbyType.SERVER_HUB)) {
-			return new String[] {"In a Main Lobby", state};
+			return new String[] {"Playing on " + getServerIP(), serverIGN(false)};
 		}
 		if (Plex.serverState.currentLobbyType.equals(PlexCoreLobbyType.CLANS_HUB)) {
-			return new String[] {"In a Clans Hub", state};
+			return new String[] {"Clans Hub", state};
 		}
 		if (Plex.serverState.currentLobbyType.equals(PlexCoreLobbyType.CLANS_SERVER)) {
-			return new String[] {"Playing Clans", state};
+			if (Plex.serverState.clansSeason == null) {
+				return new String[] {"Playing Clans", state};
+			}
+			else {
+				return new String[] {"Clans (Season " + Plex.serverState.clansSeason + ")", state};
+
+			}
+		}
+		String lobbyRep = this.getLobbyRepresentation();
+		if (Plex.serverState.currentLobbyType.equals(PlexCoreLobbyType.SERVER_HUB)) {
+			return new String[] {this.wrappedLobbyRepresentation("Main Hub", "In ", ""), state};
 		}
 		if (Plex.serverState.currentLobbyType.equals(PlexCoreLobbyType.GAME_LOBBY)) {
-			if (Plex.serverState.currentLobbyName != null) {
-				if (Plex.serverState.currentLobbyName.matches(MATCH_SERVER_NAME)) {
-					Matcher serverIDmatcher = PATTERN_SERVER_NAME.matcher(Plex.serverState.currentLobbyName);
-					serverIDmatcher.find();
-					String serverID = serverIDmatcher.group(1);
-					if (lobbyNames.containsKey(serverID.toLowerCase())) {
-						if (lobbyNames.get(serverID.toLowerCase()).startsWith("$")) {
-							return new String[] {lobbyNames.get(serverID.toLowerCase()).substring(1), state};
-						}
-						return new String[] {"In a " + lobbyNames.get(serverID.toLowerCase()) + " Lobby", state};
-					}
-				}
-			}
-			return new String[] {"In a Game Lobby", state};
+			return new String[] {this.wrappedLobbyRepresentation("Game Lobby", "Game Lobby: ", ""), state};
 		}
 		if (Plex.serverState.currentLobbyType.equals(PlexCoreLobbyType.GAME_INGAME)) {
 			if (Plex.serverState.currentGameName == null) {
@@ -317,7 +340,7 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 			}
 			return new String[] {(Plex.serverState.isGameSpectator ? "Spectating " : "Playing ") + Plex.serverState.currentGameName, state};
 		}
-		return new String[] {"Playing on " + getServerIP(), serverIgn(false)};
+		return new String[] {"Playing on " + getServerIP(), serverIGN(false)};
 	}
 
 	@Override
