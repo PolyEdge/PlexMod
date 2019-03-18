@@ -360,8 +360,8 @@ public class PlexUIScrolledItemList extends GuiScreen {
 					item.listItemOtherItemClicked();
 				}
 			}
-			hoverItem.listItemSelect();
 			hoverItem.listItemClick();
+			hoverItem.listItemSelect();
 		}
 	}
 	

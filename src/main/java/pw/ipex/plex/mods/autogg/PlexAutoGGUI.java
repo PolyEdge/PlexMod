@@ -3,11 +3,15 @@ package pw.ipex.plex.mods.autogg;
 import net.minecraft.client.gui.GuiButton;
 import pw.ipex.plex.Plex;
 import pw.ipex.plex.core.PlexCore;
+import pw.ipex.plex.core.PlexCoreUtils;
 import pw.ipex.plex.ui.PlexUIBase;
 import pw.ipex.plex.ui.PlexUIModMenuScreen;
 import pw.ipex.plex.ui.widget.PlexUISlider;
 import pw.ipex.plex.ui.widget.PlexUITextField;
+import pw.ipex.plex.ui.widget.autocomplete.PlexUIAutoCompleteItem;
 import pw.ipex.plex.ui.widget.itemlist.PlexUIScrolledItemList;
+
+import java.util.List;
 
 public class PlexAutoGGUI extends PlexUIBase {
 	public PlexUIScrolledItemList ggMessagesList;
@@ -44,10 +48,13 @@ public class PlexAutoGGUI extends PlexUIBase {
 
 		this.ggMessageEdit = new PlexUITextField(9, Plex.minecraft.fontRendererObj, pane1Pos + 5, top + 154, paneSize * 2 - 5 - 3 - 20 - 3 - 20 - 5, 20);
 		this.ggMessageEdit.text.setMaxStringLength(100);
+		this.ggMessageEdit.text.setCanLoseFocus(false);
+		this.ggMessageEdit.text.setFocused(true);
 
 		ui.addElement(this.newGGButton = new GuiButton(10, pane2Pos + paneSize - 20 - 20 - 3 - 5, top + 154, 20, 20, "+"));
 		ui.addElement(this.removeGGButton = new GuiButton(11, pane2Pos + paneSize - 20 - 5, top + 154, 20, 20, "-"));
 
+		this.deselectAll();
 		this.updateSelectedItem();
 	}
 
@@ -69,7 +76,6 @@ public class PlexAutoGGUI extends PlexUIBase {
 		PlexAutoGGMessage selectedMessage = this.getSelectedItem();
 		if (selectedMessage == null) {
 			this.ggMessageEdit.text.setText("");
-			this.ggMessageEdit.text.setEnabled(false);
 			this.removeGGButton.enabled = false;
 			this.oldSelectedMessage = null;
 			return;
@@ -87,6 +93,78 @@ public class PlexAutoGGUI extends PlexUIBase {
 		for (PlexAutoGGMessage message : modInstance.ggMessages) {
 			message.selected = false;
 		}
+	}
+
+	public void newItem() {
+		PlexAutoGGMod modInstance = PlexCore.modInstance(PlexAutoGGMod.class);
+		PlexAutoGGMessage newMessage = new PlexAutoGGMessage(this.ggMessageEdit.text.getText());
+		this.deselectAll();
+		newMessage.selected = true;
+		modInstance.ggMessages.add(newMessage);
+		this.ggMessagesList.scrollToItemIfNotCompletelyInView(newMessage);
+	}
+
+	public void deleteItem(PlexAutoGGMessage message) {
+		PlexAutoGGMod modInstance = PlexCore.modInstance(PlexAutoGGMod.class);
+		if (message == null) {
+			return;
+		}
+		PlexAutoGGMessage messageBefore = null;
+		PlexAutoGGMessage messageAfter = null;
+		boolean messageFound = false;
+		for (PlexAutoGGMessage ggMessage : modInstance.ggMessages) {
+			if (ggMessage == message) {
+				messageFound = true;
+				continue;
+			}
+			if (!messageFound) {
+				messageBefore = ggMessage;
+			}
+			else {
+				messageAfter = ggMessage;
+			}
+			if (messageFound && messageAfter != null) {
+				break;
+			}
+		}
+		modInstance.ggMessages.remove(message);
+		deselectAll();
+		PlexAutoGGMessage newSelectedMessage = null;
+		if (messageAfter != null) {
+			newSelectedMessage = messageAfter;
+		}
+		else if (messageBefore != null) {
+			newSelectedMessage = messageBefore;
+		}
+
+		if (newSelectedMessage != null) {
+			newSelectedMessage.selected = true;
+			this.ggMessagesList.scrollToItemIfNotCompletelyInView(newSelectedMessage);
+		}
+	}
+
+	public void moveSelection(int indexes) {
+		PlexAutoGGMod modInstance = PlexCore.modInstance(PlexAutoGGMod.class);
+		List<PlexAutoGGMessage> messages = modInstance.ggMessages;
+		if (messages.size() == 0) {
+			return;
+		}
+
+		PlexAutoGGMessage selectedItem = this.getSelectedItem();
+		if (selectedItem == null) {
+			selectedItem = messages.get(0);
+		}
+		selectedItem.selected = false;
+
+		int selectedIndex = -1;
+		for (int itemIndex = 0; itemIndex < messages.size(); itemIndex++) {
+			if (messages.get(itemIndex) == selectedItem) {
+				selectedIndex = itemIndex;
+			}
+		}
+		selectedIndex = PlexCoreUtils.clamp(selectedIndex + indexes, 0, messages.size() - 1);
+		messages.get(selectedIndex).selected = true;
+		this.ggMessagesList.scrollToItemIfNotCompletelyInView(messages.get(selectedIndex));
 	}
 	
 	@Override
@@ -119,7 +197,19 @@ public class PlexAutoGGUI extends PlexUIBase {
 	
 	@Override
 	public void keyTyped(char par1, int par2) {
-		this.ggMessageEdit.keyTyped(par1, par2);
+		if (par2 == 200) {
+			this.moveSelection(-1);
+		}
+		else if (par2 == 208) {
+			this.moveSelection(1);
+		}
+		else if (par2 == 28) {
+			this.newItem();
+		}
+		else {
+			this.ggMessageEdit.keyTyped(par1, par2);
+		}
+		this.updateSelectedItem();
 		PlexAutoGGMessage selectedMessage = this.getSelectedItem();
 		if (selectedMessage != null) {
 			selectedMessage.message = this.ggMessageEdit.text.getText();
@@ -186,18 +276,10 @@ public class PlexAutoGGUI extends PlexUIBase {
 			button.displayString = this.ggModeDisplayString();
 		}
 		if (button.id == 10) {
-			this.deselectAll();
-			PlexAutoGGMessage newMessage = new PlexAutoGGMessage("gg");
-			newMessage.selected = true;
-			modInstance.ggMessages.add(newMessage);
+			this.newItem();
 		}
 		if (button.id == 11) {
-			PlexAutoGGMessage selectedMessage = this.getSelectedItem();
-			if (selectedMessage == null) {
-				return;
-			}
-			selectedMessage.selected = false;
-			modInstance.ggMessages.remove(selectedMessage);
+			this.deleteItem(this.getSelectedItem());
 		}
 		this.updateSelectedItem();
 	}

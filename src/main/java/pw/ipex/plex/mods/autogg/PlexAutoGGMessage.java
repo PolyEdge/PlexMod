@@ -26,7 +26,7 @@ public class PlexAutoGGMessage implements PlexUIScrolledItem {
 
     @Override
     public void listItemClick() {
-        this.selected = true;
+        this.selected = !this.selected;
     }
 
     @Override

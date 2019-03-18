@@ -27,8 +27,8 @@ public class PlexMessagingChatMessageConstructor {
 		addAdapter("party", "party_disband", "&7The party was disbanded.", "@Party");
 		addAdapter("party", "party_invite_local", "&7Party invite from &e{sender}&7:\n{{ACCEPT_BUTTON|&a&lACCEPT}}  {{DENY_BUTTON|&c&lDENY}}", "@Party").addMessageTag("invitation_sender_ign", "{sender}").setUsesFormatRegions(true).addCallback(new PlexMessagingMessageEventParty());
 		addAdapter("party", "party_invite", "&7Party invite from &e{sender}&7 in &e{server}&7:\n{{ACCEPT_BUTTON|&a&lACCEPT}}  {{DENY_BUTTON|&c&lDENY}}", "@Party").addMessageTag("invitation_sender_ign", "{sender}").setUsesFormatRegions(true).addCallback(new PlexMessagingMessageEventParty());
-		addAdapter("party", "party_invite_search", "&Party invite sent to &e{invited_player}&7.", "@Party");
-		addAdapter("party", "party_invite_sent", "&Invited &e{invited_player}&7 to the party.", "@Party");
+		addAdapter("party", "party_invite_search", "&7Party invite sent to &e{invited_player}&7.", "@Party");
+		addAdapter("party", "party_invite_sent", "&7Invited &e{invited_player}&7 to the party.", "@Party");
 		addAdapter("party", "party_join", "&e{ign} &7joined the party.", "@Party");
 		//addAdapter("party", "party_join", "&e{ign} &7joined the party.", "@Party").condition("{ign} !equals " + PlexCore.getPlayerIGN());
 		//addAdapter("party", "party_join", "&e{ign} &7joined the party.", "@Party").condition("{ign} equals " + PlexCore.getPlayerIGN()).setChannelOpenedRequired(true);
