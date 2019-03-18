@@ -187,7 +187,7 @@ public class PlexUIScrollbar {
 	public void update() {
 		this.updateVelocity();
 		if (!this.barVisible() && this.hiddenForcedScroll != null) {
-			this.setScroll(this.hiddenForcedScroll, true);
+			this.setScroll(this.hiddenForcedScroll, false);
 		}
 	}
 

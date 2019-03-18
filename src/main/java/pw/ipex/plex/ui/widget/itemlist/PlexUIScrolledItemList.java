@@ -25,6 +25,8 @@ public class PlexUIScrolledItemList extends GuiScreen {
 	
 	public int renderBorderTop = 5;
 	public int renderBorderBottom = 5;
+	public boolean renderBorderTransition = false;
+	public int renderBorderTransitionDistance = 10;
 	public int defaultEntryHeight = 16;
 	public int mouseWheelScrollPixelAmount = 40;
 	
@@ -37,6 +39,7 @@ public class PlexUIScrolledItemList extends GuiScreen {
 	public PlexUIScrolledItemList(List<? extends PlexUIScrolledItem> itemsList, int startX, int startY, int endX, int endY) {
 		this.items = itemsList;
 		this.scrollbar = new PlexUIScrollbar(startY, endY, endX - 8, 6);
+		this.scrollbar.hiddenForcedScroll = 0.0F;
 		this.setPosition(startX, startY, endX, endY);
 	}
 	
@@ -69,6 +72,15 @@ public class PlexUIScrolledItemList extends GuiScreen {
 
 	public void setVisible(boolean visible) {
 		this.isVisible = visible;
+	}
+
+	public void setRenderBorderTransition(int size) {
+		this.renderBorderTransition = true;
+		this.renderBorderTransitionDistance = size;
+	}
+
+	public void disableRenderBorderTransition() {
+		this.renderBorderTransition = false;
 	}
 	
 	public int getSizeX() {
@@ -269,12 +281,26 @@ public class PlexUIScrolledItemList extends GuiScreen {
 		}
 		int currentY = -heightOrDefault(itemsSearch.get(0));
 		for (PlexUIScrolledItem item : itemsSearch) {
+			float alpha = 1.0F;
 			currentY += heightOrDefault(item);
 			if (currentY + heightOrDefault(item) < viewportTop - this.renderBorderTop) {
-				continue;
+				if (this.renderBorderTransition && currentY + heightOrDefault(item) >= viewportTop - this.renderBorderTop - this.renderBorderTransitionDistance) {
+					alpha = 1.0F - PlexCoreUtils.clamp(Math.abs((float)((viewportTop - this.renderBorderTop) - (currentY + heightOrDefault(item)))) / (float)this.renderBorderTransitionDistance, 0.0F, 1.0F);
+				}
+				else {
+					continue;
+				}
 			}
 			if (currentY > viewportBottom + this.renderBorderBottom) {
-				break;
+				if (this.renderBorderTransition && currentY <= viewportBottom + this.renderBorderBottom + this.renderBorderTransitionDistance) {
+					alpha = 1.0F - PlexCoreUtils.clamp(Math.abs((float)((viewportBottom + this.renderBorderBottom) - currentY)) / (float)this.renderBorderTransitionDistance, 0.0F, 1.0F);
+					Plex.renderUtils.drawScaledString("" + alpha, 150.0F, 60.0F, 0xffffff, 0.75F, false);
+					Plex.renderUtils.drawScaledString("" + (viewportBottom + this.renderBorderBottom) , 150.0F, 66.0F, 0xffffff, 0.75F, false);
+					Plex.renderUtils.drawScaledString("" + currentY, 150.0F, 72.0F, 0xffffff, 0.75F, false);
+				}
+				else {
+					break;
+				}
 			}
 			int itemYposition = this.startY + (currentY - viewportTop);
 			
@@ -302,15 +328,18 @@ public class PlexUIScrolledItemList extends GuiScreen {
 				itemForegroundColour = PlexCoreUtils.multiplyColour(itemForegroundColour, 1.20F);
 				itemBackgroundColour = PlexCoreUtils.multiplyColour(itemBackgroundColour, 1.20F);
 			}
+
+			itemBackgroundColour = PlexCoreUtils.multiplyColour(itemBackgroundColour, 1.0F, 1.0F, 1.0F, alpha);
+
 			
-			PlexUIModMenuScreen.drawRect(this.startX, itemYposition, this.endX, itemYposition + heightOrDefault(item), itemBackgroundColour);
+			Plex.renderUtils.staticDrawGradientRect(this.startX, itemYposition, this.endX, itemYposition + heightOrDefault(item), itemBackgroundColour, itemBackgroundColour);
 	
 			if (itemText != null) {
 				String finalText = Plex.minecraft.fontRendererObj.trimStringToWidth(itemText, this.getEndXWithScrollbar() - this.paddingX * 2);
 				Plex.renderUtils.drawScaledStringLeftSide(finalText, this.startX + this.paddingX, itemYposition + ((heightOrDefault(item) / 2) - (Plex.minecraft.fontRendererObj.FONT_HEIGHT / 2)), itemForegroundColour, 1.0F);
 			}
 			else {
-				item.listItemRenderText(this.startX + this.paddingX, itemYposition, this.getSizeXWithScrollbar() - this.paddingX * 2, heightOrDefault(item), isSelected, isMouseOver);
+				item.listItemRenderText(this.startX + this.paddingX, itemYposition, this.getSizeXWithScrollbar() - this.paddingX * 2, heightOrDefault(item), alpha, isSelected, isMouseOver);
 			}
 		}
 		this.scrollbar.drawScreen(mouseX, mouseY, par3);

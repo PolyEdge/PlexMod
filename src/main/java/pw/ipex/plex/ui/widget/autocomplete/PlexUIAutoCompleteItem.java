@@ -96,7 +96,7 @@ public class PlexUIAutoCompleteItem implements PlexUIScrolledItem, Comparable<Pl
     }
 
     @Override
-    public void listItemRenderText(int x, int y, int cellWidth, int cellHeight, boolean selected, boolean mouseOver) {
+    public void listItemRenderText(int x, int y, int cellWidth, int cellHeight, float alpha, boolean selected, boolean mouseOver) {
         int startX = x;
         boolean playerHead = false;
         int playerHeadSize = (int) ((float) cellHeight * 0.75F);

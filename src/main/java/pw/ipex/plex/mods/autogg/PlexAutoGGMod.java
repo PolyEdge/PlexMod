@@ -1,9 +1,15 @@
 package pw.ipex.plex.mods.autogg;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
 
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
+import net.minecraftforge.common.config.ConfigCategory;
+import net.minecraftforge.common.config.Property;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import pw.ipex.plex.Plex;
 import pw.ipex.plex.core.*;
@@ -11,17 +17,21 @@ import pw.ipex.plex.core.mineplex.PlexCoreLobbyType;
 import pw.ipex.plex.mod.PlexModBase;
 
 public class PlexAutoGGMod extends PlexModBase {
-	public PlexCoreValue modEnabled = new PlexCoreValue("autoGG_enabled", false);
-	public PlexCoreValue ggDelay = new PlexCoreValue("autoGG_delay", 0.5D);
-	public PlexCoreValue ggMessagePrimary = new PlexCoreValue("autoGG_primaryMessage", "gg");
-	public PlexCoreValue ggMessageSecondary = new PlexCoreValue("autoGG_secondaryMessage", "gg.");
-	public PlexCoreValue ggWaitUntilSilenceEnd = new PlexCoreValue("autoGG_waitUntilSilenceOver", true);
-	
-	public static double MIN_DELAY = 0.0D;
-	public static double MAX_DELAY = 5.0D;
+	public boolean modEnabled = false;
+	public double ggDelay = 0.5D;
+
+	public List<PlexAutoGGMessage> ggMessages;
+
+	public boolean ggWaitUntilSilenceEnd = true;
+	public int ggMode = 0; // 0 = in order, 1 = random
+
+	public int MAX_GG_MODE = 1;
+	public double MIN_DELAY = 0.0D;
+	public double MAX_DELAY = 5.0D;
 	
 	public String subtitleText = "";
 	public int useGGMessage = 0;
+	public PlexAutoGGMessage lastGGMessage;
 	public Long gameOverTime = null;
 	public Long ggSendTime = null;
 	public Long ggCooldown = null;
@@ -30,14 +40,20 @@ public class PlexAutoGGMod extends PlexModBase {
 
 	@Override
 	public void modInit() {
-		this.modEnabled.set(this.modSetting("autogg_enabled", false).getBoolean(false));
-		this.ggDelay.set(this.modSetting("autogg_delay", 0.5D).getDouble());
-		this.ggMessagePrimary.set(this.modSetting("autogg_primary_message", "gg").getString());
-		this.ggMessageSecondary.set(this.modSetting("autogg_secondary_message", "gg.").getString());
-		this.ggWaitUntilSilenceEnd.set(this.modSetting("autogg_wait_until_silence_over", true).getBoolean(true));
+		this.modEnabled = this.modSetting("autogg_enabled", false).getBoolean(false);
+		this.ggDelay = this.modSetting("autogg_delay", 0.5D).getDouble();
+
+		this.ggMessages = new ArrayList<>();
+		this.handleVersionCrossover();
+		List<String> messages = Arrays.asList(Plex.config.get(this.getModName(), "autogg_messages_list", new String[0]).getStringList());
+		for (String message : messages) {
+			this.ggMessages.add(new PlexAutoGGMessage(message));
+		}
+
+		this.ggWaitUntilSilenceEnd = this.modSetting("autogg_wait_until_silence_over", true).getBoolean(true);
+		this.ggMode = this.modSetting("autogg_message_rotation_mode", 0).getInt();
 		
 		Plex.plexCommand.registerPlexCommand("autogg", new PlexAutoGGCommand());
-		
 		Plex.plexCommand.addPlexHelpCommand("autogg", "Displays AutoGG options");
 		
 		PlexCore.registerUiTab("AutoGG", PlexAutoGGUI.class);
@@ -48,8 +64,21 @@ public class PlexAutoGGMod extends PlexModBase {
 		return "AutoGG";
 	}
 
+	public void handleVersionCrossover() {
+		this.handleLegacyGGString("autogg_secondary_message");
+		this.handleLegacyGGString("autogg_primary_message");
+	}
+
+	public void handleLegacyGGString(String name) {
+		String value = this.modSetting(name, (String) null).getString();
+		if (value != null && !value.trim().equals("")) {
+			this.ggMessages.add(0, new PlexAutoGGMessage(value));
+			this.modSetting(name, "").set("");
+		}
+	}
+
 	public void onlineModLoop() {
-		if (!this.modEnabled.booleanValue) {
+		if (!this.modEnabled) {
 			return;
 		}
 		try {
@@ -83,13 +112,13 @@ public class PlexAutoGGMod extends PlexModBase {
 			}
 		}
 		if (this.isGameOver()) {
-			if (!this.ggWaitUntilSilenceEnd.booleanValue && Minecraft.getSystemTime() < this.gameOverTime + 1000L) {
-				this.scheduleGG((long) (this.ggDelay.doubleValue * 1000.0D));
+			if (!this.ggWaitUntilSilenceEnd && Minecraft.getSystemTime() < this.gameOverTime + 1000L) {
+				this.scheduleGG((long) (this.ggDelay * 1000.0D));
 			}
-			else if (Minecraft.getSystemTime() < this.gameOverTime + 1000L && Plex.serverState.currentLobbyName != null && Plex.serverState.currentLobbyName.startsWith("NANO")) {
-				this.scheduleGG((long) (this.ggDelay.doubleValue * 1000.0D));
-			}
-			else if (this.ggWaitUntilSilenceEnd.booleanValue) {
+			//else if (Minecraft.getSystemTime() < this.gameOverTime + 1000L && Plex.serverState.currentLobbyName != null && Plex.serverState.currentLobbyName.startsWith("NANO")) {
+			//	this.scheduleGG((long) (this.ggDelay * 1000.0D)); they added chat silence in nano
+			//}
+			else if (this.ggWaitUntilSilenceEnd) {
 				scheduleGGatChatUnsilence = true;
 			}
 		}
@@ -109,7 +138,7 @@ public class PlexAutoGGMod extends PlexModBase {
 	
 	@SubscribeEvent
 	public void onChat(ClientChatReceivedEvent e) {
-		if (!this.modEnabled.booleanValue) {
+		if (!this.modEnabled) {
 			return;
 		}
 		String minified = PlexCoreUtils.chatMinimalizeLowercase(e.message.getFormattedText());
@@ -124,7 +153,7 @@ public class PlexAutoGGMod extends PlexModBase {
 		if (minified.contains("chat> chat is no longer silenced")) {
 			if (this.scheduleGGatChatUnsilence) {
 				scheduleGGatChatUnsilence = false;
-				this.scheduleGG((long) (this.ggDelay.doubleValue * 1000.0D));
+				this.scheduleGG((long) (this.ggDelay * 1000.0D));
 			}
 		}
 	}
@@ -161,24 +190,74 @@ public class PlexAutoGGMod extends PlexModBase {
 			this.gameOverTime = null;
 		}
 	}
+
+	public List<String> getGGMessages() {
+		List<String> messages = new ArrayList<>();
+		for (PlexAutoGGMessage message : this.ggMessages) {
+			if (message.message != null) {
+				messages.add(message.message);
+			}
+		}
+		return messages;
+	}
+
+	public List<PlexAutoGGMessage> getValidGGMessages() { //safeguard due to weird forge settings handler
+		List<PlexAutoGGMessage> messages = new ArrayList<>();
+		for (PlexAutoGGMessage message : this.ggMessages) {
+			if (message.message != null) {
+				messages.add(message);
+			}
+		}
+		return messages;
+	}
+
+	public PlexAutoGGMessage getGG() {
+		List<PlexAutoGGMessage> messages = this.getValidGGMessages();
+		if (messages.size() == 0) {
+			return null;
+		}
+		if (this.ggMode == 0) {
+			if (this.useGGMessage >= messages.size()) {
+				this.useGGMessage = 0;
+			}
+			this.useGGMessage += 1;
+			return messages.get(this.useGGMessage - 1);
+		}
+		if (this.ggMode == 1) {
+			if (messages.size() == 1) {
+				return messages.get(0);
+			}
+			List<PlexAutoGGMessage> selection = new ArrayList<>();
+			for (PlexAutoGGMessage message : messages) {
+				if (message != this.lastGGMessage) {
+					selection.add(message);
+				}
+			}
+			Random rand = new Random();
+			return selection.get(rand.nextInt(selection.size()));
+		}
+		return null;
+	}
 	
 	public void sendGG() {
-		String ggMessage = this.ggMessagePrimary.stringValue;
-		if (this.useGGMessage % 2 == 1) {
-			ggMessage = this.ggMessageSecondary.stringValue;
+		PlexAutoGGMessage ggMessage = this.getGG();
+		if (ggMessage != null) {
+			Plex.minecraft.thePlayer.sendChatMessage(ggMessage.message);
 		}
-		Plex.minecraft.thePlayer.sendChatMessage(ggMessage);
-		this.useGGMessage = (this.useGGMessage + 1) % 2;
+		else {
+			PlexCoreUtils.chatAddMessage(PlexCoreUtils.chatPlexPrefix() + PlexCoreUtils.chatStyleText("RED", "You do not have any GG messages added, so there are none to send!"));
+		}
+		this.lastGGMessage = ggMessage;
 		this.sentGG = true;
 	}
 	
 	@Override
 	public void saveModConfig() {
-		this.modSetting("autogg_enabled", false).set(this.modEnabled.booleanValue);
-		this.modSetting("autogg_delay", 0.5F).set(this.ggDelay.doubleValue);
-		this.modSetting("autogg_primary_message", "").set(this.ggMessagePrimary.stringValue);
-		this.modSetting("autogg_secondary_message", "").set(this.ggMessageSecondary.stringValue);
-		this.modSetting("autogg_wait_until_silence_over", true).set(this.ggWaitUntilSilenceEnd.booleanValue);
+		this.modSetting("autogg_enabled", false).set(this.modEnabled);
+		this.modSetting("autogg_delay", 0.5F).set(this.ggDelay);
+		this.modSetting("autogg_wait_until_silence_over", true).set(this.ggWaitUntilSilenceEnd);
+		this.modSetting("autogg_message_rotation_mode", 0).set(this.ggMode);
+		Plex.config.get(this.getModName(), "autogg_messages_list", new String[0]).set(this.getGGMessages().toArray(new String[0]));
 	}
 
 	@Override
@@ -186,8 +265,5 @@ public class PlexAutoGGMod extends PlexModBase {
 		this.gameOverTime = null;
 		this.sentGG = false;
 		this.scheduleGGatChatUnsilence = false;
-		if (type.equals(PlexCoreLobbyType.SERVER_HUB)) {
-			this.useGGMessage = 0;
-		}
 	}
 }

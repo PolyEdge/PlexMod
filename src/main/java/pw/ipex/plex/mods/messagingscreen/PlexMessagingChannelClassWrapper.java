@@ -97,7 +97,7 @@ public class PlexMessagingChannelClassWrapper implements PlexUIScrolledItem {
     }
 
     @Override
-    public void listItemRenderText(int x, int y, int cellWidth, int cellHeight, boolean selected, boolean mouseOver) {
+    public void listItemRenderText(int x, int y, int cellWidth, int cellHeight, float alpha, boolean selected, boolean mouseOver) {
     }
 
     @Override

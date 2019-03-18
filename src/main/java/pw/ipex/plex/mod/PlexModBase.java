@@ -1,6 +1,7 @@
 package pw.ipex.plex.mod;
 
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.config.ConfigCategory;
 import net.minecraftforge.common.config.Property;
 import pw.ipex.plex.Plex;
 import pw.ipex.plex.core.mineplex.PlexCoreLobbyType;
@@ -13,25 +14,29 @@ public abstract class PlexModBase {
 	}
 	
 	public abstract String getModName();
-	
+
 	public Property modSetting(String name, Integer def) {
 		return Plex.config.get(this.getModName(), name, def);
 	}
-	
+
 	public Property modSetting(String name, String def) {
 		return Plex.config.get(this.getModName(), name, def);
 	}
-	
+
 	public Property modSetting(String name, Boolean def) {
 		return Plex.config.get(this.getModName(), name, def);
 	}
-	
+
 	public Property modSetting(String name, Float def) {
 		return Plex.config.get(this.getModName(), name, def);
 	}
-	
+
 	public Property modSetting(String name, Double def) {
 		return Plex.config.get(this.getModName(), name, def);
+	}
+
+	public ConfigCategory getConfig() {
+		return Plex.config.getCategory(this.getModName());
 	}
 	
 	public void saveModConfig() {}

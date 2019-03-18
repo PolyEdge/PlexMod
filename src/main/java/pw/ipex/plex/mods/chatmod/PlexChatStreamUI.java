@@ -44,13 +44,14 @@ public class PlexChatStreamUI extends PlexUIBase {
 	}
 	
 	public String filtrationLevelDisplayString() {
-		Integer level = PlexCore.getSharedValue("hideStream_lobbyFiltrationLevel").integerValue;
+        PlexChatStreamMod modInstance = PlexCore.modInstance(PlexChatStreamMod.class);
+		Integer level = modInstance.lobbyFiltrationLevel;
 		return "Lobby Chat Filter: " + (level.equals(0) ? "Disabled" : (level));
 	}
 	
 	public String barReductionDisplayString() {
 		PlexChatStreamMod modInstance = PlexCore.modInstance(PlexChatStreamMod.class);
-		Integer level = PlexCore.getSharedValue("hideStream_barReductionIndex").integerValue;
+		Integer level = modInstance.barReductionIndex;
 		java.util.Map.Entry<Integer, Integer> barReductionValues = modInstance.BAR_REDUCTION.get(level);
 		return "Bar Reduction: " + (level.equals(0) ? "Disabled" : ((float) barReductionValues.getValue() / (float) barReductionValues.getKey() * 100) + "%");
 	}

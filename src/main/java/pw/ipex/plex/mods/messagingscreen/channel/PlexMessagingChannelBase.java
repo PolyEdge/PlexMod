@@ -244,7 +244,7 @@ public abstract class PlexMessagingChannelBase implements PlexUIScrolledItem, Co
 	}
 
 	@Override
-	public void listItemRenderText(int x, int y, int cellWidth, int cellHeight, boolean selected, boolean mouseOver) {
+	public void listItemRenderText(int x, int y, int cellWidth, int cellHeight, float alpha, boolean selected, boolean mouseOver) {
 		int channelNameStartX = x;
 		int foregroundColour = this.getDisplayColour();
 		int unreadMessages = this.getMessagesSinceLastRead().size();

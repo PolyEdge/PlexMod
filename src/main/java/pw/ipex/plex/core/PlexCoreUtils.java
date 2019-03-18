@@ -367,6 +367,11 @@ public class PlexCoreUtils {
 		return fromRGB((int) (mul * rgb[0]), (int) (mul * rgb[1]), (int) (mul * rgb[2]), alpha ? (int) (mul * rgb[3]) : rgb[3]);
 	}
 
+	public static int multiplyColour(int colour, float r, float g, float b, float a) {
+		int[] rgb = toRGB(colour);
+		return fromRGB((int) (r * rgb[0]), (int) (g * rgb[1]), (int) (b * rgb[2]), (int) (a * rgb[3]));
+	}
+
 	// misc
 
 	public static List<String> matchStringToList(String input, List<String> list) {
