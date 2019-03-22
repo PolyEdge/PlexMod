@@ -70,7 +70,7 @@ public class PlexAutoGGMod extends PlexModBase {
 	}
 
 	public void handleLegacyGGString(String name) {
-		String value = this.modSetting(name, (String) null).getString();
+		String value = this.modSetting(name, "").getString();
 		if (value != null && !value.trim().equals("")) {
 			this.ggMessages.add(0, new PlexAutoGGMessage(value));
 			this.modSetting(name, "").set("");

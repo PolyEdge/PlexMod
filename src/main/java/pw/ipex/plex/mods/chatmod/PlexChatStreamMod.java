@@ -206,6 +206,7 @@ public class PlexChatStreamMod extends PlexModBase {
 		this.modSetting("lobby_filtration_level", 0).set(this.lobbyFiltrationLevel);
 		this.modSetting("hide_community_invites", false).set(this.hideCommunityInvites);
 		this.modSetting("attempted_adblocking", false).set(this.adblocking);
+		this.modSetting("hide_gadget_disable", false).set(this.hideGadgetDisable);
 		this.modSetting("bar_reduction_index", 0).set(this.barReductionIndex);
 	}
 
