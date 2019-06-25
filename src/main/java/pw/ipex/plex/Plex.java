@@ -32,7 +32,7 @@ import org.apache.logging.log4j.Logger;
 public class Plex {
 	public static final String MODID = "PolyEdge_Plex";
 	public static final String VERSION = "0.4";
-	public static final String PATCHID = "PATCH_4";
+	public static final String PATCHID = "PATCH_5";
 	public static final String RELEASENOTICE = "Welcome to 0.4!";
 
 	public static Minecraft minecraft = Minecraft.getMinecraft();

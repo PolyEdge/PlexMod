@@ -401,11 +401,7 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 	public void attemptIPCConnection() {
 		richPresenceOpening.set(true);
 		lastConnectionAttempt.set(Minecraft.getSystemTime());
-		currentConnectionThread = new Thread(new Runnable() {
-			public void run() {
-				connectIPCThread();
-			}
-		});
+		currentConnectionThread = new Thread(this::connectIPCThread);
 		currentConnectionThread.start();
 	}
 

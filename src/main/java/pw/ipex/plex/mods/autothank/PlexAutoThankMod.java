@@ -20,13 +20,13 @@ import pw.ipex.plex.cq.PlexCommandQueue;
 import pw.ipex.plex.core.PlexCore;
 import pw.ipex.plex.core.mineplex.PlexCoreLobbyType;
 import pw.ipex.plex.core.PlexCoreUtils;
-import pw.ipex.plex.core.PlexCoreValue;
 import pw.ipex.plex.mod.PlexModBase;
 
 public class PlexAutoThankMod extends PlexModBase {
 
-	public static String MATCH_AMPLIFIER_MESSAGE = "^amplifier> [a-zA-Z0-9_]{1,20} has activated a game amplifier on ([a-zA-Z ]+)!$";
-	public static String MATCH_SUCCESSFUL_TIP = "^tip> you thanked ([a-zA-Z0-9_]{1,20})\\. they earned 5 treasure shards and you got 5 treasure shards in return!$";
+	public static String MATCH_AMPLIFIER_GLOBAL = "^amplifier> [a-zA-Z0-9_]{1,20} has activated a game amplifier on ([a-zA-Z ]+)!$";
+	public static String MATCH_AMPLIFIER_LOCAL = "^amplifier> [a-zA-Z0-9_]{1,20} has activated a game amplifier for .*$";
+	public static String MATCH_SUCCESSFUL_TIP = "^tip> you thanked ([a-zA-Z0-9_]{1,20}).*$";
 	
 	public static Pattern PATTERN_SUCCESSFUL_TIP = Pattern.compile(MATCH_SUCCESSFUL_TIP, Pattern.CASE_INSENSITIVE);
 	
@@ -36,12 +36,11 @@ public class PlexAutoThankMod extends PlexModBase {
 	public Map<String, String> gameNames = new HashMap<String, String>();
 	public PlexCommandQueue thankQueue = new PlexCommandQueue("autoThank", Plex.plexCommandQueue);
 	public Long lastThankWave = 0L;
-	public Boolean thankingInProgress = false;
 	public Boolean cooldownWait = false;
 
 	public Long thankWaveInterval = 900000L; // 15 minutes
 	public Long cooldownBackoffDelay = 5000L; // 5 seconds
-	public Long thankResponseTimeout = 15000L; // 15 seconds
+	public Long thankResponseTimeout = 10000L; // 10 seconds
 
 	@Override
 	public void modInit() {
@@ -84,7 +83,7 @@ public class PlexAutoThankMod extends PlexModBase {
 
 	public void onlineModLoop() {
 		if (!this.modEnabled) {
-			lastThankWave = 0L; // remove this in release
+			lastThankWave = 0L; // just kidding
 			this.thankQueue.cancelAll();
 			return;
 		}
@@ -117,16 +116,16 @@ public class PlexAutoThankMod extends PlexModBase {
 		}
 		String minifiedCase = PlexCoreUtils.chatMinimalize(e.message.getFormattedText());
 		String minified = minifiedCase.toLowerCase();
-		if (minified.matches(MATCH_AMPLIFIER_MESSAGE) && this.compactMessagesEnabled) {
-			e.setCanceled(true);
-		}
-		if (minified.matches(MATCH_SUCCESSFUL_TIP) && this.compactMessagesEnabled) {
-			Matcher nameExtract = PATTERN_SUCCESSFUL_TIP.matcher(minifiedCase);
-			nameExtract.find();
-			PlexCoreUtils.chatAddMessage(PlexCoreUtils.chatStyleText("BLUE", thankQueue.hasItems() ? "AutoThank> " : "Thank> ") + PlexCoreUtils.chatStyleText("GRAY", "Thanked ") + PlexCoreUtils.chatStyleText("YELLOW", nameExtract.group(1)) + PlexCoreUtils.chatStyleText("GRAY", "."));
-			e.setCanceled(true);
-		}
 		if (thankQueue.hasItems()) {
+			if (minified.matches(MATCH_AMPLIFIER_GLOBAL) && this.compactMessagesEnabled) {
+				e.setCanceled(true);
+			}
+			if (minified.matches(MATCH_SUCCESSFUL_TIP) && this.compactMessagesEnabled) {
+				Matcher nameExtract = PATTERN_SUCCESSFUL_TIP.matcher(minifiedCase);
+				nameExtract.find();
+				PlexCoreUtils.chatAddMessage(PlexCoreUtils.chatStyleText("BLUE", thankQueue.hasItems() ? "AutoThank> " : "Thank> ") + PlexCoreUtils.chatStyleText("GRAY", "Thanked ") + PlexCoreUtils.chatStyleText("YELLOW", nameExtract.group(1)) + PlexCoreUtils.chatStyleText("GRAY", "."));
+				e.setCanceled(true);
+			}
 			if (thankQueue.getItem(0).isSent()) {
 				if (minified.matches(MATCH_SUCCESSFUL_TIP)) {
 					thankQueue.getItem(0).markComplete();

@@ -30,7 +30,7 @@ import pw.ipex.plex.ui.PlexUIModMenuScreen;
 public class PlexCoreListeners {
 	public String MATCH_SERVER_MESSAGE = "^Portal> You are currently on server: (.*)$";
 	public String MATCH_GAME_NAME = "^&aGame - &e&l(.*)$";
-	public String MATCH_EMOTE = "^&e:(.+):&7 -> &e(.+)$";
+	public String MATCH_EMOTE = "^&e:(.+):&7 -> (.+)$";
 	
 	public Pattern PATTERN_SERVER_MESSAGE = Pattern.compile(MATCH_SERVER_MESSAGE);
 	public Pattern PATTERN_GAME_NAME = Pattern.compile(MATCH_GAME_NAME);

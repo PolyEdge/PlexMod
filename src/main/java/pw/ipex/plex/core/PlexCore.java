@@ -456,7 +456,6 @@ public class PlexCore {
 	 * 
 	 * @param sender - command sender
 	 * @param args   - command arguments
-	 * @return 
 	 */
 
 	public static void processModCommand(ICommandSender sender, String[] args) throws CommandException {

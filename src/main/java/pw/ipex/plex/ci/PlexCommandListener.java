@@ -81,21 +81,4 @@ public class PlexCommandListener extends CommandBase {
 		}
 		return PlexCore.commandTabCompletion(sender, finalArgs, pos);
 	}
-	
-//	@Override
-//	public List<String> addTabCompletionOptions(ICommandSender sender, String[] args, BlockPos pos) {
-//		switch (args.length) {
-//		case 1:
-//			return getListOfStringsMatchingLastWord(args, "options", "red", "green", "blue", "alpha", "rgb", "thickness", "fill_alpha", "fill_blink_speed", "disable_depth", "break_animation", "chroma_speed");
-//		case 2:
-//			if (args[0].equalsIgnoreCase("disable_depth")) {
-//				return getListOfStringsMatchingLastWord(args, "true", "false");
-//			}
-//			if (args[0].equalsIgnoreCase("break_animation")) {
-//				return getListOfStringsMatchingLastWord(args, "none", "shrink", "down", "alpha");
-//			}
-//		}
-//		return Collections.emptyList();
-//	}
-
 }
