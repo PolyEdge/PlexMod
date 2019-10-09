@@ -9,7 +9,6 @@ import java.util.regex.Pattern;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import pw.ipex.plex.Plex;
-import pw.ipex.plex.ci.PlexCommandListener;
 import pw.ipex.plex.core.PlexCore;
 import pw.ipex.plex.core.mineplex.PlexCoreLobbyType;
 import pw.ipex.plex.core.PlexCoreUtils;
@@ -51,11 +50,11 @@ public class PlexFriendsListEnhancementsMod extends PlexModBase {
 		this.hideOfflineEnabled.set(this.modSetting("hide_offline_friends", false).getBoolean());
 		this.hideIncomingRequestsEnabled.set(this.modSetting("hide_incoming_friend_requests", false).getBoolean());
 		this.hideOutgoingRequestsEnabled.set(this.modSetting("hide_outgoing_friend_requests", false).getBoolean());
-		
-		PlexCore.registerCommandListener(new PlexCommandListener("ff"));
-		PlexCore.registerCommandListener(new PlexCommandListener("fs"));
-		PlexCore.registerCommandHandler("ff", new PlexFriendsListEnhancementsCommand());
-		PlexCore.registerCommandHandler("fs", new PlexFriendsListEnhancementsCommand());
+
+		//PlexCore.registerCommandListener(new PlexCommandListenerClientCommandListener("ff"));
+		//PlexCore.registerCommandListener(new PlexCommandListenerClientCommandListener("fs"));
+		//PlexCore.registerCommandHandler("ff", new PlexFriendsListEnhancementsCommand());
+		//PlexCore.registerCommandHandler("fs", new PlexFriendsListEnhancementsCommand());
 		Plex.plexCommand.registerPlexCommand("friends", new PlexFriendsListEnhancementsCommand());
 		
 		Plex.plexCommand.addPlexHelpCommand("friends", "Displays friends list options");

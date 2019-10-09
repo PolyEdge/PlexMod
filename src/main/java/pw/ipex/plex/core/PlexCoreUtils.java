@@ -83,24 +83,25 @@ public class PlexCoreUtils {
 	public static String chatStyleText(String ...args) {
 		String valueText = args[(args.length - 1)];
 		List<String> styles = Arrays.asList(args).subList(0, (args.length - 1));
-		String outputText = EnumChatFormatting.RESET + "";
+		StringBuilder output = new StringBuilder();
 		String[] words = valueText.split("\\s", -1);
-		String output = "";
 		for (String word : words) {
-			String outputWord = "";
+			StringBuilder outputWord = new StringBuilder();
 			for (String style : styles) {
-				outputWord += EnumChatFormatting.valueOf(style.toUpperCase());
+				outputWord.append(EnumChatFormatting.valueOf(style.toUpperCase()));
 			}
-			outputWord += word;
-			if (!output.equals("")) {
-				output += " " + outputWord;
+			outputWord.append(word);
+			if (output.length() == 0) {
+				output.append(outputWord);
 			}
 			else {
-				output += outputWord;
+				output.append(" ");
+				output.append(outputWord);
 			}
 		}
-		outputText = output + EnumChatFormatting.RESET;
-		return outputText;
+		output.insert(0, EnumChatFormatting.RESET);
+		output.append(EnumChatFormatting.RESET);
+		return output.toString();
 	}
 	
 	public static String chatPlexPrefix() {

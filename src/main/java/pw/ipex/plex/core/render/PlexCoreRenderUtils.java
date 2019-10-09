@@ -162,7 +162,6 @@ public class PlexCoreRenderUtils extends GuiScreen {
 		GlStateManager.disableBlend();
 		GlStateManager.enableAlpha();
 		GlStateManager.enableTexture2D();
-
 	}
 
 	public void drawScaledGradientRect(int startX, int startY, int endX, int endY, float scale, int colour1, int colour2) {

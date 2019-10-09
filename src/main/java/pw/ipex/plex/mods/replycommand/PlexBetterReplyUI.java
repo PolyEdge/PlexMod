@@ -14,11 +14,12 @@ public class PlexBetterReplyUI extends PlexUIBase {
 
 	@Override
 	public void uiAddButtons(PlexUIModMenuScreen ui) {
+		PlexBetterReplyMod instance = PlexCore.modInstance(PlexBetterReplyMod.class);
 		Integer top = ui.startingYPos(52);
 		Integer paneSize = ui.centeredPaneSize(1, 20, 160);
 		Integer pane1Pos = ui.centeredPanePos(0, 1, 20, 160);
-		ui.addElement(new GuiButton(5, pane1Pos + 5, top + 0, paneSize - 10, 20, buttonDisplayString("Better Reply", PlexCore.getSharedValue("betterReply_enabled").booleanValue)));
-		ui.addElement(new PlexUISlider(this, 6, pane1Pos + 5, top + 23, paneSize - 10, 20, Float.valueOf(PlexCore.getSharedValue("betterReply_replyTimeout").integerValue) / PlexBetterReplyMod.MAX_REPLY_TIMEOUT, timeoutDisplayString()));
+		ui.addElement(new GuiButton(5, pane1Pos + 5, top + 0, paneSize - 10, 20, buttonDisplayString("Better Reply", instance.modEnabled)));
+		ui.addElement(new PlexUISlider(this, 6, pane1Pos + 5, top + 23, paneSize - 10, 20, (float)instance.replyTimeoutSeconds / PlexBetterReplyMod.MAX_REPLY_TIMEOUT, timeoutDisplayString()));
 	}
 	
 	public String buttonDisplayString(String prefix, Boolean enabled) {
@@ -26,14 +27,16 @@ public class PlexBetterReplyUI extends PlexUIBase {
 	}
 
 	public String timeoutDisplayString() {
-		Integer secondsValue = PlexCore.getSharedValue("betterReply_replyTimeout").integerValue;
+		PlexBetterReplyMod instance = PlexCore.modInstance(PlexBetterReplyMod.class);
+		Integer secondsValue = instance.replyTimeoutSeconds;
 		return "Reply Timeout: " + (secondsValue.equals(PlexBetterReplyMod.MAX_REPLY_TIMEOUT) ? "Unlimited" : (secondsValue + "s"));
 	}
 	
 	@Override
 	public void uiSliderInteracted(PlexUISlider slider) {
+		PlexBetterReplyMod instance = PlexCore.modInstance(PlexBetterReplyMod.class);
 		if (slider.id == 6) {
-			PlexCore.getSharedValue("betterReply_replyTimeout").set(Math.round(slider.sliderValue * PlexBetterReplyMod.MAX_REPLY_TIMEOUT));
+			instance.replyTimeoutSeconds = Math.round(slider.sliderValue * PlexBetterReplyMod.MAX_REPLY_TIMEOUT);
 			slider.displayString = timeoutDisplayString();
 		}
 	}
@@ -45,10 +48,10 @@ public class PlexBetterReplyUI extends PlexUIBase {
 
 	@Override
 	public void uiButtonClicked(GuiButton button) {
+		PlexBetterReplyMod instance = PlexCore.modInstance(PlexBetterReplyMod.class);
 		if (button.id == 5) {
-			PlexCore.getSharedValue("betterReply_enabled").set(!PlexCore.getSharedValue("betterReply_enabled").booleanValue);
-			button.displayString = buttonDisplayString("Better Reply", PlexCore.getSharedValue("betterReply_enabled").booleanValue);
-			PlexCore.getCommandListener("r").setDisabled(!PlexCore.getSharedValue("betterReply_enabled").booleanValue);
+			instance.modEnabled = !instance.modEnabled;
+			button.displayString = buttonDisplayString("Better Reply", instance.modEnabled);
 		}
 	}
 }

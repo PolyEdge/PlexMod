@@ -13,6 +13,7 @@ import pw.ipex.plex.core.PlexCoreValue;
 import pw.ipex.plex.mod.PlexModBase;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -22,7 +23,7 @@ public class PlexAutoFriendMod extends PlexModBase {
 
 	public Pattern PATTERN_REQUEST = Pattern.compile(MATCH_REQUEST);
 
-	public PlexCoreValue modEnabled = new PlexCoreValue("autoFriend_enabled", false);
+	public boolean modEnabled;
 	public static List<String> blacklist = new ArrayList<>();
 
 	public Property blacklistSetting;
@@ -30,11 +31,9 @@ public class PlexAutoFriendMod extends PlexModBase {
 
 	@Override
 	public void modInit() {
-		this.modEnabled.set(this.modSetting("autofriend_enabled", false).getBoolean(false));
+		this.modEnabled = this.modSetting("autofriend_enabled", false).getBoolean(false);
 		this.blacklistSetting = Plex.config.get("AutoFriend.Blacklist", "blacklist", new String[0]);
-		for (String item : this.blacklistSetting.getStringList()) {
-			blacklist.add(item);
-		}
+		blacklist.addAll(Arrays.asList(this.blacklistSetting.getStringList()));
 		
 		Plex.plexCommand.registerPlexCommand("autofriend", new PlexAutoFriendCommand());
 		
@@ -50,7 +49,7 @@ public class PlexAutoFriendMod extends PlexModBase {
 	
 	@SubscribeEvent
 	public void onChat(ClientChatReceivedEvent e) {
-		if (!this.modEnabled.booleanValue) {
+		if (!this.modEnabled) {
 			return;
 		}
 		String minified = PlexCoreUtils.chatMinimalizeLowercase(e.message.getFormattedText());
@@ -69,7 +68,7 @@ public class PlexAutoFriendMod extends PlexModBase {
 	
 	@Override
 	public void saveModConfig() {
-		this.modSetting("autofriend_enabled", false).set(this.modEnabled.booleanValue);
+		this.modSetting("autofriend_enabled", false).set(this.modEnabled);
 	}
 
 	@Override

@@ -8,7 +8,6 @@ import java.util.regex.Pattern;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import pw.ipex.plex.Plex;
-import pw.ipex.plex.ci.PlexCommandListener;
 import pw.ipex.plex.core.*;
 import pw.ipex.plex.core.mineplex.PlexCoreLobbyType;
 import pw.ipex.plex.core.regex.PlexCoreRegex;
@@ -72,12 +71,8 @@ public class PlexChatStreamMod extends PlexModBase {
 		this.barReductionIndex = this.modSetting("bar_reduction_index", 0).getInt();
 		this.barReductionIndex = 0;
 
-		PlexCore.registerCommandListener(new PlexCommandListener("tc"));
-		PlexCore.registerCommandHandler("tc", new PlexChatStreamCommand());
 		Plex.plexCommand.registerPlexCommand("chat", new PlexChatStreamCommand());
-		
-		Plex.plexCommand.addPlexHelpCommand("chat", "tc", "Displays chat options");
-		
+
 		PlexCore.registerUiTab("Chat", PlexChatStreamUI.class);
 		
 		for (String exp : AD_MATCHERS) {
@@ -105,7 +100,6 @@ public class PlexChatStreamMod extends PlexModBase {
 
 		String min = PlexCoreUtils.chatMinimalizeLowercase(e.message.getFormattedText());
 
-		//PlexCoreUtils.chatAddMessage(potentialType);
 		if (hidePlayerChat) {
 			if (!isOwnPlayer && (potentialType.equals("player_chat"))) {
 				e.setCanceled(true);

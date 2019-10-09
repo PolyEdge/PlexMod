@@ -5,8 +5,6 @@ import java.util.List;
 import net.minecraftforge.client.event.sound.PlaySoundEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import pw.ipex.plex.Plex;
-import pw.ipex.plex.ci.PlexCommandListener;
-import pw.ipex.plex.core.PlexCore;
 import pw.ipex.plex.core.mineplex.PlexCoreLobbyType;
 import pw.ipex.plex.core.PlexCoreUtils;
 import pw.ipex.plex.core.PlexCoreValue;
@@ -44,8 +42,8 @@ public class PlexLobbySoundFilterMod extends PlexModBase {
 		this.maxSoundRadius.set(this.modSetting("sounds_allowed_within", 0).getInt());
 		this.minSoundInRadiusLevel.set(this.modSetting("levels_allowed_within", 0).getInt());
 
-		PlexCore.registerCommandListener(new PlexCommandListener("ts"));
-		PlexCore.registerCommandHandler("ts", new PlexChatStreamCommand());
+		//PlexCore.registerCommandListener(new PlexCommandListenerClientCommandListener("ts"));
+		//PlexCore.registerCommandHandler("ts", new PlexChatStreamCommand());
 		Plex.plexCommand.registerPlexCommand("sounds", new PlexChatStreamCommand());
 	}
 	

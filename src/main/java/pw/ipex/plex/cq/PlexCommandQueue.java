@@ -49,6 +49,10 @@ public class PlexCommandQueue {
         return command;
     }
 
+    public PlexCommandQueueCommand newCommand(String textCommand) {
+        return new PlexCommandQueueCommand(this.group, textCommand);
+    }
+
     public void removeCompleted() {
         List<PlexCommandQueueCommand> completed = new ArrayList<PlexCommandQueueCommand>();
         synchronized (queueItems) {

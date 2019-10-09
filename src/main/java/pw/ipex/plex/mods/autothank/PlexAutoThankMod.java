@@ -7,7 +7,9 @@ import java.util.TimerTask;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.IChatComponent;
@@ -15,11 +17,11 @@ import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import pw.ipex.plex.Plex;
-import pw.ipex.plex.ci.PlexCommandListener;
 import pw.ipex.plex.cq.PlexCommandQueue;
 import pw.ipex.plex.core.PlexCore;
 import pw.ipex.plex.core.mineplex.PlexCoreLobbyType;
 import pw.ipex.plex.core.PlexCoreUtils;
+import pw.ipex.plex.cq.PlexCommandQueueCommand;
 import pw.ipex.plex.mod.PlexModBase;
 
 public class PlexAutoThankMod extends PlexModBase {
@@ -65,12 +67,8 @@ public class PlexAutoThankMod extends PlexModBase {
 		gameNames.put("event", "Event");
 		gameNames.put("nano", "Nano_Games");
 		
-		
-		PlexCore.registerCommandListener(new PlexCommandListener("ath"));
-		PlexCore.registerCommandHandler("ath", new PlexAutoThankCommand());
+
 		Plex.plexCommand.registerPlexCommand("thank", new PlexAutoThankCommand());
-		
-		Plex.plexCommand.addPlexHelpCommand("thank", "ath", "Displays AutoThank options");
 		
 		PlexCore.registerUiTab("AutoThank", PlexAutoThankUI.class);
 
@@ -117,7 +115,7 @@ public class PlexAutoThankMod extends PlexModBase {
 		String minifiedCase = PlexCoreUtils.chatMinimalize(e.message.getFormattedText());
 		String minified = minifiedCase.toLowerCase();
 		if (thankQueue.hasItems()) {
-			if (minified.matches(MATCH_AMPLIFIER_GLOBAL) && this.compactMessagesEnabled) {
+			if ((minified.matches(MATCH_AMPLIFIER_GLOBAL) || minified.matches(MATCH_AMPLIFIER_LOCAL)) && this.compactMessagesEnabled) {
 				e.setCanceled(true);
 			}
 			if (minified.matches(MATCH_SUCCESSFUL_TIP) && this.compactMessagesEnabled) {
@@ -151,15 +149,45 @@ public class PlexAutoThankMod extends PlexModBase {
 					cooldownWait = true;
 					thankQueue.getItem(0).resendIn(cooldownBackoffDelay);
 				}
+				else if (minified.toLowerCase().startsWith("thanks> you can't thank yourself")) {
+					e.setCanceled(true);
+					cooldownWait = false;
+					thankQueue.getItem(0).markComplete();
+				}
+				else if (minified.toLowerCase().startsWith("amplifier> you can't thank yourself")) {
+					e.setCanceled(true);
+					cooldownWait = true;
+					thankQueue.getItem(0).resendIn(cooldownBackoffDelay);
+				}
 			}
 		}
 		if (minified.startsWith("amplifier> click here to thank")) {
 			JsonParser messageParser = new JsonParser();
-			JsonElement messageJson = messageParser.parse(IChatComponent.Serializer.componentToJson(e.message));
-			String command = messageJson.getAsJsonObject().get("clickEvent").getAsJsonObject().get("value").getAsString();
+			JsonObject messageJson = messageParser.parse(IChatComponent.Serializer.componentToJson(e.message)).getAsJsonObject();
+			JsonElement globalClickEvent = messageJson.get("clickEvent");
+			JsonElement extra = messageJson.get("extra");
+			String command = null;
+			if (globalClickEvent != null) {
+				command = globalClickEvent.getAsJsonObject().get("value").getAsString();
+			}
+			else if (extra != null) {
+				JsonArray extraTag = extra.getAsJsonArray();
+				for (JsonElement item : extraTag) {
+					JsonObject clickEvent = (JsonObject) item.getAsJsonObject().get("clickEvent");
+					if (clickEvent != null) {
+						command = clickEvent.get("value").getAsString();
+						break;
+					}
+				}
+			}
+			if (command == null) {
+				PlexCoreUtils.chatAddMessage(PlexCoreUtils.chatStyleText("BLUE", "AutoThank> ") + PlexCoreUtils.chatStyleText("RED", "Unexpectedly failed to detect which game this is. Is it a thank message?"));
+			}
 			if (this.compactMessagesEnabled) {
 				e.setCanceled(true);
 			}
+			PlexCommandQueueCommand queueCommand = thankQueue.newCommand(command);
+			queueCommand.setPriority(41);
 			thankQueue.addCommand(command);
 		}
 	}

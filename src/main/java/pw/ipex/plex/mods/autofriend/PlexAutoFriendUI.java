@@ -19,10 +19,11 @@ public class PlexAutoFriendUI extends PlexUIBase {
 
 	@Override
 	public void uiAddButtons(PlexUIModMenuScreen ui) {
+		PlexAutoFriendMod instance = PlexCore.modInstance(PlexAutoFriendMod.class);
 		Integer top = ui.startingYPos(112);
 		Integer paneSize = ui.centeredPaneSize(1, 20, 160);
 		Integer pane1Pos = ui.centeredPanePos(0, 1, 20, 160);
-		ui.addElement(new GuiButton(5, pane1Pos + 5, top + 0, paneSize - 10, 20, buttonDisplayString("AutoFriend", PlexCore.getSharedValue("autoFriend_enabled").booleanValue)));
+		ui.addElement(new GuiButton(5, pane1Pos + 5, top + 0, paneSize - 10, 20, buttonDisplayString("AutoFriend", instance.modEnabled)));
 
 	}
 	
@@ -61,9 +62,10 @@ public class PlexAutoFriendUI extends PlexUIBase {
 
 	@Override
 	public void uiButtonClicked(GuiButton button) {
+		PlexAutoFriendMod instance = PlexCore.modInstance(PlexAutoFriendMod.class);
 		if (button.id == 5) {
-			PlexCore.getSharedValue("autoFriend_enabled").set(!PlexCore.getSharedValue("autoFriend_enabled").booleanValue);
-			button.displayString = buttonDisplayString("AutoFriend", PlexCore.getSharedValue("autoFriend_enabled").booleanValue);
+			instance.modEnabled = !instance.modEnabled;
+			button.displayString = buttonDisplayString("AutoFriend", instance.modEnabled);
 		}
 	}
 }

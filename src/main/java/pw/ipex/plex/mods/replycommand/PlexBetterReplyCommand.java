@@ -1,8 +1,6 @@
 package pw.ipex.plex.mods.replycommand;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.command.CommandException;
@@ -22,58 +20,40 @@ public class PlexBetterReplyCommand extends PlexCommandHandler {
 
 	@Override
 	public void processCommand(ICommandSender sender, String namespace, String[] args) throws CommandException {
+		PlexBetterReplyMod instance = PlexCore.modInstance(PlexBetterReplyMod.class);
 		if (namespace.equals("plex.messages")) {
 			PlexCore.displayUIScreen(new PlexBetterReplyUI());
 		}
 		else if (namespace.equals("r")) {
-			if (PlexCore.getSharedValue("betterReply_currentConversation").stringValue.equals("")) {
+			if (instance.currentConversation == null) {
 				PlexCoreUtils.chatAddMessage(PlexCoreUtils.chatPlexPrefix() + PlexCoreUtils.chatStyleText("GRAY", "You haven't messaged anybody yet!"));
 				return;
 			}
-			//PlexCore.getMod("Better Reply").communicate("addSentUser", PlexCore.getSharedValue("betterReply_currentConversation").stringValue);
-			//PlexCore.getMod("Better Reply").communicate("addToHistory", PlexCore.getSharedValue("betterReply_currentConversation"), PlexCoreUtils.buildCommand(args));
-			Plex.minecraft.thePlayer.sendChatMessage("/msg " + PlexCore.getSharedValue("betterReply_currentConversation").stringValue + " " + PlexCoreUtils.buildCommand(args));
+			Plex.minecraft.thePlayer.sendChatMessage("/msg " + instance.currentConversation + " " + PlexCoreUtils.buildCommand(args));
+			instance.lastConversationTime = Minecraft.getSystemTime();
 		}
 		else if (namespace.equals("rr")) {
 			if (args.length == 0) {
 				PlexCoreUtils.chatAddMessage(PlexCoreUtils.chatPlexPrefix() + PlexCoreUtils.chatStyleText("GRAY", "Please specify somebody to message."));
 				return;
 			}
-			String replyUser = String.valueOf(PlexCore.modInstance(PlexBetterReplyMod.class).receive("getAutoCompleteUser", args[0]));
-			if (replyUser.substring(0, 1).equals("$")) {
-				PlexCoreUtils.chatAddMessage(replyUser.substring(1));
-			}
-			else {
-				Plex.minecraft.thePlayer.sendChatMessage("/msg " + replyUser.substring(1) + " " + PlexCoreUtils.buildCommand(Arrays.copyOfRange(args, 1, args.length)));
-				if (PlexCore.getSharedValue("betterReply_enabled").booleanValue) {
-					//PlexCore.getMod("Better Reply").communicate("addSentUser", replyUser.substring(1));
-					//PlexCore.getMod("Better Reply").communicate("addToHistory", replyUser.substring(1), PlexCoreUtils.buildCommand(Arrays.copyOfRange(args, 1, args.length)));
-				}
-				PlexCore.getSharedValue("betterReply_currentConversation").set(replyUser.substring(1));
-				PlexCore.getSharedValue("betterReply_lastConversationReply").set(Minecraft.getSystemTime());				
-			}
-		}
-		else if (namespace.equals("dms")) {
-			if (args.length == 0) {
-				PlexCore.modInstance(PlexBetterReplyMod.class).communicate("dmHistory", "1");
+			List<String> matchUsers = PlexCoreUtils.matchStringToList(args[0], new ArrayList<>(instance.contacts));
+			if (matchUsers.size() == 0) {
+				PlexCoreUtils.chatAddMessage(PlexCoreUtils.chatPlexPrefix() + PlexCoreUtils.chatStyleText("GRAY", "You haven't messaged anybody matching the ign ") + PlexCoreUtils.chatStyleText("BLUE", args[0]) + PlexCoreUtils.chatStyleText("GRAY", "."));
 				return;
 			}
-			if (args.length == 1) {
-				PlexCore.modInstance(PlexBetterReplyMod.class).communicate("dmHistory", args[0]);
-			}
-			if (args.length == 2) {
-				if (args[0].equalsIgnoreCase("u") || args[0].equalsIgnoreCase("user")) {
-					PlexCore.modInstance(PlexBetterReplyMod.class).communicate("dmHistoryUser", args[1], "1");
+			if (matchUsers.size() > 1) {
+				String outputString = PlexCoreUtils.chatPlexPrefix() + PlexCoreUtils.chatStyleText("GRAY", "You have messaged with multiple people matching the ign ") + PlexCoreUtils.chatStyleText("BLUE", args[0]) + PlexCoreUtils.chatStyleText("GRAY", ": ");
+				StringJoiner joiner = new StringJoiner(PlexCoreUtils.chatStyleText("GRAY", ", "), "", "");
+				for (String ign : matchUsers) {
+					joiner.add(PlexCoreUtils.chatStyleText("GOLD", ign));
 				}
-				else {
-					PlexCore.modInstance(PlexBetterReplyMod.class).communicate("dmHistoryUser", args[0], args[1]);
-				}
+				PlexCoreUtils.chatAddMessage(outputString + joiner.toString() + PlexCoreUtils.chatStyleText("GRAY", "."));
+				return;
 			}
-			if (args.length == 3) {
-				if (args[0].equalsIgnoreCase("u") || args[0].equalsIgnoreCase("user")) {
-					PlexCore.modInstance(PlexBetterReplyMod.class).communicate("dmHistoryUser", args[1], args[2]);
-				}
-			}
+			Plex.minecraft.thePlayer.sendChatMessage("/msg " + matchUsers.get(0) + " " + PlexCoreUtils.buildCommand(Arrays.copyOfRange(args, 1, args.length)));
+			instance.currentConversation = matchUsers.get(0);
+			instance.lastConversationTime = Minecraft.getSystemTime();
 		}
 		else {
 			if (args.length == 0) {
@@ -81,12 +61,8 @@ public class PlexBetterReplyCommand extends PlexCommandHandler {
 				return;
 			}
 			Plex.minecraft.thePlayer.sendChatMessage("/msg " + PlexCoreUtils.buildCommand(args));
-			if (PlexCore.getSharedValue("betterReply_enabled").booleanValue) {
-				//PlexCore.getMod("Better Reply").communicate("addSentUser", args[0]);
-				//PlexCore.getMod("Better Reply").communicate("addToHistory", args[0], PlexCoreUtils.buildCommand(args));
-			}
-			PlexCore.getSharedValue("betterReply_currentConversation").set(args[0]);
-			PlexCore.getSharedValue("betterReply_lastConversationReply").set(Minecraft.getSystemTime());
+			instance.currentConversation = args[0];
+			instance.lastConversationTime = Minecraft.getSystemTime();
 		}
 	}
 }

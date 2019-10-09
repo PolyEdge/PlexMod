@@ -11,6 +11,7 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.util.BlockPos;
 import pw.ipex.plex.Plex;
 import pw.ipex.plex.ci.PlexCommandHandler;
+import pw.ipex.plex.ci.PlexCommandListener;
 import pw.ipex.plex.core.PlexCore;
 import pw.ipex.plex.core.PlexCoreUtils;
 
@@ -28,14 +29,10 @@ public class PlexPlexCommand extends PlexCommandHandler {
 		}
 		return null;
 	}
-	@Override
-	public Boolean allowUnsupportedServers() {
-		return true;
-	}
 	
 	@Override
 	public List<String> tabCompletion(ICommandSender sender, String namespace, String[] args, BlockPos pos) {
-		return new ArrayList<String>();
+		return new ArrayList<>();
 	}
 
 	@Override
@@ -50,7 +47,7 @@ public class PlexPlexCommand extends PlexCommandHandler {
 			PlexCoreUtils.chatAddMessage(PlexCoreUtils.getUiChatMessage("plex.unsupportedServer"));
 		}
 		else if (plexNamespace.containsKey(args[0])) {
-			plexNamespace.get(args[0]).processCommand(sender, "plex." + PlexCommandHandler.getCommandNamespace(args), PlexCommandHandler.getCommandArgs(args));
+			plexNamespace.get(args[0]).processCommand(sender, "plex." + PlexCommandListener.getCommandNamespace(args), PlexCommandListener.getCommandArgs(args));
 		}
 		else if (args[0].equalsIgnoreCase("help")) {
 			displayHelpMenu();
@@ -65,8 +62,8 @@ public class PlexPlexCommand extends PlexCommandHandler {
 		List<String> alias = Arrays.asList(aliasInformation).subList(0, (aliasInformation.length - 1));
 		String item = PlexCoreUtils.chatStyleText("DARK_GRAY", "> ") + PlexCoreUtils.chatStyleText("GOLD", "/plex " + name + "");
 		String currentArgColour;
-		Integer aliasColour = 0;
-		Integer argColour = 0;
+		int aliasColour = 0;
+		int argColour = 0;
 		for (String commandAlias : alias) {
 			currentArgColour = argColour == 0 ? "DARK_GRAY" : "GOLD";
 			if (commandAlias.startsWith("$")) {
@@ -92,8 +89,8 @@ public class PlexPlexCommand extends PlexCommandHandler {
 		List<String> alias = Arrays.asList(commandInformation).subList(0, (commandInformation.length - 1));
 		String item = PlexCoreUtils.chatStyleText("DARK_GRAY", ">");
 		String currentArgColour;
-		Integer aliasColour = 1;
-		Integer argColour = 0;
+		int aliasColour = 1;
+		int argColour = 0;
 		for (String commandAlias : alias) {
 			currentArgColour = argColour == 0 ? "DARK_GRAY" : "GOLD";
 			if (commandAlias.startsWith("$")) {

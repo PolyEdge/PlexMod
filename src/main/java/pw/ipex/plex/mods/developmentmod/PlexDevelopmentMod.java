@@ -8,8 +8,11 @@ import pw.ipex.plex.Plex;
 import pw.ipex.plex.core.PlexCore;
 import pw.ipex.plex.core.mineplex.PlexCoreLobbyType;
 import pw.ipex.plex.core.PlexCoreUtils;
+import pw.ipex.plex.core.regex.PlexCoreRegex;
+import pw.ipex.plex.core.regex.PlexCoreRegexEntry;
 import pw.ipex.plex.mod.PlexModBase;
 
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -18,6 +21,8 @@ public class PlexDevelopmentMod extends PlexModBase {
 	public boolean chatMinify = true;
 	public boolean soundStream = false;
 	public boolean lobbySwitchStream = false;
+	public boolean chatCharacterCodes = false;
+	public boolean regexEntries = false;
 
 	@Override
 	public String getModName() {
@@ -38,6 +43,19 @@ public class PlexDevelopmentMod extends PlexModBase {
 		if (!PlexCoreUtils.chatIsMessage(e.type)) {
 			return;
 		}
+		if (regexEntries) {
+			StringBuilder builder = new StringBuilder();
+			for (PlexCoreRegexEntry item : PlexCoreRegex.getEntriesMatchingText(e.message.getFormattedText())) {
+				if (builder.length() != 0) {
+					builder.append(", ");
+				}
+				builder.append(item.entryName);
+			}
+			if (builder.length() == 0) {
+				builder.append("<null>");
+			}
+			PlexCoreUtils.chatAddMessage(builder.toString());
+		}
 		if (!chatStream) {
 			return;
 		}
@@ -50,6 +68,15 @@ public class PlexDevelopmentMod extends PlexModBase {
 			filtered = PlexCoreUtils.chatAmpersandFilter(e.message.getFormattedText());
 		}
 		PlexCoreUtils.chatAddMessage(PlexCoreUtils.chatStyleText("GOLD", "[plexdev chat]: ") + filtered);
+		if (this.chatCharacterCodes) {
+			StringBuilder output = new StringBuilder();
+			output.append(PlexCoreUtils.chatStyleText("GOLD", "[plexdev chat]: "));
+			for (char i : PlexCoreUtils.chatMinimalize(e.message.getFormattedText()).toCharArray()) {
+				output.append((int)i);
+				output.append(" ");
+			}
+			PlexCoreUtils.chatAddMessage(output.toString());
+		}
 	}
 	
 	@SubscribeEvent 

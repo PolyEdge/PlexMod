@@ -335,7 +335,7 @@ public class PlexUIScrolledItemList extends GuiScreen {
 			Plex.renderUtils.staticDrawGradientRect(this.startX, itemYposition, this.endX, itemYposition + heightOrDefault(item), itemBackgroundColour, itemBackgroundColour);
 	
 			if (itemText != null) {
-				String finalText = Plex.minecraft.fontRendererObj.trimStringToWidth(itemText, this.getEndXWithScrollbar() - this.paddingX * 2);
+				String finalText = Plex.renderUtils.trimScaledTextToWidth(itemText, (this.getEndXWithScrollbar() - this.paddingX) - (this.startX + this.paddingX), 1.0F);
 				Plex.renderUtils.drawScaledStringLeftSide(finalText, this.startX + this.paddingX, itemYposition + ((heightOrDefault(item) / 2) - (Plex.minecraft.fontRendererObj.FONT_HEIGHT / 2)), itemForegroundColour, 1.0F);
 			}
 			else {

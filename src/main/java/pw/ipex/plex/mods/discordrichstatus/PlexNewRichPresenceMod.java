@@ -153,7 +153,7 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 		lobbyNames.put("min", "Mixed Arcade");
 		lobbyNames.put("sb", "Speed Builders");
 		lobbyNames.put("bh", "Block Hunt");
-		lobbyNames.put("cw4", "Cake Wars Standard");
+		lobbyNames.put("cw4", "Cake Wars");
 		lobbyNames.put("cw2", "Cake Wars Duos");
 		lobbyNames.put("hg", "Survival Games");
 		lobbyNames.put("sg", "Survival Games"); // just in case

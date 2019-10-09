@@ -4,14 +4,8 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import net.minecraft.client.network.NetworkPlayerInfo;
-import net.minecraft.command.CommandException;
-import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.BlockPos;
-import net.minecraftforge.client.ClientCommandHandler;
 import pw.ipex.plex.Plex;
-import pw.ipex.plex.ci.PlexCommandHandler;
-import pw.ipex.plex.ci.PlexCommandListener;
 import pw.ipex.plex.core.loop.PlexCoreEventLoop;
 import pw.ipex.plex.core.mineplex.PlexCoreLobbyType;
 import pw.ipex.plex.mod.PlexModBase;
@@ -28,8 +22,6 @@ public class PlexCore {
 	public static Map<Class<? extends PlexModBase>, PlexModBase> plexMods = new ConcurrentHashMap<>();
 	public static Map<PlexModBase, Runnable> modLoops = new HashMap<>();
 	public static Map<PlexModBase, Thread> modThreads = new HashMap<>();
-	public static Map<String, PlexCommandHandler> commandHandlerNamespace = new HashMap<>();
-	public static Map<String, PlexCommandListener> commandListenerNamespace = new HashMap<>();
 	public static List<PlexUITabContainer> uiTabList = new ArrayList<>();
 	public static Map<String, PlexCoreValue> sharedValues = new HashMap<>();
 
@@ -95,53 +87,6 @@ public class PlexCore {
 			catch (Throwable e) {
 				return null;
 			}
-		}
-		return null;
-	}
-
-	/**
-	 * Registers a command handler
-	 * 
-	 * @param namespace The name to register the command handler under
-	 * @param handler   The command handler
-	 * @see PlexCommandHandler
-	 */
-	public static void registerCommandHandler(String namespace, PlexCommandHandler handler) {
-		commandHandlerNamespace.put(namespace, handler);
-	}
-
-	/**
-	 * Gets a command handler
-	 * 
-	 * @param namespace Name of the command handler
-	 * @return The command handler
-	 */
-	public static PlexCommandHandler getCommandHandler(String namespace) {
-		if (commandHandlerNamespace.containsKey(namespace)) {
-			return commandHandlerNamespace.get(namespace);
-		}
-		return null;
-	}
-
-	/**
-	 * Registers a listener
-	 * 
-	 * @param listener The listener to register
-	 */
-	public static void registerCommandListener(PlexCommandListener listener) {
-		commandListenerNamespace.put(listener.getCommandName(), listener);
-		ClientCommandHandler.instance.registerCommand(listener);
-	}
-
-	/**
-	 * Returns a specified command listener
-	 * 
-	 * @param name The name of the listener
-	 * @return The listener if it exists, null otherwise
-	 */
-	public static PlexCommandListener getCommandListener(String name) {
-		if (commandListenerNamespace.containsKey(name)) {
-			return commandListenerNamespace.get(name);
 		}
 		return null;
 	}
@@ -427,49 +372,5 @@ public class PlexCore {
 	 */
 	public static String getGameName() {
 		return Plex.serverState.currentGameName;
-	}
-
-	/**
-	 * Handles tab completion
-	 * 
-	 * @param sender - command sender
-	 * @param args   - command arguments
-	 * @param pos    - block position
-	 * @return A list of completions for the current typed command
-	 */
-	public static List<String> commandTabCompletion(ICommandSender sender, String[] args, BlockPos pos) {
-		String namespace = PlexCommandHandler.getCommandNamespace(args);
-		String[] commandArgs = PlexCommandHandler.getCommandArgs(args);
-		if (!commandHandlerNamespace.containsKey(namespace)) {
-			return Collections.emptyList();
-		}
-		PlexCommandHandler commandObj = commandHandlerNamespace.get(namespace);
-		if ((!commandObj.allowUnsupportedServers()) && (!Plex.serverState.onMineplex)) {
-			return Collections.emptyList();
-		}
-		return commandHandlerNamespace.get(namespace).tabCompletion(sender, namespace, commandArgs, pos);
-	}
-	
-	
-	/**
-	 * Handles a client command
-	 * 
-	 * @param sender - command sender
-	 * @param args   - command arguments
-	 */
-
-	public static void processModCommand(ICommandSender sender, String[] args) throws CommandException {
-		String namespace = PlexCommandHandler.getCommandNamespace(args);
-		String[] commandArgs = PlexCommandHandler.getCommandArgs(args);
-		if (!commandHandlerNamespace.containsKey(namespace)) {
-			PlexCoreUtils.chatAddMessage(PlexCoreUtils.getUiChatMessage("plex.nullCommandGlobal"));
-			return;
-		}
-		PlexCommandHandler commandObj = commandHandlerNamespace.get(namespace);
-		if ((!commandObj.allowUnsupportedServers()) && (!Plex.serverState.onMineplex)) {
-			PlexCoreUtils.chatAddMessage(PlexCoreUtils.getUiChatMessage("notOnMineplex"));
-			return;
-		}
-		commandHandlerNamespace.get(namespace).processCommand(sender, namespace, commandArgs);
 	}
 }

@@ -166,6 +166,10 @@ public class PlexCommandQueueCommand {
         this.completeAfter = completeOnSend ? 0L : null;
     }
 
+    public void setPriority(Integer priority) {
+        this.priority = priority;
+    }
+
     public String getDebug() {
         return PlexCoreUtils.chatStyleText("DARK_BLUE", "BOLD", this.group) + " " +
                 PlexCoreUtils.chatStyleText("GRAY", this.command) + " "  +

@@ -21,6 +21,7 @@ public class PlexCommandQueueManager {
 	private Thread thread;
 
 	public long lastCommandSent = 0L;
+	public boolean debug = false;
 
 	private boolean sendCommand(PlexCommandQueueCommand command) {
 		if (command.sendCommand()) {
@@ -42,12 +43,15 @@ public class PlexCommandQueueManager {
 
 
 	public void showDebug(PlexCommandQueueCommand command) {
+		if (!this.debug) {
+			return;
+		}
 		String debug = ""; //PlexCoreUtils.chatStyleText("DARK_RED", "BOLD", "== Queued Commands ==");
 		for (PlexCommandQueueCommand com : queuedCommands) {
-			debug += PlexCoreUtils.chatStyleText(com.isSent() ? "GREEN" : "BLUE", com.command) + " "; //PlexCoreUtils.chatStyleText("BLUE", com.group) + ": " + PlexCoreUtils.chatStyleText("DARK_GRAY", com.toString()) + " " + PlexCoreUtils.chatStyleText("GOLD", "" + com.priority);
+			debug += PlexCoreUtils.chatStyleText(com.isSent() ? "GREEN" : "BLUE", com.command);// + " " + PlexCoreUtils.chatStyleText("BLUE", com.group) + ": " + PlexCoreUtils.chatStyleText("DARK_GRAY", com.toString()) + " " + PlexCoreUtils.chatStyleText("GOLD", "" + com.priority);
 		}
 		//PlexCoreUtils.chatAddMessage(PlexCoreUtils.chatStyleText("GREEN", " >") + " " + PlexCoreUtils.chatStyleText("BLUE", command.group) + ": " + PlexCoreUtils.chatStyleText("DARK_GRAY", command.command) + " " + PlexCoreUtils.chatStyleText("GOLD", "" + command.getPriority()));
-		//PlexCoreUtils.chatAddMessage(debug);
+		PlexCoreUtils.chatAddMessage(debug);
 	}
 
 

@@ -21,6 +21,7 @@ import pw.ipex.plex.core.render.PlexCoreTextures;
 import pw.ipex.plex.mod.PlexModBase;
 
 public class PlexPlexMod extends PlexModBase {
+	public PlexCommandListener plexListener;
 	public static Map<String, String> socialMediaLinks = new ConcurrentHashMap<String, String>();
 	public static Map<String, ResourceLocation> socialMediaRenderInformation = new LinkedHashMap<String, ResourceLocation>();
 	public static Map<String, String> socialMediaLinkMapping = new HashMap<String, String>();
@@ -34,8 +35,8 @@ public class PlexPlexMod extends PlexModBase {
 	public void modInit() {
 		Plex.logger.info(":: Plex Mod Version " + Plex.VERSION + (Plex.PATCHID == null ? "" : "-" + Plex.PATCHID) + (Plex.RELEASENOTICE == null ? "" : " [" + Plex.RELEASENOTICE + "]") );
 
-		PlexCore.registerCommandListener(new PlexCommandListener("plex").setGlobal(true));
-		PlexCore.registerCommandHandler("plex", Plex.plexCommand);
+		this.plexListener = new PlexCommandListener("plex").setGlobal(true);
+		this.plexListener.setHandler(Plex.plexCommand);
 		
 		PlexCore.registerUiTab("Plex", PlexPlexUI.class);
 		
