@@ -39,14 +39,16 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 	
 	public Long AFK_IDLE_TIME = 30000L;
 	public RichPresence currentStatus = null;
-	
-	public AtomicBoolean richPresenceOpening = new AtomicBoolean();
-	public AtomicBoolean richPresenceOpened = new AtomicBoolean();
+
+	public AtomicBoolean richPresenceReady = new AtomicBoolean();
+	public AtomicBoolean richPresenceClose = new AtomicBoolean();
+	public AtomicBoolean richPresenceConnectThread = new AtomicBoolean();
+	public AtomicBoolean richPresenceShowErrors = new AtomicBoolean();
+	public AtomicBoolean richPresenceShowReconnect = new AtomicBoolean();
+
 
 	public Thread currentConnectionThread;
 	public AtomicLong lastConnectionAttempt = new AtomicLong();
-	
-	public AtomicBoolean richPresenceErrored = new AtomicBoolean();
 
 	public boolean isAfk = false;
 	public boolean modEnabled = false;
@@ -68,9 +70,11 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 	
 	@Override
 	public void modInit() {
-		richPresenceOpening.set(false);
-		richPresenceOpened.set(false);
-		richPresenceErrored.set(false);
+		richPresenceReady.set(false);
+		richPresenceClose.set(false);
+		richPresenceConnectThread.set(false);
+		richPresenceShowErrors.set(false);
+		richPresenceShowReconnect.set(false);
 
 		lastConnectionAttempt.set(0L);
 
@@ -78,8 +82,15 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 		ipcClient.setListener(new IPCListener() {
 			@Override
 			public void onReady(IPCClient client) {
-				richPresenceOpening.set(false);
-				richPresenceOpened.set(true);
+				if (richPresenceClose.get()) {
+					closeIPCConnection();
+					return;
+				}
+				lastConnectionAttempt.set(0L);
+				richPresenceReady.set(true);
+				if (richPresenceShowReconnect.get()) {
+					PlexCoreUtils.chatAddMessage(PlexCoreUtils.chatPlexPrefix() + PlexCoreUtils.chatStyleText("GREEN", "Discord reconnected!"));
+				}
 			}
 		});
 		
@@ -182,7 +193,7 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 	}
 	
 	public void putRichPresence() {
-		if (!this.richPresenceOpened.get()) {
+		if (!this.richPresenceReady.get()) {
 			return;
 		}
 		final RichPresence status = getRichPresence();
@@ -203,11 +214,11 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 	}
 	
 	public void updateRichPresence() {
-		if (!richPresenceOpened.get()) {
+		if (!isRichPresenceReady()) {
 			return;
 		}
-		lastRPupdate = Minecraft.getSystemTime();
 		if (this.modEnabled && Plex.serverState.onMineplex) {
+			lastRPupdate = Minecraft.getSystemTime();
 			putRichPresence();
 		}
 	}
@@ -327,7 +338,7 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 
 			}
 		}
-		String lobbyRep = this.getLobbyRepresentation();
+
 		if (Plex.serverState.currentLobbyType.equals(PlexCoreLobbyType.SERVER_HUB)) {
 			return new String[] {this.wrappedLobbyRepresentation("Main Hub", "In ", ""), state};
 		}
@@ -362,93 +373,104 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 		}, 2000L);
 	}
 
-	public void connectIPCThread() {
-		lastConnectionAttempt.set(Minecraft.getSystemTime());
-		try {
-			ipcClient.connect(DiscordBuild.ANY);
-			while (true) {
-				if (ipcClient.getStatus().equals(PipeStatus.CONNECTED)) {
-					break;
-				}
-			}
-			if (richPresenceErrored.get()) {
-				try {
-					PlexCoreUtils.chatAddMessage(PlexCoreUtils.chatPlexPrefix() + PlexCoreUtils.chatStyleText("GREEN", "Discord reconnected!"));
-				}
-				catch (Throwable ee) {
-				}
-			}
-			richPresenceErrored.set(false);
-			richPresenceOpened.set(true);
-			richPresenceOpening.set(false);
-		}
-		catch (Throwable e) {
-			if (!richPresenceErrored.get()) {
-				String error = String.valueOf(e.getMessage());
-				Plex.logger.error("The rich presence failed to connect due to " + error);
-				Plex.logger.error(org.apache.commons.lang3.exception.ExceptionUtils.getStackTrace(e));
-				try {
-					PlexCoreUtils.chatAddMessage(PlexCoreUtils.chatPlexPrefix() + PlexCoreUtils.chatStyleText("DARK_RED", "Discord disconnected! Check the log for details."));
-				}
-				catch (Throwable ee) {}
-			}
-			richPresenceOpened.set(false);
-			richPresenceOpening.set(false);
-			richPresenceErrored.set(true);
-		}
+	public boolean isRichPresenceReady() {
+		return ipcClient.getStatus().equals(PipeStatus.CONNECTED);
+	}
+
+	public boolean isRichPresenceClosed() {
+		return !ipcClient.getStatus().equals(PipeStatus.CONNECTED) && !ipcClient.getStatus().equals(PipeStatus.CONNECTING);
 	}
 
 	public void attemptIPCConnection() {
-		richPresenceOpening.set(true);
+		if (ipcClient.getStatus().equals(PipeStatus.CONNECTING)) {
+			return;
+		}
+		this.closeIPCConnection();
 		lastConnectionAttempt.set(Minecraft.getSystemTime());
-		currentConnectionThread = new Thread(this::connectIPCThread);
+		final PlexNewRichPresenceMod me = this;
+		richPresenceConnectThread.set(true);
+		currentConnectionThread = new Thread(new Runnable() {
+			public void run() {
+				me.ipcConnectionHandler();
+			}
+		});
 		currentConnectionThread.start();
 	}
 
-	public void handleIPCClientState() {
-		if (!Plex.serverState.onMineplex || !this.modEnabled) {
-			lastConnectionAttempt.set(0);
+	public void closeIPCConnection() {
+		if (ipcClient.getStatus().equals(PipeStatus.CONNECTED)) {
 			try {
 				ipcClient.close();
 			}
 			catch (Throwable e) {}
-			richPresenceOpened.set(false);
-			richPresenceOpening.set(false);
-			richPresenceErrored.set(false);
+		}
+		lastConnectionAttempt.set(0);
+		richPresenceReady.set(false);
+	}
+
+	public void ipcConnectionHandler() {
+		try {
+			ipcClient.connect(DiscordBuild.ANY);
+		}
+		catch (Throwable e) {
+			if (richPresenceShowErrors.get()) {
+				String error = String.valueOf(e.getMessage());
+				Plex.logger.error("The rich presence failed to connect due to " + error);
+				Plex.logger.error(org.apache.commons.lang3.exception.ExceptionUtils.getStackTrace(e));
+				PlexCoreUtils.chatAddMessage(PlexCoreUtils.chatPlexPrefix() + PlexCoreUtils.chatStyleText("DARK_RED", "Discord disconnected! Check the log for details."));
+			}
+			richPresenceShowErrors.set(false);
+			richPresenceShowReconnect.set(true);
+		}
+		richPresenceConnectThread.set(false);
+		currentConnectionThread = null;
+	}
+
+	public void handleIPCClientState() {
+		if (!Plex.serverState.onMineplex || !this.modEnabled) {
+			this.closeIPCConnection();
+			richPresenceReady.set(false);
+			richPresenceShowErrors.set(true);
+			richPresenceShowReconnect.set(false);
 			return;
 		}
-		if ((ipcClient.getStatus().equals(PipeStatus.CLOSED) || ipcClient.getStatus().equals(PipeStatus.DISCONNECTED)) && !richPresenceOpening.get() && richPresenceOpened.get()) {
-			this.richPresenceOpened.set(false);
+		if (isRichPresenceClosed()) {
+			this.richPresenceReady.set(false);
 		}
-		if (richPresenceOpening.get() && Minecraft.getSystemTime() > lastConnectionAttempt.get() + 6000L) {
+		else {
+			currentConnectionThread = null;
+		}
+		if (richPresenceConnectThread.get() && Minecraft.getSystemTime() > lastConnectionAttempt.get() + 6000L) {
 			try {
 				currentConnectionThread.interrupt();
 			}
 			catch (Throwable ee) {}
-			if (!richPresenceErrored.get()) {
+			if (richPresenceShowErrors.get()) {
 				PlexCoreUtils.chatAddMessage(PlexCoreUtils.chatPlexPrefix() + PlexCoreUtils.chatStyleText("DARK_RED", "Connection to Discord timed out!"));
 			}
 			currentConnectionThread = null;
-			richPresenceOpened.set(false);
-			richPresenceOpening.set(false);
-			richPresenceErrored.set(true);
-			//lastConnectionAttempt.set(Minecraft.getSystemTime());
 		}
-		if (richPresenceOpening.get() || richPresenceOpened.get()) {
+		if (!isRichPresenceClosed()) {
 			return;
 		}
-		if (Minecraft.getSystemTime() > lastConnectionAttempt.get() + 15000L) {
+		if (Minecraft.getSystemTime() > lastConnectionAttempt.get() + 8000L && currentConnectionThread == null) {
 			attemptIPCConnection();
 		}
 	}
 
 	@Override
 	public void joinedMineplex() {
-		lastRPupdate = Minecraft.getSystemTime();
+		lastRPupdate = 0L;
 	}
 
 	@Override
 	public void leftMineplex() {
+		new Timer().schedule(new TimerTask() {
+			public void run() {
+				lastConnectionAttempt.set(0L);
+			}
+		}, 5000L);
+
 	}
 
 	public void modLoop(boolean online) {
@@ -473,6 +495,7 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 	@Override
 	public void lobbyUpdated(PlexCoreLobbyType type) {
 		if (type.equals(PlexCoreLobbyType.E_GAME_UPDATED)) {
+			this.lastRPupdate = Minecraft.getSystemTime();
 			new Timer().schedule(new TimerTask() {
 				public void run() {
 					updateRichPresence();
@@ -480,11 +503,12 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 			}, 250L);
 		}
 		if (type.equals(PlexCoreLobbyType.E_SWITCHED_SERVERS)) {
+			this.lastRPupdate = Minecraft.getSystemTime();
 			new Timer().schedule(new TimerTask() {
 				public void run() {
 					updateRichPresence();
 				}
-			}, 3000L);
+			}, 2000L);
 		}
 	}
 
