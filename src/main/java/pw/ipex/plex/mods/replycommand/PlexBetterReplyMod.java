@@ -2,7 +2,6 @@ package pw.ipex.plex.mods.replycommand;
 
 import java.util.*;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
@@ -13,11 +12,12 @@ import pw.ipex.plex.core.PlexCore;
 import pw.ipex.plex.core.mineplex.PlexCoreLobbyType;
 import pw.ipex.plex.core.PlexCoreUtils;
 import pw.ipex.plex.core.regex.PlexCoreRegex;
+import pw.ipex.plex.core.regex.PlexCoreRegexManager;
+import pw.ipex.plex.core.regex.chat.PlexCoreRegexChatMatch;
+import pw.ipex.plex.core.regex.chat.PlexCoreRegexChatMatchItem;
 import pw.ipex.plex.mod.PlexModBase;
 
 public class PlexBetterReplyMod extends PlexModBase {
-	public Pattern PATTERN_DIRECT_MESSAGE = Pattern.compile(PlexCoreRegex.MATCH_DIRECT_MESSAGE);
-
 	public static int DEFAULT_REPLY_TIMEOUT = 300;
 	public static int MAX_REPLY_TIMEOUT = 600;
 
@@ -47,7 +47,6 @@ public class PlexBetterReplyMod extends PlexModBase {
 		PlexBetterReplyCommand betterReplyCommand = new PlexBetterReplyCommand();
 		this.replyListener.setHandler(betterReplyCommand);
 		this.modCommandsListener.setHandler(betterReplyCommand);
-
 		
 		Plex.plexCommand.registerPlexCommand("reply", new PlexBetterReplyCommand());
 		
@@ -66,23 +65,24 @@ public class PlexBetterReplyMod extends PlexModBase {
 		if (!PlexCoreUtils.chatIsMessage(e.type)) {
 			return;
 		}
-		String filtered = PlexCoreUtils.chatCondense(e.message.getFormattedText());
-		if (filtered.matches(PlexCoreRegex.MATCH_DIRECT_MESSAGE)) {
-			Matcher matcher = PATTERN_DIRECT_MESSAGE.matcher(filtered);
-			matcher.find();
-			if (matcher.group(1).equalsIgnoreCase(PlexCore.getPlayerIGN())) {
+		PlexCoreRegexChatMatch match = PlexCoreRegexManager.getChatMatch(e.message);
+		PlexCoreRegexChatMatchItem dm = match.get("direct_message");
+		if (dm != null) {
+			if (dm.getField("author").equalsIgnoreCase(PlexCore.getPlayerIGN())) {
+				this.contacts.add(dm.getField("destination"));
 				this.lastConversationTime = Minecraft.getSystemTime();
-				this.currentConversation = matcher.group(2);
+				this.currentConversation = dm.getField("destination");
 			}
-			else if (matcher.group(2).equalsIgnoreCase(PlexCore.getPlayerIGN())) {
+			else if (dm.getField("destination").equalsIgnoreCase(PlexCore.getPlayerIGN())) {
+				this.contacts.add(dm.getField("author"));
 				if (this.currentConversation == null) {
-					this.currentConversation = matcher.group(1);
+					this.currentConversation = dm.getField("author");
 				}
-				if (matcher.group(1).equalsIgnoreCase(this.currentConversation)) {
+				if (dm.getField("author").equalsIgnoreCase(this.currentConversation)) {
 					this.lastConversationTime = Minecraft.getSystemTime();
 				}
 				if (Minecraft.getSystemTime() > this.lastConversationTime + (long)this.replyTimeoutSeconds * 1000L) {
-					this.currentConversation = matcher.group(1);
+					this.currentConversation = dm.getField("author");
 				}
 			}
 		}

@@ -25,7 +25,7 @@ public abstract class PlexCoreRegexParsedEntry extends PlexCoreRegexEntry {
     }
 
     public boolean hasField(String field) {
-        return this.patternNames.keySet().contains(field);
+        return this.groupNames.keySet().contains(field);
     }
 
     public boolean matches(String string) {

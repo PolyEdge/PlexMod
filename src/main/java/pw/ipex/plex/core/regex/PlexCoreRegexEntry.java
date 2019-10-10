@@ -1,7 +1,5 @@
 package pw.ipex.plex.core.regex;
 
-import pw.ipex.plex.Plex;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,8 +13,9 @@ public class PlexCoreRegexEntry {
 	public Pattern regexPattern;
 	public boolean hideWhite = true;
 	public boolean hideReset = true;
-	public Map<String, Integer> patternNames = new HashMap<>();
+	public Map<String, Integer> groupNames = new HashMap<>();
 	public List<String> identifierTags = new ArrayList<>();
+
 	public char FORMAT_SYMBOL_CHAR = (char) 167;
 	public String FORMAT_SYMBOL = String.valueOf(FORMAT_SYMBOL_CHAR);
 
@@ -100,12 +99,12 @@ public class PlexCoreRegexEntry {
 	}
 	
 	public PlexCoreRegexEntry addField(int group, String name) {
-		this.patternNames.put(name, group);
+		this.groupNames.put(name, group);
 		return this;
 	}
 
 	public boolean hasField(String field) {
-		return this.patternNames.keySet().contains(field);
+		return this.groupNames.keySet().contains(field);
 	}
 
 	public boolean matches(String string) {
@@ -127,9 +126,9 @@ public class PlexCoreRegexEntry {
 		Map<String, String> output = new HashMap<>();
 		Matcher matcher = this.regexPattern.matcher(this.prepareInputString(input));
 		matcher.find();
-		for (String groupName : patternNames.keySet()) {
+		for (String groupName : groupNames.keySet()) {
 			try {
-				output.put(groupName, matcher.group(this.patternNames.get(groupName)));
+				output.put(groupName, matcher.group(this.groupNames.get(groupName)));
 			}
 			catch (Throwable e) {
 				output.put(groupName, null);

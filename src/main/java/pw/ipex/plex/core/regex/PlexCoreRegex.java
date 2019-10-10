@@ -70,7 +70,6 @@ public class PlexCoreRegex {
 		addEntry("party_offline", MATCH_PARTY_OFFLINE, "party").addField(1, "ign");
 
 		addEntry("direct_message_player_offline", MATCH_DM_PLAYER_OFFLINE, "direct_message").addField(1, "destination");
-		
 	}
 
 	public static List<String> splitFormatRegionString(String input) {
