@@ -1,0 +1,105 @@
+package cc.dyspore.plex.mods.messagingscreen;
+
+import java.util.ArrayList;
+//import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
+import cc.dyspore.plex.mods.messagingscreen.channel.PlexMessagingChannelBase;
+import net.minecraft.client.Minecraft;
+import net.minecraftforge.client.event.ClientChatReceivedEvent;
+import net.minecraftforge.common.MinecraftForge;
+//import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
+import cc.dyspore.plex.Plex;
+
+public class PlexMessagingChannelManager {
+	public PlexMessagingChannelBase selectedChannel = null;
+	public boolean autoReady = true;
+	public List<PlexMessagingChannelBase> channels = new ArrayList<>();
+	public List<PlexMessagingChannelBase> displayedChannels = new ArrayList<>();
+	public Long lastChannelChange = 0L;
+	
+	public PlexMessagingChannelManager() {
+		MinecraftForge.EVENT_BUS.register(this);
+	}
+
+	public void chatEvent(ClientChatReceivedEvent e) {
+		if (!Plex.gameState.isMineplex || this.selectedChannel == null) {
+			return;
+		}
+		if (this.selectedChannel.awaitingReady) {
+			Plex.logger.info("test");
+			this.selectedChannel.chatMessage(e);
+		}
+	}
+	
+	public void addChannel(PlexMessagingChannelBase channel) {
+		this.channels.add(channel);
+		channel.channelInit();
+	}
+	
+	public PlexMessagingChannelBase getChannel(String name) { 
+		for (PlexMessagingChannelBase channel : this.channels) {
+			if (channel.name.equalsIgnoreCase(name)) {
+				return channel;
+			}
+		}
+		return null;
+	}
+
+	public void updateDisplayedChannels() {
+		List<PlexMessagingChannelBase> nonHidden = new ArrayList<>();
+		for (PlexMessagingChannelBase channel : this.channels) {
+			if (!channel.hiddenFromList) {
+				nonHidden.add(channel);
+			}
+		}
+		Collections.sort(nonHidden);
+		Collections.reverse(nonHidden);
+		this.displayedChannels.clear();
+		this.displayedChannels.addAll(nonHidden);
+	}
+	
+	public void setSelectedChannel(PlexMessagingChannelBase channel) {
+		if (this.selectedChannel != null) {
+			this.selectedChannel.deselected();
+		}
+		this.selectedChannel = channel;
+		if (channel != null) {
+			channel.lastChannelSwitchedTo = Minecraft.getSystemTime();
+			channel.selected();
+			if (this.autoReady) {
+				channel.getChannelReady();
+			}
+		}
+		lastChannelChange = Minecraft.getSystemTime();
+	}
+	
+	public void deselectChannel() {
+		this.setSelectedChannel((PlexMessagingChannelBase) null);
+	}
+	
+	public void deleteMessageRenderCache() {
+		for (PlexMessagingChannelBase channel : this.channels) {
+			for (PlexMessagingMessage message : channel.channelMessages) {
+				message.cachedRenderData = null;
+			}
+		}
+	}
+	
+	public void addMessageToChannel(PlexMessagingChannelBase channel, PlexMessagingMessage message) {
+		channel.addMessage(message);
+	}
+	
+	public void updateChannelActivity(PlexMessagingChannelBase channel) {
+		channel.bumpActivityNow();
+	}
+
+	public void unreadyChannelsByClass(Class<? extends PlexMessagingChannelBase> channelClass, boolean readyOnly) {
+		for (PlexMessagingChannelBase channel : this.channels) {
+			if (channel.getClass().equals(channelClass) && (channel.channelReady || !readyOnly)) {
+				channel.setUnready();
+			}
+		}
+	}
+}

@@ -26,7 +26,7 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 version = "0.4"
-group = "pw.ipex.plex"
+group = "cc.dyspore.plex"
 archivesBaseName = "Plex"
 
 minecraft {
@@ -92,12 +92,18 @@ processResources {
 
 shadowJar {
     configurations = [project.configurations.compile]
-    relocate 'org.slf4j', 'pw.ipex.slf4j'
+    relocate 'org.slf4j', '_org.slf4j'
     classifier ''
 }
 
 reobf {
     shadowJar {}
+}
+
+jar {
+    manifest {
+        attributes "FMLCorePlugin": "cc.dyspore.plex.core.fml.PlexFMLPlugin", "ModSide": "CLIENT", "FMLCorePluginContainsFMLMod": true
+    }
 }
 
 task getHomeDir {

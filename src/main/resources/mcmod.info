@@ -1,6 +1,6 @@
 [
 {
-  "modid": "PolyEdge_Plex",
+  "modid": "polyedge_plex",
   "name": "Plex",
   "description": "Provides QoL enhancements on Mineplex.\n\nOptions Menu: /plex\nQuestions? Join the discord by clicking the discord icon in the options menu.",
   "version": "0.4",
