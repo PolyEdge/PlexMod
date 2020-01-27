@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 public class PlexUtilChat {
-    public static final String PLEX = chatStyleText("GOLD", "Plex") + chatStyleText("BLACK", ">") + chatStyleText("RESET", ">");
+    public static final String PLEX = chatStyleText("GOLD", "Plex") + chatStyleText("BLACK", ">") + chatStyleText("RESET", " ");
     public static String FORMAT_SYMBOL = Character.toString ((char) 167);
     public static Map<String, Integer> colourCode = new HashMap<>();
 

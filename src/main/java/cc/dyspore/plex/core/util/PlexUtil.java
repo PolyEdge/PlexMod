@@ -4,9 +4,11 @@ import cc.dyspore.plex.Plex;
 import net.minecraft.client.gui.GuiPlayerTabOverlay;
 import net.minecraft.scoreboard.ScoreObjective;
 import net.minecraft.scoreboard.Scoreboard;
+import net.minecraft.util.IChatComponent;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 
 import java.awt.Desktop;
+import java.lang.reflect.Field;
 import java.net.URI;
 import java.net.URL;
 import java.time.OffsetDateTime;
@@ -15,7 +17,6 @@ import java.util.*;
 
 
 public class PlexUtil {
-
 	// command builder
 
 	public static String buildCommand(List<String> args) {
@@ -151,8 +152,16 @@ public class PlexUtil {
 		return objective != null ? objective.getDisplayName() : null;
 	}
 
-	public static String readTablistHeader() {
-		return (String)ObfuscationReflectionHelper.getPrivateValue(GuiPlayerTabOverlay.class, Plex.minecraft.ingameGUI.getTabList(), "header");
+	public static IChatComponent readTablistHeader() {
+		try {
+			Field tabHeaderField = Plex.minecraft.ingameGUI.getTabList().getClass().getDeclaredField("header");
+			tabHeaderField.setAccessible(true);
+			return (IChatComponent)tabHeaderField.get(Plex.minecraft.ingameGUI.getTabList());
+		}
+		catch (NoSuchFieldException | IllegalAccessException e) {
+			return null;
+		}
+
 	}
 
 	// time

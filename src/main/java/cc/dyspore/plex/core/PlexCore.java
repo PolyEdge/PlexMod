@@ -189,7 +189,9 @@ public class PlexCore {
 		if (screen != null) {
 			Plex.listeners.setTargetGuiScreen(new PlexUIModMenuScreen(screen));
 		}
-		Plex.listeners.setTargetGuiScreen(null);
+		else {
+			Plex.listeners.setTargetGuiScreen(null);
+		}
 	}
 
 	/**
@@ -222,7 +224,7 @@ public class PlexCore {
 	 * @param lowercase Make all player names lowercase
 	 * @return The list of names, or null if not in a world
 	 */
-	public static List<String> getPlayerIGNList(Boolean lowercase) {
+	public static List<String> getPlayerIGNList(boolean lowercase) {
 		try {
 			List<String> result = new ArrayList<String>();
 			for (EntityPlayer player : Plex.minecraft.theWorld.playerEntities) {

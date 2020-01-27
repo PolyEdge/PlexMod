@@ -8,6 +8,7 @@ import java.time.OffsetDateTime;
 public class PlexGame {
     public String name;
     public boolean spectating;
+    public boolean ended;
 
     public long startTimeMS;
     public OffsetDateTime startTimeDT;

@@ -10,7 +10,9 @@ public enum PlexLobbyType {
 	CLANS_SERVER,
 
 	// Only used in firing events
+	E_WORLD_CHANGE,
 	E_LOBBY_SWITCH,
 	E_LOBBY_NAME_UPDATED,
 	E_GAME_UPDATED,
+	E_GAME_ENDED
 }

@@ -58,7 +58,7 @@ public class Plex {
 		MinecraftForge.EVENT_BUS.register(listeners);
 		PlexUtilTextures.loadTextures();
 
-		PlexCore.getInternalLoop().addTask(listeners::handleLobbySwitching);
+		PlexCore.getInternalLoop().addTask(listeners::handleLobbyData);
 		PlexCore.getInternalLoop().addTask(queue::processQueue);
 
 		PlexCore.registerMod(new PlexPlexMod());

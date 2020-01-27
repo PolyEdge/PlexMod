@@ -34,7 +34,7 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 	
 	public Pattern PATTERN_SERVER_NAME = Pattern.compile(MATCH_SERVER_NAME);
 	
-	public Map<String, String> gameIcons = new HashMap<String, String>();
+	public Map<String, String> gameIcons = new HashMap<>();
 	public Map<String, String> lobbyNames = new HashMap<String, String>();
 	
 	public static IPCClient ipcClient;
@@ -70,13 +70,13 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 	
 	@Override
 	public void modInit() {
-		richPresenceReady.set(false);
-		richPresenceClose.set(false);
-		richPresenceConnectThread.set(false);
-		richPresenceShowErrors.set(false);
-		richPresenceShowReconnect.set(false);
+		this.richPresenceReady.set(false);
+		this.richPresenceClose.set(false);
+		this.richPresenceConnectThread.set(false);
+		this.richPresenceShowErrors.set(false);
+		this.richPresenceShowReconnect.set(false);
 
-		lastConnectionAttempt.set(0L);
+		this.lastConnectionAttempt.set(0L);
 
 		ipcClient = new IPCClient(463568324458971147L);
 		ipcClient.setListener(new IPCListener() {
@@ -101,87 +101,87 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 		this.showAfk = this.modSetting("richPresence_showAFK", true).getBoolean(true);
 		this.showIP = this.modSetting("richPresence_showIP", true).getBoolean(true);
 		
-		gameIcons.put("bacon brawl", "raw_porkchop");
-		gameIcons.put("bawk bawk battles", "egg");
-		gameIcons.put("bomb lobbers", "fire_charge");
-		gameIcons.put("death tag", "skeleton_skull");
-		gameIcons.put("dragon escape", "dragon_egg");
-		gameIcons.put("dragons", "end_stone");
-		gameIcons.put("evolution", "null_spawn_egg");
-		gameIcons.put("gladiators", "iron_sword");
-		gameIcons.put("micro battle", "lava_bucket");
-		gameIcons.put("monster maze", "rotten_flesh");
-		gameIcons.put("one in the quiver", "bow_drawn");
-		gameIcons.put("runner", "leather_boots");
-		gameIcons.put("sheep quest", "white_wool");
-		gameIcons.put("snake", "yellow_wool");
-		gameIcons.put("sneaky assassins", "ink_sac");
-		gameIcons.put("super paintball", "ender_pearl");
-		gameIcons.put("super spleef", "iron_shovel");
-		gameIcons.put("turf wars", "stained_hardened_clay");
-		gameIcons.put("wither assault", "wither_skeleton_skull");
-		gameIcons.put("champions ctf", "banner_white");
-		gameIcons.put("champions dominate", "beacon");
-		gameIcons.put("champions domination", "beacon");
-		gameIcons.put("block hunt", "grass_block");
-		gameIcons.put("draw my thing", "book_and_quill");
-		gameIcons.put("master builders", "oak_wood_planks");
-		gameIcons.put("minestrike", "tnt");
-		gameIcons.put("speed builders", "quartz_block");
-		gameIcons.put("super smash mobs", "creeper_head");
-		gameIcons.put("super smash mobs teams", "creeper_head");
-		gameIcons.put("the bridges", "iron_pickaxe");
-		gameIcons.put("skywars", "feather");
-		gameIcons.put("skywars teams", "feather");
-		gameIcons.put("cake wars standard", "cake");
-		gameIcons.put("cake wars duos", "cake");
-		gameIcons.put("survival games", "diamond_sword");
-		gameIcons.put("survival games teams", "diamond_sword");
-		gameIcons.put("clans", "iron_sword");
+		this.gameIcons.put("bacon brawl", "raw_porkchop");
+		this.gameIcons.put("bawk bawk battles", "egg");
+		this.gameIcons.put("bomb lobbers", "fire_charge");
+		this.gameIcons.put("death tag", "skeleton_skull");
+		this.gameIcons.put("dragon escape", "dragon_egg");
+		this.gameIcons.put("dragons", "end_stone");
+		this.gameIcons.put("evolution", "null_spawn_egg");
+		this.gameIcons.put("gladiators", "iron_sword");
+		this.gameIcons.put("micro battle", "lava_bucket");
+		this.gameIcons.put("monster maze", "rotten_flesh");
+		this.gameIcons.put("one in the quiver", "bow_drawn");
+		this.gameIcons.put("runner", "leather_boots");
+		this.gameIcons.put("sheep quest", "white_wool");
+		this.gameIcons.put("snake", "yellow_wool");
+		this.gameIcons.put("sneaky assassins", "ink_sac");
+		this.gameIcons.put("super paintball", "ender_pearl");
+		this.gameIcons.put("super spleef", "iron_shovel");
+		this.gameIcons.put("turf wars", "stained_hardened_clay");
+		this.gameIcons.put("wither assault", "wither_skeleton_skull");
+		this.gameIcons.put("champions ctf", "banner_white");
+		this.gameIcons.put("champions dominate", "beacon");
+		this.gameIcons.put("champions domination", "beacon");
+		this.gameIcons.put("block hunt", "grass_block");
+		this.gameIcons.put("draw my thing", "book_and_quill");
+		this.gameIcons.put("master builders", "oak_wood_planks");
+		this.gameIcons.put("minestrike", "tnt");
+		this.gameIcons.put("speed builders", "quartz_block");
+		this.gameIcons.put("super smash mobs", "creeper_head");
+		this.gameIcons.put("super smash mobs teams", "creeper_head");
+		this.gameIcons.put("the bridges", "iron_pickaxe");
+		this.gameIcons.put("skywars", "feather");
+		this.gameIcons.put("skywars teams", "feather");
+		this.gameIcons.put("cake wars standard", "cake");
+		this.gameIcons.put("cake wars duos", "cake");
+		this.gameIcons.put("survival games", "diamond_sword");
+		this.gameIcons.put("survival games teams", "diamond_sword");
+		this.gameIcons.put("clans", "iron_sword");
 
-		lobbyNames.put("lobby", "$Main Hub");
+		this.lobbyNames.put("lobby", "$Main Hub");
 
-		lobbyNames.put("bld", "Master Builders");
-		lobbyNames.put("dmt", "Draw My Thing");
-		lobbyNames.put("bb", "Bacon Brawl");
-		lobbyNames.put("bl", "Bomb Lobbers");
-		lobbyNames.put("dt", "Death Tag");
-		lobbyNames.put("de", "Dragon Escape");
-		lobbyNames.put("dr", "Dragons");
-		lobbyNames.put("evo", "Evolution");
-		lobbyNames.put("gld", "Gladiators");
-		lobbyNames.put("mb", "Micro Battles");
-		lobbyNames.put("mm", "Monster Maze");
-		lobbyNames.put("oitq", "OITQ");
-		lobbyNames.put("run", "Runner");
-		lobbyNames.put("sq", "Sheep Quest");
-		lobbyNames.put("sn", "Snake");
-		lobbyNames.put("sa", "Sneaky Assassins");
-		lobbyNames.put("pb", "Paintball");
-		lobbyNames.put("ss", "Spleef");
-		lobbyNames.put("tf", "Turf Wars");
-		lobbyNames.put("wa", "Wither Assault");
-		lobbyNames.put("min", "Mixed Arcade");
-		lobbyNames.put("sb", "Speed Builders");
-		lobbyNames.put("bh", "Block Hunt");
-		lobbyNames.put("cw4", "Cake Wars");
-		lobbyNames.put("cw2", "Cake Wars Duos");
-		lobbyNames.put("hg", "Survival Games");
-		lobbyNames.put("sg", "Survival Games"); // just in case
-		lobbyNames.put("hg2", "SG Teams"); // just in case
-		lobbyNames.put("sg2", "SG Teams");
-		lobbyNames.put("sky", "Skywars");
-		lobbyNames.put("sky2", "Skywars Teams");
-		lobbyNames.put("br", "Bridges");
-		lobbyNames.put("ms", "MineStrike");
-		lobbyNames.put("ssm", "Super Smash Mobs");
-		lobbyNames.put("ssm2", "SSM Teams");
-		lobbyNames.put("dom", "Dominate");
-		lobbyNames.put("ctf", "CTF");
-		lobbyNames.put("retro", "Retro");
-		lobbyNames.put("nano", "Nano Games");
-		lobbyNames.put("event", "$In an Event");
-		lobbyNames.put("staff", "$In a Staff Server");
+		this.lobbyNames.put("bld", "Master Builders");
+		this.lobbyNames.put("dmt", "Draw My Thing");
+		this.lobbyNames.put("bb", "Bacon Brawl");
+		this.lobbyNames.put("bl", "Bomb Lobbers");
+		this.lobbyNames.put("dt", "Death Tag");
+		this.lobbyNames.put("de", "Dragon Escape");
+		this.lobbyNames.put("dr", "Dragons");
+		this.lobbyNames.put("evo", "Evolution");
+		this.lobbyNames.put("gld", "Gladiators");
+		this.lobbyNames.put("mb", "Micro Battles");
+		this.lobbyNames.put("mm", "Monster Maze");
+		this.lobbyNames.put("oitq", "OITQ");
+		this.lobbyNames.put("run", "Runner");
+		this.lobbyNames.put("sq", "Sheep Quest");
+		this.lobbyNames.put("sn", "Snake");
+		this.lobbyNames.put("sa", "Sneaky Assassins");
+		this.lobbyNames.put("pb", "Paintball");
+		this.lobbyNames.put("ss", "Spleef");
+		this.lobbyNames.put("tf", "Turf Wars");
+		this.lobbyNames.put("wa", "Wither Assault");
+		this.lobbyNames.put("min", "Mixed Arcade");
+		this.lobbyNames.put("sb", "Speed Builders");
+		this.lobbyNames.put("bh", "Block Hunt");
+		this.lobbyNames.put("cw4", "Cake Wars");
+		this.lobbyNames.put("cw2", "Cake Wars Duos");
+		this.lobbyNames.put("hg", "Survival Games");
+		this.lobbyNames.put("sg", "Survival Games"); // just in case
+		this.lobbyNames.put("hg2", "SG Teams"); // just in case
+		this.lobbyNames.put("sg2", "SG Teams");
+		this.lobbyNames.put("sky", "Skywars");
+		this.lobbyNames.put("sky2", "Skywars Teams");
+		this.lobbyNames.put("br", "Bridges");
+		this.lobbyNames.put("ms", "MineStrike");
+		this.lobbyNames.put("ssm", "Super Smash Mobs");
+		this.lobbyNames.put("ssm2", "SSM Teams");
+		this.lobbyNames.put("dom", "Dominate");
+		this.lobbyNames.put("ctf", "CTF");
+		this.lobbyNames.put("retro", "Retro");
+		this.lobbyNames.put("nano", "Nano Games");
+		this.lobbyNames.put("event", "$In an Event");
+		this.lobbyNames.put("staff", "$In a Staff Server");
 		
 		Plex.plexCommand.registerPlexCommand("discord", new PlexRichPresenceCommand());
 		
@@ -214,12 +214,12 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 	}
 	
 	public void updateRichPresence() {
-		if (!isRichPresenceReady()) {
+		if (!this.isRichPresenceReady()) {
 			return;
 		}
 		if (this.modEnabled && Plex.gameState.isMineplex) {
 			this.lastRPupdate = Minecraft.getSystemTime();
-			putRichPresence();
+			this.putRichPresence();
 		}
 	}
 	
@@ -234,13 +234,12 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 			this.isAfk = true;
 			presence.setDetails("AFK | " + gameState[0]);
 			presence.setSmallImage("afk", "AFK | " + gameState[0]);
-			return presence.build();
 		}
 		if (Plex.gameState.currentLobby.type.equals(PlexLobbyType.GAME_INGAME)) {
 			if (Plex.gameState.currentLobby.currentGame != null) {
-				String game = Plex.gameState.currentLobby.currentGame.name.toLowerCase();
-				if (this.gameIcons.containsKey(game)) {
-					presence.setSmallImage(game, gameState[0]);
+				String game = Plex.gameState.currentLobby.currentGame.name.toLowerCase().trim();
+				if (this.gameIcons.containsKey(game) && !this.isAfk) {
+					presence.setSmallImage(this.gameIcons.get(game), gameState[0]);
 				}
 				if (this.timerMode == 1 && (Plex.gameState.currentLobby.currentGame.startTimeDT != null)) {
 					presence.setStartTimestamp(Plex.gameState.currentLobby.currentGame.startTimeDT);
@@ -503,7 +502,7 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 				}
 			}, 250L);
 		}
-		if (type.equals(PlexLobbyType.E_LOBBY_SWITCH)) {
+		if (type.equals(PlexLobbyType.E_WORLD_CHANGE)) {
 			this.lastRPupdate = Minecraft.getSystemTime();
 			new Timer().schedule(new TimerTask() {
 				public void run() {

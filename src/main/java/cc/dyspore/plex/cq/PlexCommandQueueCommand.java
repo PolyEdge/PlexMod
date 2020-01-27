@@ -16,13 +16,14 @@ public class PlexCommandQueueCommand {
 
     public boolean overridesParent = false;
     public String group;
-    public Integer priority;
-    public Boolean respectQueueOrder;
-    public Boolean blocksQueue;
-    public PlexCommandQueueConditions delaySet;
+    public int priority;
+    public boolean respectQueueOrder;
+    public boolean blocksQueue;
+    public PlexCommandQueueConditions conditions;
 
-    public Long sendAfter = null; // when set, flags the manager to wait until after the set time in milliseconds before sending the command
-    public Long completeAfter = null; // when set, flags the manager to mark the command as complete after this number of milliseconds when sent
+    private Long sendAfter = null; // when set, flags the manager to wait until after the set time in milliseconds before sending the command
+    private Long completeAfter = null; // when set, flags the manager to mark the command as complete after this number of milliseconds when sent
+    private Long completeAfterTime = null;
 
     public List<Long> sendTimes = new ArrayList<>();
 
@@ -43,7 +44,7 @@ public class PlexCommandQueueCommand {
         this.group = group;
         this.command = command;
         this.priority = 100;
-        this.delaySet = new PlexCommandQueueConditions();
+        this.conditions = new PlexCommandQueueConditions();
     }
 
     public PlexCommandQueueCommand(String group, String command, long delay) {
@@ -51,8 +52,24 @@ public class PlexCommandQueueCommand {
         this.command = command;
         this.priority = 100;
         this.sendAfter = Minecraft.getSystemTime() + delay;
-        this.delaySet = new PlexCommandQueueConditions();
+        this.conditions = new PlexCommandQueueConditions();
     }
+
+    public PlexCommandQueueCommand sendAfter(long time) {
+        this.sendAfter = Minecraft.getSystemTime() + time;
+        return this;
+    }
+
+    public PlexCommandQueueCommand setCompleteAfterSentFor(Long time) {
+        this.completeAfter = time;
+        return this;
+    }
+
+    public PlexCommandQueueCommand setCompleteAfterNow(long time) {
+        this.completeAfterTime = Minecraft.getSystemTime() + time;
+        return this;
+    }
+
 
     public String getGroup() {
         return this.parent == null ? this.group : (this.overridesParent ? this.group : parent.group);
@@ -62,8 +79,8 @@ public class PlexCommandQueueCommand {
         return this.parent == null ? this.priority : (this.overridesParent ? this.priority : parent.priority);
     }
 
-    public PlexCommandQueueConditions getDelaySet() {
-        return this.parent == null ? this.delaySet : (this.overridesParent ? this.delaySet : parent.conditions);
+    public PlexCommandQueueConditions getConditions() {
+        return this.parent == null ? this.conditions : (this.overridesParent ? this.conditions : parent.conditions);
     }
 
     public boolean getRespectQueueOrder() {
@@ -93,7 +110,7 @@ public class PlexCommandQueueCommand {
         if (this.sendAfter != null && Minecraft.getSystemTime() < this.sendAfter) {
             return false;
         }
-        return this.delaySet.sendable();
+        return this.getConditions().sendable();
     }
 
     public boolean isSent() {
@@ -112,6 +129,9 @@ public class PlexCommandQueueCommand {
             return true;
         }
         if (this.completeAfter != null && this.isSent() && this.hasSent() && Minecraft.getSystemTime() > this.getSendTime() + completeAfter) {
+            return true;
+        }
+        if (this.completeAfterTime != null && Minecraft.getSystemTime() > this.completeAfterTime) {
             return true;
         }
         if (this.timeout != null && this.sendTimes.size() > 0 && Minecraft.getSystemTime() > this.sendTimes.get(0) + this.timeout) {

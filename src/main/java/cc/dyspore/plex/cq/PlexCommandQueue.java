@@ -36,7 +36,7 @@ public class PlexCommandQueue {
         return command;
     }
 
-    public PlexCommandQueueCommand addCommand(String textCommand, Long delay) {
+    public PlexCommandQueueCommand addCommand(String textCommand, long delay) {
         PlexCommandQueueCommand command = new PlexCommandQueueCommand(this.group, textCommand, delay);
         this.addCommand(command);
         return command;
