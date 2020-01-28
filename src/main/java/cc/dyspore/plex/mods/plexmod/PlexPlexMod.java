@@ -13,9 +13,8 @@ import com.google.gson.stream.JsonReader;
 
 import net.minecraft.util.ResourceLocation;
 import cc.dyspore.plex.Plex;
-import cc.dyspore.plex.ci.PlexCommandListener;
+import cc.dyspore.plex.commands.client.PlexCommandListener;
 import cc.dyspore.plex.core.PlexCore;
-import cc.dyspore.plex.core.mineplex.PlexLobbyType;
 import cc.dyspore.plex.core.util.PlexUtilTextures;
 //import PlexUtil;
 import cc.dyspore.plex.core.PlexModBase;

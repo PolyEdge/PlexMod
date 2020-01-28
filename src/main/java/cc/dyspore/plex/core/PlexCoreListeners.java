@@ -10,7 +10,7 @@ import cc.dyspore.plex.core.mineplex.PlexLobby;
 import cc.dyspore.plex.core.mineplex.PlexLobbyType;
 import cc.dyspore.plex.core.util.PlexUtil;
 import cc.dyspore.plex.core.util.PlexUtilChat;
-import cc.dyspore.plex.cq.PlexCommandQueue;
+import cc.dyspore.plex.commands.queue.PlexCommandQueue;
 import cc.dyspore.plex.mods.messagingscreen.PlexMessagingUIScreen;
 import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.client.Minecraft;
@@ -27,7 +27,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientConnectedToServerEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientDisconnectionFromServerEvent;
 import cc.dyspore.plex.Plex;
-import cc.dyspore.plex.cq.PlexCommandQueueCommand;
+import cc.dyspore.plex.commands.queue.PlexCommandQueueCommand;
 
 @SuppressWarnings("FieldCanBeLocal")
 public class PlexCoreListeners {
@@ -52,7 +52,7 @@ public class PlexCoreListeners {
 	private long lastWorldLoadEvent;
 	private long lastTimeWorldSwitchFired;
 	private long lastTimeServerNamePacket;
-	private long lastTimeNetherRespawn;
+	private long lastTimePacketPlayerRespawn;
 
 	private boolean lobbyTypeDeterminationEventRequired = false;
 	private boolean lobbyNameDeterminationEventRequired = false;
@@ -178,7 +178,7 @@ public class PlexCoreListeners {
 
 			PlexCore.joinedMineplex();
 
-			if (!this.packetListenerActive) {
+			if (this.packetListenerActive) {
 				this.onWorldSwitch();
 			}
 
@@ -312,19 +312,17 @@ public class PlexCoreListeners {
 	}
 
 	public void onPacket(ChannelHandlerContext context, Packet packet) {
-		//this.packetListenerActive = true;
+		this.packetListenerActive = true;
 		if ((packet instanceof S14PacketEntity) || (packet instanceof S3BPacketScoreboardObjective) || (packet instanceof S3CPacketUpdateScore) || (packet instanceof S2APacketParticles)) {
 			return;
 		}
 		//Plex.logger.info(packet.getClass().getName());
 		if (packet instanceof S07PacketRespawn) {
 			S07PacketRespawn item = (S07PacketRespawn)packet;
-			if (Minecraft.getSystemTime() < this.lastTimeNetherRespawn + 50L) {
+			if (Minecraft.getSystemTime() > this.lastTimePacketPlayerRespawn + 50L) {
 				this.onWorldSwitch();
 			}
-			else if (item.getDimensionID() == -1) {
-				this.lastTimeNetherRespawn = Minecraft.getSystemTime();
-			}
+			this.lastTimePacketPlayerRespawn = Minecraft.getSystemTime();
 		}
 
 		if (packet instanceof S47PacketPlayerListHeaderFooter) {

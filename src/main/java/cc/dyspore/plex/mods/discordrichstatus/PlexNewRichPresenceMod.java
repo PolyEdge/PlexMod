@@ -161,7 +161,7 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 		this.lobbyNames.put("ss", "Spleef");
 		this.lobbyNames.put("tf", "Turf Wars");
 		this.lobbyNames.put("wa", "Wither Assault");
-		this.lobbyNames.put("min", "Mixed Arcade");
+		this.lobbyNames.put("min", "Arcade");
 		this.lobbyNames.put("sb", "Speed Builders");
 		this.lobbyNames.put("bh", "Block Hunt");
 		this.lobbyNames.put("cw4", "Cake Wars");

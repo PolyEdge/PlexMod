@@ -13,7 +13,7 @@ public class PlexFriendsListEnhancementsUI extends PlexUIBase {
 	}
 
 	@Override
-	public void uiAddButtons(PlexUIModMenuScreen ui) {
+	public void initGui(PlexUIModMenuScreen ui) {
 		PlexFriendsListEnhancementsMod instance = PlexCore.modInstance(PlexFriendsListEnhancementsMod.class);
 		Integer top = ui.startingYPos(72);
 		Integer paneSize = ui.centeredPaneSize(1, 20, 160);

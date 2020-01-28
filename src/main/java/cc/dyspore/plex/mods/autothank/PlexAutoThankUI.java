@@ -13,7 +13,7 @@ public class PlexAutoThankUI extends PlexUIBase {
 	}
 
 	@Override
-	public void uiAddButtons(PlexUIModMenuScreen ui) {
+	public void initGui(PlexUIModMenuScreen ui) {
 		Integer top = ui.startingYPos(41);
 		Integer paneSize = ui.centeredPaneSize(1, 20, 160);
 		Integer pane1Pos = ui.centeredPanePos(0, 1, 20, 160);

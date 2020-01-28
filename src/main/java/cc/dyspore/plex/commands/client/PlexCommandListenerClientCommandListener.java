@@ -1,4 +1,4 @@
-package cc.dyspore.plex.ci;
+package cc.dyspore.plex.commands.client;
 
 import java.util.ArrayList;
 import java.util.Arrays;

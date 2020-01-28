@@ -2,10 +2,9 @@ package cc.dyspore.plex.mods.autofriend;
 
 import cc.dyspore.plex.Plex;
 import cc.dyspore.plex.core.PlexCore;
-import cc.dyspore.plex.core.mineplex.PlexLobbyType;
 import cc.dyspore.plex.core.util.PlexUtilChat;
-import cc.dyspore.plex.cq.PlexCommandQueue;
-import cc.dyspore.plex.cq.PlexCommandQueueCommand;
+import cc.dyspore.plex.commands.queue.PlexCommandQueue;
+import cc.dyspore.plex.commands.queue.PlexCommandQueueCommand;
 import cc.dyspore.plex.core.PlexModBase;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.common.config.Property;

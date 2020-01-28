@@ -13,7 +13,7 @@ public class PlexBetterReplyUI extends PlexUIBase {
 	}
 
 	@Override
-	public void uiAddButtons(PlexUIModMenuScreen ui) {
+	public void initGui(PlexUIModMenuScreen ui) {
 		PlexBetterReplyMod instance = PlexCore.modInstance(PlexBetterReplyMod.class);
 		Integer top = ui.startingYPos(52);
 		Integer paneSize = ui.centeredPaneSize(1, 20, 160);

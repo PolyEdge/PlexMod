@@ -14,7 +14,7 @@ public class PlexPlexUI extends PlexUIBase {
 	}
 
 	@Override
-	public void uiAddButtons(PlexUIModMenuScreen ui) {
+	public void initGui(PlexUIModMenuScreen ui) {
 	}
 	
 	@Override

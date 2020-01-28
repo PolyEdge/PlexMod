@@ -79,8 +79,8 @@ public class PlexMessagingUIScreen extends PlexUIBase {
 	
 	@Override
 	public void uiOpened() {
-		Keyboard.enableRepeatEvents(true);
 		MinecraftForge.EVENT_BUS.register(this);
+		Keyboard.enableRepeatEvents(true);
 	}
 	
 	@Override
@@ -103,7 +103,7 @@ public class PlexMessagingUIScreen extends PlexUIBase {
 	}
 
 	@Override
-	public void uiAddButtons(PlexUIModMenuScreen ui) {
+	public void initGui(PlexUIModMenuScreen ui) {
 		Integer bottom = ui.zoneEndY() - 4;
 		Integer startX = ui.zoneStartX() + 6;
 		Integer sizeX = ui.horizontalPixelCount() - (getContactsPaneSize()) - 8 - 24;

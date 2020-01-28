@@ -19,9 +19,9 @@ import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import cc.dyspore.plex.Plex;
-import cc.dyspore.plex.cq.PlexCommandQueue;
+import cc.dyspore.plex.commands.queue.PlexCommandQueue;
 import cc.dyspore.plex.core.PlexCore;
-import cc.dyspore.plex.cq.PlexCommandQueueCommand;
+import cc.dyspore.plex.commands.queue.PlexCommandQueueCommand;
 import cc.dyspore.plex.core.PlexModBase;
 
 public class PlexAutoThankMod extends PlexModBase {

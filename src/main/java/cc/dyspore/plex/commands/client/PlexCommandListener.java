@@ -1,4 +1,4 @@
-package cc.dyspore.plex.ci;
+package cc.dyspore.plex.commands.client;
 
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;

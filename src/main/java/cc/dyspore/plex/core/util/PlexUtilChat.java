@@ -3,6 +3,7 @@ package cc.dyspore.plex.core.util;
 import cc.dyspore.plex.Plex;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.IChatComponent;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -35,8 +36,12 @@ public class PlexUtilChat {
     }
 
     public static void chatAddMessage(String message) {
+        chatAddMessage(new ChatComponentText(message));
+    }
+
+    public static void chatAddMessage(IChatComponent message) {
         try {
-            Plex.minecraft.thePlayer.addChatComponentMessage(new ChatComponentText(message));
+            Plex.minecraft.ingameGUI.getChatGUI().printChatMessage(message);
         }
         catch (NullPointerException ignored) {
         }

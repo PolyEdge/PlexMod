@@ -99,14 +99,7 @@ public class PlexDevelopmentMod extends PlexModBase {
 			extra += PlexUtilChat.chatStyleText("BLUE", "game -> " + Plex.gameState.currentLobby.currentGame.name);
 		}
 		final String finalExtra = extra;
-		new Timer().schedule(new TimerTask() {
-			public void run() {
-				try {
-					PlexUtilChat.chatAddMessage(PlexUtilChat.PLEX + PlexUtilChat.chatStyleText("GREEN", "lobby -> " + type.toString()) + " " + finalExtra);
-				} catch (Throwable ee) {
-				}
-			}
-		}, 2000L);
+		PlexUtilChat.chatAddMessage(PlexUtilChat.PLEX + PlexUtilChat.chatStyleText("GREEN", "lobby -> " + type.toString()) + " " + finalExtra);
 	}
 
 }

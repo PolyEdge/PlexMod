@@ -9,7 +9,7 @@ import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.util.BlockPos;
 import cc.dyspore.plex.Plex;
-import cc.dyspore.plex.ci.PlexCommandHandler;
+import cc.dyspore.plex.commands.client.PlexCommandHandler;
 import cc.dyspore.plex.core.PlexCore;
 
 public class PlexBetterReplyCommand extends PlexCommandHandler {

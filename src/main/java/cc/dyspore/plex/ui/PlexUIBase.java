@@ -9,7 +9,7 @@ public abstract class PlexUIBase {
 	
 	public abstract String uiGetTitle();
 	
-	public abstract void uiAddButtons(PlexUIModMenuScreen ui);
+	public abstract void initGui(PlexUIModMenuScreen ui);
 	
 	public abstract void uiSliderInteracted(PlexUISlider slider);
 	

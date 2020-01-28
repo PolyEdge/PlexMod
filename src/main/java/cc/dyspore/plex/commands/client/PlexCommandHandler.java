@@ -1,6 +1,5 @@
-package cc.dyspore.plex.ci;
+package cc.dyspore.plex.commands.client;
 
-import java.util.Arrays;
 import java.util.List;
 
 import net.minecraft.command.CommandException;

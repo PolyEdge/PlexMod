@@ -18,7 +18,7 @@ public class PlexAutoFriendUI extends PlexUIBase {
 	}
 
 	@Override
-	public void uiAddButtons(PlexUIModMenuScreen ui) {
+	public void initGui(PlexUIModMenuScreen ui) {
 		PlexAutoFriendMod instance = PlexCore.modInstance(PlexAutoFriendMod.class);
 		Integer top = ui.startingYPos(112);
 		Integer paneSize = ui.centeredPaneSize(1, 20, 160);

@@ -1,9 +1,7 @@
 package cc.dyspore.plex.ui;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 import cc.dyspore.plex.core.PlexCore;
 import cc.dyspore.plex.core.util.PlexUtilRender;
@@ -30,8 +28,8 @@ public class PlexUIModMenuScreen extends GuiScreen {
 	public PlexUIBase baseUiScreen;
 	public PlexCoreRenderColourState colourState = new PlexCoreRenderColourState();
 	public PlexCoreRenderColourState oldColourState = null;
-	public List<GuiButton> internalButtonList = new ArrayList<GuiButton>();
-	public List<PlexUITabContainer> uiTabs = new ArrayList<PlexUITabContainer>();
+	public List<GuiButton> plexInterfaceButtonList = new ArrayList<>();
+	public Map<Integer, PlexCore.PlexUITab> plexInterfaceUiTabs = new HashMap<>();
 	public long initializationTime;
 	public long colourFadeTime = 500L;
 
@@ -158,38 +156,33 @@ public class PlexUIModMenuScreen extends GuiScreen {
 	@Override
 	public void initGui() {
 		this.buttonList.clear();
-		this.internalButtonList.clear();
-		this.addPlexUi();			
+		this.plexInterfaceButtonList.clear();
+		this.initializePlexInterface();
+		this.baseUiScreen.initGui(this);
 		this.baseUiScreen.uiOpened();
-		this.baseUiScreen.uiAddButtons(this);
 	}
 	
-	public void addPlexUi() {
-		this.internalButtonList.add(new GuiButton(1, (this.width / 6) + ((this.width - (this.width / 6)) / 2) - 40, this.height - 25, 80, 20, "Done"));			
-		this.uiTabs.clear();
-		int y_count = 0;
-		int tabID = -1;
-		for (PlexUITabContainer tab : PlexCore.getUiTabList()) {
-			uiTabs.add(tab.getShallowCopy().setID(tabID));
-			GuiButton button = new GuiButton(tabID, 10, 35 + (y_count * 25), this.width / 6 - 20, 20, tab.getLabel());
-			this.internalButtonList.add(button);
-			y_count += 1;
-			tabID -= 1;
+	public void initializePlexInterface() {
+		this.plexInterfaceButtonList.add(new GuiButton(1, (this.width / 6) + ((this.width - (this.width / 6)) / 2) - 40, this.height - 25, 80, 20, "Done"));
+		this.plexInterfaceUiTabs.clear();
+
+		List<PlexCore.PlexUITab> tabs = PlexCore.getUiTabList();
+		for (int i = 0; i < tabs.size(); i++) {
+			PlexCore.PlexUITab tab = tabs.get(i);
+			this.plexInterfaceUiTabs.put(-1 - i, tab.getShallowCopy());
+			GuiButton button = new GuiButton(-1 - i, 10, 35 + (i * 25), this.width / 6 - 20, 20, tab.getLabel());
+			this.plexInterfaceButtonList.add(button);
 		}
 	}
 	
-	public void updatePlexUi() {
-		for (GuiButton button : this.internalButtonList) {
+	public void updatePlexInterface() {
+		for (GuiButton button : this.plexInterfaceButtonList) {
 			if (button.id == 1) {
 				button.visible = !(this.baseUiScreen.disableDoneButton() || this.baseUiScreen.disablePlexUi());
 			}
-			else if (button.id < 0) {
+			else if (this.plexInterfaceUiTabs.containsKey(button.id)) {
 				button.visible = !(this.baseUiScreen.disableSidebar() || this.baseUiScreen.disablePlexUi());
-				for (PlexUITabContainer tab : this.uiTabs) {
-					if (button.id == tab.getID()) {
-						button.enabled = !(tab.uiClass.equals(this.baseUiScreen.getClass()));
-					}
-				}
+				button.enabled = !(this.plexInterfaceUiTabs.get(button.id).getGuiClass().equals(this.baseUiScreen.getClass()));
 			}
 		}
 	}
@@ -215,22 +208,17 @@ public class PlexUIModMenuScreen extends GuiScreen {
 		this.baseUiScreen.uiButtonClicked(button);
 	}
 	
-	public void internalActionPerformed (GuiButton button) {
+	public void plexInterfaceButtonPressed(GuiButton button) {
 		if (button.id == 1) {
 			PlexCore.saveAllConfig();
 			this.close();
 		}
-		else if (button.id < 0 && !this.baseUiScreen.disablePlexUi()) {
-			for (PlexUITabContainer tab : this.uiTabs) {
-				if (button.id == tab.getID()) {
-					PlexCore.saveAllConfig();
-					try {
-						this.mc.displayGuiScreen(new PlexUIModMenuScreen(tab.uiClass.newInstance(), this.colourState, this.parent));
-						return;
-					} 
-					catch (InstantiationException | IllegalAccessException ignored) {}
-				}
+		else if (this.plexInterfaceUiTabs.containsKey(button.id) && !this.baseUiScreen.disablePlexUi()) {
+			PlexCore.saveAllConfig();
+			try {
+				this.mc.displayGuiScreen(new PlexUIModMenuScreen(this.plexInterfaceUiTabs.get(button.id).getGuiClass().newInstance(), this.colourState, this.parent));
 			}
+			catch (InstantiationException | IllegalAccessException ignored) {}
 		}
 	}
 	
@@ -250,10 +238,10 @@ public class PlexUIModMenuScreen extends GuiScreen {
 	@Override
 	protected void mouseClicked(int par1, int par2, int btn) throws IOException {
 		if (btn == 0) {
-			for (GuiButton button : this.internalButtonList) {
+			for (GuiButton button : this.plexInterfaceButtonList) {
 				if (button.mousePressed(this.mc, par1, par2)) {
 					button.playPressSound(this.mc.getSoundHandler());
-					this.internalActionPerformed(button);
+					this.plexInterfaceButtonPressed(button);
 				}
 			}
 		}		
@@ -378,7 +366,7 @@ public class PlexUIModMenuScreen extends GuiScreen {
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float par3) {
 		
-		this.updatePlexUi();
+		this.updatePlexInterface();
 		this.updateColourState();
 
 		Integer foregroundColour = getForeground();
@@ -435,7 +423,7 @@ public class PlexUIModMenuScreen extends GuiScreen {
 		}
 
 		
-		for (GuiButton button : this.internalButtonList) {
+		for (GuiButton button : this.plexInterfaceButtonList) {
 			button.drawButton(Plex.minecraft, mouseX, mouseY);
 		}
      

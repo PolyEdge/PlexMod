@@ -10,7 +10,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import cc.dyspore.plex.Plex;
 import cc.dyspore.plex.core.loop.PlexCoreEventLoop;
 import cc.dyspore.plex.ui.PlexUIBase;
-import cc.dyspore.plex.ui.PlexUITabContainer;
 
 /**
  * The core utility class for PlexMod. Use the static methods in this class to
@@ -19,10 +18,8 @@ import cc.dyspore.plex.ui.PlexUITabContainer;
  * @since 1.0
  */
 public class PlexCore {
-	public static Map<Class<? extends PlexModBase>, PlexModBase> plexMods = new ConcurrentHashMap<>();
-	public static Map<PlexModBase, Runnable> modLoops = new HashMap<>();
-	public static Map<PlexModBase, Thread> modThreads = new HashMap<>();
-	public static List<PlexUITabContainer> uiTabList = new ArrayList<>();
+	private static Map<Class<? extends PlexModBase>, PlexModBase> plexMods = new ConcurrentHashMap<>();
+	private static List<PlexUITab> uiTabList = new ArrayList<>();
 
 	private PlexCore() {
 	}
@@ -93,28 +90,13 @@ public class PlexCore {
 	/**
 	 * Registers a UI tab under the given title
 	 * 
-	 * @param name   Title of the UI tab
-	 * @param class1 Class of the UI tab
+	 * @param name  Title of the UI tab
+	 * @param clazz Class of the UI tab
 	 */
-	public static PlexUITabContainer registerUiTab(String name, Class<? extends PlexUIBase> class1) {
-		PlexUITabContainer tab = new PlexUITabContainer(class1, name);
+	public static PlexUITab registerUiTab(String name, Class<? extends PlexUIBase> clazz) {
+		PlexUITab tab = new PlexUITab(clazz, name);
 		uiTabList.add(tab);
 		return tab;
-	}
-
-	/**
-	 * Gets the UI tab registered under the given title
-	 * 
-	 * @param label Title of the tab
-	 * @return The UI tab
-	 */
-	public static PlexUITabContainer getUiTab(String label) {
-		for (PlexUITabContainer tab : uiTabList) {
-			if (tab.getUiClass().equals(label)) {
-				return tab;
-			}
-		}
-		return null;
 	}
 
 	/**
@@ -124,18 +106,11 @@ public class PlexCore {
 	 * @return Title of the tab if it exists, null otherwise
 	 * @see PlexUIBase
 	 */
-	public static PlexUITabContainer getUiTabAt(Integer pos) {
+	public static PlexUITab getUiTabAt(Integer pos) {
 		if (pos >= uiTabList.size()) {
 			return null;
 		}
-
-		PlexUITabContainer tab = uiTabList.get(pos);
-		if (tab != null) {
-			return tab;
-		} 
-		else {
-			return null;
-		}
+		return uiTabList.get(pos);
 	}
 
 	/**
@@ -144,7 +119,7 @@ public class PlexCore {
 	 * @return the UI tab list
 	 * @see PlexUIBase
 	 */
-	public static List<PlexUITabContainer> getUiTabList() {
+	public static List<PlexUITab> getUiTabList() {
 		return uiTabList;
 	}
 
@@ -275,5 +250,37 @@ public class PlexCore {
 		for (PlexModBase mod : plexMods.values()) {
 			mod.lobbyUpdated(lobbyType);
 		}		
+	}
+
+	public static class PlexUITab {
+		private Class<? extends PlexUIBase> guiClass;
+		private String label;
+		private int id;
+
+		public PlexUITab(Class<? extends PlexUIBase> uiClass, String label) {
+			this.guiClass = uiClass;
+			this.label = label;
+		}
+
+		public Class<? extends PlexUIBase> getGuiClass() {
+			return this.guiClass;
+		}
+
+		public String getLabel() {
+			return this.label;
+		}
+
+		public int getID() {
+			return this.id;
+		}
+
+		public PlexUITab setID(int id) {
+			this.id = id;
+			return this;
+		}
+
+		public PlexUITab getShallowCopy() {
+			return new PlexUITab(this.guiClass, this.label);
+		}
 	}
 }

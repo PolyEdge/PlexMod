@@ -1,4 +1,4 @@
-package cc.dyspore.plex.cq;
+package cc.dyspore.plex.commands.queue;
 
 import cc.dyspore.plex.Plex;
 import net.minecraft.client.Minecraft;

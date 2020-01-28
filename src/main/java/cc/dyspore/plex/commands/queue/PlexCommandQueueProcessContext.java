@@ -1,7 +1,6 @@
-package cc.dyspore.plex.cq;
+package cc.dyspore.plex.commands.queue;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 public class PlexCommandQueueProcessContext {

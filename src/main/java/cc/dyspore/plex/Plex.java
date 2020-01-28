@@ -6,7 +6,7 @@ import cc.dyspore.plex.core.PlexCorePersistentPlayerManager;
 import cc.dyspore.plex.core.loop.PlexCoreEventLoopManager;
 import cc.dyspore.plex.core.mineplex.PlexServerState;
 import cc.dyspore.plex.core.util.PlexUtilTextures;
-import cc.dyspore.plex.cq.PlexCommandQueueManager;
+import cc.dyspore.plex.commands.queue.PlexCommandQueueManager;
 import cc.dyspore.plex.mods.autogg.PlexAutoGGMod;
 import cc.dyspore.plex.mods.autothank.PlexAutoThankMod;
 import cc.dyspore.plex.mods.chatmod.PlexChatStreamMod;

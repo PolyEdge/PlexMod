@@ -1,6 +1,7 @@
 package cc.dyspore.plex.core;
 
 import cc.dyspore.plex.core.mineplex.PlexLobbyType;
+import net.minecraft.client.Minecraft;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.ConfigCategory;
 import net.minecraftforge.common.config.Property;

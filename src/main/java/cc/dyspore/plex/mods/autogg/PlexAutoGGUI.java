@@ -27,7 +27,7 @@ public class PlexAutoGGUI extends PlexUIBase {
 	}
 
 	@Override
-	public void uiAddButtons(PlexUIModMenuScreen ui) {
+	public void initGui(PlexUIModMenuScreen ui) {
 		int top = ui.startingYPos(180);
 		int paneSize = ui.centeredPaneSize(2, 20, 160);
 		int pane1Pos = ui.centeredPanePos(-1, 2, 20, 160);

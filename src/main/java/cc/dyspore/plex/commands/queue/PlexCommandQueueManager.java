@@ -1,8 +1,7 @@
-package cc.dyspore.plex.cq;
+package cc.dyspore.plex.commands.queue;
 
 import cc.dyspore.plex.core.util.PlexUtilChat;
 import net.minecraft.client.Minecraft;
-import cc.dyspore.plex.Plex;
 
 import java.util.ArrayList;
 import java.util.Collections;

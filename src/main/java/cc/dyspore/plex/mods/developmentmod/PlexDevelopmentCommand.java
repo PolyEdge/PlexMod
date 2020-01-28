@@ -8,7 +8,7 @@ import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.util.BlockPos;
 import cc.dyspore.plex.Plex;
-import cc.dyspore.plex.ci.PlexCommandHandler;
+import cc.dyspore.plex.commands.client.PlexCommandHandler;
 import cc.dyspore.plex.core.PlexCore;
 import cc.dyspore.plex.core.regex.PlexCoreRegex;
 
@@ -54,7 +54,7 @@ public class PlexDevelopmentCommand extends PlexCommandHandler {
 			devInstance.lobbySwitchStream = !devInstance.lobbySwitchStream;
 			PlexUtilChat.chatAddMessage("plexdev -> " + (devInstance.lobbySwitchStream ? "now showing" : "no longer showing") + " lobby switch events.");
 		}
-		else if (args[0].equalsIgnoreCase("cq") || args[0].equalsIgnoreCase("queue")) {
+		else if (args[0].equalsIgnoreCase("queue") || args[0].equalsIgnoreCase("queue")) {
 			Plex.queue.debug = !Plex.queue.debug;
 			PlexUtilChat.chatAddMessage("plexdev -> " + (Plex.queue.debug ? "now showing" : "no longer showing") + " command queue debug.");
 		}

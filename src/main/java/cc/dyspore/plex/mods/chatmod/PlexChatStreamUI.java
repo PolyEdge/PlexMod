@@ -13,7 +13,7 @@ public class PlexChatStreamUI extends PlexUIBase {
 	}
 
 	@Override
-	public void uiAddButtons(PlexUIModMenuScreen ui) {
+	public void initGui(PlexUIModMenuScreen ui) {
 		Integer top = ui.startingYPos(94);
 		Integer paneSize = ui.centeredPaneSize(2, 20, 160);
 		Integer pane1Pos = ui.centeredPanePos(-1, 2, 20, 160);

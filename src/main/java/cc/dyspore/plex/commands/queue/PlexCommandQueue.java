@@ -1,4 +1,4 @@
-package cc.dyspore.plex.cq;
+package cc.dyspore.plex.commands.queue;
 
 import java.util.ArrayList;
 import java.util.Collections;
