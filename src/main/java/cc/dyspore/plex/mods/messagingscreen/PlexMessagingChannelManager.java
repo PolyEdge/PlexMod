@@ -28,7 +28,7 @@ public class PlexMessagingChannelManager {
 			return;
 		}
 		if (this.selectedChannel.awaitingReady) {
-			Plex.logger.info("test");
+			//Plex.logger.info("test");
 			this.selectedChannel.chatMessage(e);
 		}
 	}

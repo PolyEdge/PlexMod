@@ -109,7 +109,7 @@ public class PlexChatStreamMod extends PlexModBase {
 				entry = item.entry;
 				String playerName = PlexCore.getPlayerIGN();
 				if (playerName != null && entry.hasField("author")) {
-					isOwnPlayer = playerName.equals(entry.getField(e.message.getFormattedText(), "author"));
+					isOwnPlayer = playerName.equalsIgnoreCase(entry.getField(e.message.getFormattedText(), "author"));
 				}
 			}
 		}
