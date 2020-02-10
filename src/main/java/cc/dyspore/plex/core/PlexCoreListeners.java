@@ -39,7 +39,7 @@ public class PlexCoreListeners {
 	private Pattern PATTERN_GAME_NAME = Pattern.compile(MATCH_GAME_NAME);
 	private Pattern PATTERN_EMOTE = Pattern.compile(MATCH_EMOTE);
 
-	public IChatComponent tablistHeader;
+	private IChatComponent tablistHeader;
 
 	private boolean packetListenerActive = false;
 	private boolean resetGameStateNextTick = false;
@@ -73,46 +73,61 @@ public class PlexCoreListeners {
 
 	public PlexCoreListeners() {
 		// us.mineplex.com
-		mineplexIPs.add("173.236.67.11");
-		mineplexIPs.add("173.236.67.12");
-		mineplexIPs.add("173.236.67.14");
-		mineplexIPs.add("173.236.67.15");
-		mineplexIPs.add("173.236.67.16");
-		mineplexIPs.add("173.236.67.17");
-		mineplexIPs.add("173.236.67.23");
-		mineplexIPs.add("173.236.67.24");
-		mineplexIPs.add("173.236.67.26");
-		mineplexIPs.add("173.236.67.29");
-		mineplexIPs.add("173.236.67.31");
-		mineplexIPs.add("173.236.67.32");
-		mineplexIPs.add("173.236.67.34");
-		mineplexIPs.add("173.236.67.38");
+		this.mineplexIPs.add("173.236.67.11");
+		this.mineplexIPs.add("173.236.67.12");
+		this.mineplexIPs.add("173.236.67.13");
+		this.mineplexIPs.add("173.236.67.14");
+		this.mineplexIPs.add("173.236.67.15");
+		this.mineplexIPs.add("173.236.67.16");
+		this.mineplexIPs.add("173.236.67.17");
+		this.mineplexIPs.add("173.236.67.18");
+		this.mineplexIPs.add("173.236.67.19");
+		this.mineplexIPs.add("173.236.67.20");
+		this.mineplexIPs.add("173.236.67.21");
+		this.mineplexIPs.add("173.236.67.22");
+		this.mineplexIPs.add("173.236.67.23");
+		this.mineplexIPs.add("173.236.67.24");
+		this.mineplexIPs.add("173.236.67.25");
+		this.mineplexIPs.add("173.236.67.26");
+		this.mineplexIPs.add("173.236.67.27");
+		this.mineplexIPs.add("173.236.67.28");
+		this.mineplexIPs.add("173.236.67.29");
+		this.mineplexIPs.add("173.236.67.30");
+		this.mineplexIPs.add("173.236.67.31");
+		this.mineplexIPs.add("173.236.67.32");
+		this.mineplexIPs.add("173.236.67.33");
+		this.mineplexIPs.add("173.236.67.34");
+		this.mineplexIPs.add("173.236.67.35");
+		this.mineplexIPs.add("173.236.67.36");
+		this.mineplexIPs.add("173.236.67.37");
+		this.mineplexIPs.add("173.236.67.38");
+
 
 		// mineplex.com
-		mineplexIPs.add("96.45.82.193");
-		mineplexIPs.add("96.45.82.3");
-		mineplexIPs.add("96.45.83.216");
-		mineplexIPs.add("96.45.83.38");
+		this.mineplexIPs.add("96.45.82.193");
+		this.mineplexIPs.add("96.45.82.3");
+		this.mineplexIPs.add("96.45.83.216");
+		this.mineplexIPs.add("96.45.83.38");
 
 		// clans.mineplex.com
-		mineplexIPs.add("173.236.67.101");
-		mineplexIPs.add("173.236.67.102");
-		mineplexIPs.add("173.236.67.103");
+		this.mineplexIPs.add("173.236.67.101");
+		this.mineplexIPs.add("173.236.67.102");
+		this.mineplexIPs.add("173.236.67.103");
 
 		// eu.mineplex.com
-		mineplexIPs.add("107.6.151.174");
-		mineplexIPs.add("107.6.151.190");
-		mineplexIPs.add("107.6.151.206");
-		mineplexIPs.add("107.6.151.210");
-		mineplexIPs.add("107.6.151.22");
-		mineplexIPs.add("107.6.176.114");
-		mineplexIPs.add("107.6.176.122");
-		mineplexIPs.add("107.6.176.138");
-		mineplexIPs.add("107.6.176.14");
-		mineplexIPs.add("107.6.176.166");
-		mineplexIPs.add("107.6.176.194");
+		this.mineplexIPs.add("107.6.151.174");
+		this.mineplexIPs.add("107.6.151.190");
+		this.mineplexIPs.add("107.6.151.206");
+		this.mineplexIPs.add("107.6.151.210");
+		this.mineplexIPs.add("107.6.151.22");
+		this.mineplexIPs.add("107.6.176.114");
+		this.mineplexIPs.add("107.6.176.122");
+		this.mineplexIPs.add("107.6.176.138");
+		this.mineplexIPs.add("107.6.176.14");
+		this.mineplexIPs.add("107.6.176.166");
+		this.mineplexIPs.add("107.6.176.194");
 
-		hostnameBlacklist.add("build.mineplex.com");
+		this.hostnameBlacklist.add("build.mineplex.com");
 
 		this.serverCommandQueue.conditions
 				.afterChatOpen(0)

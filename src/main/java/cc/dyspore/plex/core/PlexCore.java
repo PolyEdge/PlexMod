@@ -175,12 +175,7 @@ public class PlexCore {
 	 * @return The player's IGN, or null if not in-game
 	 */
 	public static String getPlayerIGN() {
-		try {
-			return Plex.minecraft.thePlayer.getDisplayNameString();
-		} 
-		catch (NullPointerException e) {
-			return null;
-		}
+		return Plex.minecraft.getSession().getUsername();
 	}
 
 	/**

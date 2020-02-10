@@ -37,7 +37,7 @@ public class PlexDevelopmentMod extends PlexModBase {
 	public void saveModConfig() {
 	}
 	
-	@SubscribeEvent
+	@SubscribeEvent(receiveCanceled = true)
 	public void onChat(final ClientChatReceivedEvent e) {
 		if (!PlexUtilChat.chatIsMessage(e.type)) {
 			return;

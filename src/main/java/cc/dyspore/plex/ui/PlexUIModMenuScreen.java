@@ -402,12 +402,15 @@ public class PlexUIModMenuScreen extends GuiScreen {
 			drawHeaderImage();
 			drawSocialMedia();
 
-			String lobbyName = Plex.gameState.currentLobby.name;
+			String lobbyName;
 			if (!Plex.gameState.isMineplex) {
 				lobbyName = "[Not Online]";
 			}
-			else if (lobbyName == null) {
+			else if (Plex.gameState.currentLobby == null || Plex.gameState.currentLobby.name == null) {
 				lobbyName = "...";
+			}
+			else {
+				lobbyName = Plex.gameState.currentLobby.name;
 			}
 
 			if (mouseX > this.getSocialMediaStartX() - 35 && mouseX < this.getSocialMediaStartX() - 10 && mouseY > 2 && mouseY < 24 && Mouse.isButtonDown(1)) {

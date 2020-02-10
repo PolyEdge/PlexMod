@@ -8,7 +8,7 @@ import java.util.Map;
 public class PlexCoreRegexChatMatchItem {
     public String chatMessage;
     public PlexCoreRegexEntry entry;
-    public Map<String, String> fields = new HashMap<>();
+    public Map<String, String> fields;
 
     public PlexCoreRegexChatMatchItem(String chatMessage, PlexCoreRegexEntry entry) {
         this.entry = entry;

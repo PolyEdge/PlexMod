@@ -9,12 +9,12 @@ public class PlexCoreRegex {
 	public static String SPLIT_FORMAT_REGION = "((?:([^ \n]*?)(?<!\\\\)\\{\\{([^|]+?)\\|(.+?)(?<!\\\\)\\}\\}|[^ \n]+|\n)|( +))";
 	public static Pattern PATTERN_FORMAT_REGION = Pattern.compile(SPLIT_FORMAT_REGION); // why cant i keep the delimiter in java
 	
-	public static String MATCH_PLAYER_CHAT = "^(?:&7Dead )?(?:(?:&[0-9a-fA-Fklmnor])*([0-9]{1,3}) ) *(?:&3\\u2726)? *(?:&2&lMPS (?:Host|Co-Host))? *(?:(?:&[0-9a-fA-Fklmnor])*&l(ULTRA|HERO|LEGEND|TITAN|ETERNAL|YT|YOUTUBE|ARTIST|TRAINEE|SUPPORT|MOD|SR\\.MOD|MAPPER|BUILDER|MAPLEAD|JR\\.DEV|DEV|ADMIN|LEADER|OWNER))? *(?:&[0-9a-fA-Fklmnor])* *([a-zA-Z0-9_-]+) *(?:&[0-9a-fA-Fklmnor])* *(.*)$";
-	public static String MATCH_PLAYER_MPS_CHAT = "^(?:&7Dead )?(?:(?:&[0-9a-fA-Fklmnor])*([0-9]{1,3}) )? *(?:(?:&[0-9a-fA-Fklmnor])*&l(ULTRA|HERO|LEGEND|TITAN|ETERNAL|YT|YOUTUBE|ARTIST|TRAINEE|SUPPORT|MOD|SR\\.MOD|MAPPER|BUILDER|MAPLEAD|JR\\.DEV|DEV|ADMIN|LEADER|OWNER))? *(?:&[0-9a-fA-Fkmnor])* *([a-zA-Z0-9_-]+) *(?:&[0-9a-fA-Fklmnor])* *(.*)$"; // there are no levels in mps, so a weaker regex is given (player's name cannot be bold)
+	public static String MATCH_PLAYER_CHAT = "^(?:&7Dead )?(?:(?:&[0-9a-fA-Fklmnor])*([0-9]{1,3}) ) *(?:&[0-9a-fA-Fklmnor].)? *(?:&2&lMPS (?:Host|Co-Host))? *(?:(?:&[0-9a-fA-Fklmnor])*&l(ULTRA|HERO|LEGEND|TITAN|ETERNAL|IMMORTAL|YT|YOUTUBE|ARTIST|TRAINEE|SUPPORT|MOD|SR\\.MOD|MAPPER|BUILDER|MAPLEAD|JR\\.DEV|DEV|ADMIN|LEADER|OWNER))? *(?:&[0-9a-fA-Fklmnor])* *([a-zA-Z0-9_-]+) *(?:&[0-9a-fA-Fklmnor])* *(.*)$";
+	public static String MATCH_PLAYER_MPS_CHAT = "^(?:&7Dead )?(?:(?:&[0-9a-fA-Fklmnor])*([0-9]{1,3}) )? *(?:(?:&[0-9a-fA-Fklmnor])*&l(ULTRA|HERO|LEGEND|TITAN|ETERNAL|IMMORTAL|YT|YOUTUBE|ARTIST|TRAINEE|SUPPORT|MOD|SR\\.MOD|MAPPER|BUILDER|MAPLEAD|JR\\.DEV|DEV|ADMIN|LEADER|OWNER))? *(?:&[0-9a-fA-Fkmnor])* *([a-zA-Z0-9_-]+) *(?:&[0-9a-fA-Fklmnor])* *(.*)$"; // there are no levels in mps, so a weaker regex is given (player's name cannot be bold)
 	public static String MATCH_PARTY_CHAT_OLDER = "^(?:(?:&[0-9a-fA-Fklmnor]){1,3}([0-9]{1,3}) )? ?(?:&5&lParty) ()?(?:&[0-9a-fA-Fklmnor]){0,4}([a-zA-Z0-9_-]{1,16}) ?(?:&[0-9a-fA-Fklmnor]){0,4} ?(.*)$";
 	public static String MATCH_PARTY_CHAT_OLD = "^(?:(?:&[0-9a-fA-Fklmnor]){1,3}([0-9]{1,3}) )? ?(?:&5&l(?:Party|PARTY)) ()?(?:&[0-9a-fA-Fklmnor]){0,4}([a-zA-Z0-9_-]{1,16}) ?&d(.*)$";
 	public static String MATCH_PARTY_CHAT = "^(?:(?:&[0-9a-fA-Fklmnor])*([0-9]{1,3}) )? ?(?:&5&l(?:Party|PARTY)) (?:(?:&[0-9a-fA-Fklmnor])*([0-9]{1,3}) )? ?(?:&[0-9a-fA-Fklmnor]){0,4}([a-zA-Z0-9_-]{1,16}) ?&d(.*)$";
-	public static String MATCH_TEAM_CHAT = "^&l(?:Team|TEAM) (?:&7Dead )?(?:(?:&[0-9a-fA-Fklmnor])*([0-9]{1,3}) ) *(?:&3\\u2726)? *(?:&2&lMPS (?:Host|Co-Host))? *(?:&[0-9a-fA-Fklmnor]){0,4}(ULTRA|HERO|LEGEND|TITAN|ETERNAL|YT|YOUTUBE|ARTIST|TRAINEE|SUPPORT|MOD|SR\\.MOD|MAPPER|BUILDER|MAPLEAD|JR\\.DEV|DEV|ADMIN|LEADER|OWNER)? ?(?:&[0-9a-fA-Fklmnor]){0,4}([a-zA-Z0-9_-]{1,16}) ?(?:&[0-9a-fA-Fklmnor]){0,4} ?(.*)$";
+	public static String MATCH_TEAM_CHAT = "^&l(?:Team|TEAM) (?:&7Dead )?(?:(?:&[0-9a-fA-Fklmnor])*([0-9]{1,3}) ) *(?:&[0-9a-fA-Fklmnor].)? *(?:&2&lMPS (?:Host|Co-Host))? *(?:&[0-9a-fA-Fklmnor]){0,4}(ULTRA|HERO|LEGEND|TITAN|ETERNAL|IMMORTAL|YT|YOUTUBE|ARTIST|TRAINEE|SUPPORT|MOD|SR\\.MOD|MAPPER|BUILDER|MAPLEAD|JR\\.DEV|DEV|ADMIN|LEADER|OWNER)? ?(?:&[0-9a-fA-Fklmnor]){0,4}([a-zA-Z0-9_-]{1,16}) ?(?:&[0-9a-fA-Fklmnor]){0,4} ?(.*)$";
 	public static String MATCH_DIRECT_MESSAGE = "^&6&l([a-zA-Z0-9 _]+) > ([a-zA-Z0-9 _]+)&e &e&l(.*)$";
 	public static String MATCH_COMMUNITY_CHAT_OLDER = "^(?:&([0-9a-f]))?&l([a-zA-Z0-9_]+) (?:&([0-9a-f]))?&l([a-zA-Z0-9_]+) (?:&([0-9a-f]?))?(.+)$";
 	public static String MATCH_COMMUNITY_CHAT_OLD = "^(?:&([0-9a-f]))?&l([a-zA-Z0-9_]+) ?(?:(?:&([0-9a-f]))?&l(Trainee|Support|Mod|Sr\\.Mod|Mapper|Builder|Maplead|Jr\\.Dev|Dev|Admin|Leader|Owner) |(?:&([0-9a-f]))?&l)([a-zA-Z0-9_]+) (?:&([0-9a-f]))?(.+)$";
@@ -36,6 +36,7 @@ public class PlexCoreRegex {
 	public static String MATCH_PARTY_OFFLINE = "^&9Party> &7Could not locate &e([a-zA-Z0-9_]+)&?7?\\.?$";
 	
 	public static String MATCH_DM_PLAYER_OFFLINE = "^&9Online Player Search> &e0&7 matches for \\[&e([A-Za-z0-9_]+)&7]\\.?$";
+	public static String MATCH_IMMORTAL_JOIN_LOBBY = "^&9Join> (:?&7)?&e&lIMMORTAL ([A-Za-z0-9_])+&7 has joined the lobby.$";
 
 	public static Pattern PATTERN_PLAYER_CHAT = Pattern.compile(MATCH_PLAYER_CHAT);
 	//public static Pattern PATTERN_PLAYER_MPS_CHAT = Pattern.compile(MATCH_PLAYER_MPS_CHAT);
@@ -69,6 +70,8 @@ public class PlexCoreRegex {
 		addEntry("party_offline", MATCH_PARTY_OFFLINE, "party").addField(1, "ign");
 
 		addEntry("direct_message_player_offline", MATCH_DM_PLAYER_OFFLINE, "direct_message").addField(1, "destination");
+		addEntry("immortal_join_lobby", MATCH_IMMORTAL_JOIN_LOBBY).addField(1, "player_name");
+
 	}
 
 	public static List<String> splitFormatRegionString(String input) {

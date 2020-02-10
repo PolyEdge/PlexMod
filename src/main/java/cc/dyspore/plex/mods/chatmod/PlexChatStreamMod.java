@@ -7,6 +7,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import cc.dyspore.plex.core.PlexCore;
+import cc.dyspore.plex.core.regex.PlexCoreRegexManager;
+import cc.dyspore.plex.core.regex.chat.PlexCoreRegexChatMatch;
+import cc.dyspore.plex.core.regex.chat.PlexCoreRegexChatMatchItem;
 import cc.dyspore.plex.core.util.PlexUtilChat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.IChatComponent;
@@ -42,12 +45,13 @@ public class PlexChatStreamMod extends PlexModBase {
 
 	@Override
 	public String getModName() {
-		return "Chat Cleaner";
+		return "Chat Toggles";
 	}
 	
 	@Override
 	public void modInit() {
 		this.AD_MATCHERS.add("mineplex.com.shop");
+		this.AD_MATCHERS.add("mineplex.com.clans");
 		this.AD_MATCHERS.add("rank sale");
 		this.AD_MATCHERS.add("get your (?:new )?(?:rank)");
 		this.AD_MATCHERS.add("all ranks are");
@@ -82,8 +86,8 @@ public class PlexChatStreamMod extends PlexModBase {
 
 		PlexCore.registerUiTab("Chat", PlexChatStreamUI.class);
 		
-		for (String exp : AD_MATCHERS) {
-			adPatterns.add(Pattern.compile(exp));
+		for (String exp : this.AD_MATCHERS) {
+			this.adPatterns.add(Pattern.compile(exp));
 		}
 	}
 	
@@ -92,23 +96,26 @@ public class PlexChatStreamMod extends PlexModBase {
 		if (!PlexUtilChat.chatIsMessage(e.type)) {
 			return;
 		}
-		String message = PlexUtilChat.chatCondense(e.message.getFormattedText());
-		String ampMessage = PlexUtilChat.chatCondenseAndAmpersand(e.message.getFormattedText());
-		PlexCoreRegexEntry entry = PlexCoreRegex.getEntryMatchingText(message);
-		String potentialType = "";
+		String message = PlexUtilChat.chatCondenseAndAmpersand(e.message.getFormattedText());
+		String messageLowercase = message.toLowerCase();
+		String messageMinimal = PlexUtilChat.chatMinimalizeLowercase(e.message.getFormattedText());
+
+		PlexCoreRegexChatMatch match = PlexCoreRegexManager.getChatMatch(e.message);
+		PlexCoreRegexEntry entry = null;
 		boolean isOwnPlayer = false;
-		if (entry != null) {
-			potentialType = entry.entryName;
-			String playerName = PlexCore.getPlayerIGN();
-			if (playerName != null && entry.hasField("author")) {
-				isOwnPlayer = playerName.equals(entry.getField(message, "author"));
+
+		for (PlexCoreRegexChatMatchItem item : match.getEntries()) {
+			if (item.hasTag("chatMessage") || entry == null) {
+				entry = item.entry;
+				String playerName = PlexCore.getPlayerIGN();
+				if (playerName != null && entry.hasField("author")) {
+					isOwnPlayer = playerName.equals(entry.getField(e.message.getFormattedText(), "author"));
+				}
 			}
 		}
 
-		String min = PlexUtilChat.chatMinimalizeLowercase(e.message.getFormattedText());
-
 		if (this.adblocking) {
-			if ((min.equals("\n")) || (min.contains("========")) || (min.trim().equals(""))) {
+			if ((messageMinimal.equals("\n")) || (messageMinimal.contains("========")) || (messageMinimal.trim().equals(""))) {
 				e.setCanceled(true);
 				if (!this.adBlockPostPadding) {
 					this.paddingRemovalQueue.add(new QueuedChatComponent(e.message));
@@ -118,7 +125,7 @@ public class PlexChatStreamMod extends PlexModBase {
 			else if (entry == null) {
 				boolean isAd = false;
 				for (Pattern pat : adPatterns) {
-					Matcher m = pat.matcher(min);
+					Matcher m = pat.matcher(messageMinimal);
 					if (m.find()) {
 						e.setCanceled(true);
 						isAd = true;
@@ -134,62 +141,59 @@ public class PlexChatStreamMod extends PlexModBase {
 			this.adBlockPostPadding = false;
 			this.flushPaddingQueue(true);
 		}
-		if (this.hidePlayerChat) {
-			if (!isOwnPlayer && (potentialType.equals("player_chat"))) {
+
+		if (entry != null && !isOwnPlayer) {
+			if (this.hidePlayerChat && entry.entryName.equals("player_chat")) {
+				e.setCanceled(true);
+				return;
+			}
+			if (this.hidePartyChat && entry.entryName.equals("party_chat")) {
+				e.setCanceled(true);
+				return;
+			}
+			if (this.hideTeamChat && entry.entryName.equals("team_chat")) {
+				e.setCanceled(true);
+				return;
+			}
+			if (this.hideComChat && entry.entryName.equals("community_chat")) {
 				e.setCanceled(true);
 				return;
 			}
 		}
-		if (this.hidePartyChat) {
-			if (!isOwnPlayer && (potentialType.equals("party_chat"))) {
-				e.setCanceled(true);
-				return;
-			}
-		}
-		if (this.hideTeamChat) {
-			if (!isOwnPlayer && (potentialType.equals("team_chat"))) {
-				e.setCanceled(true);
-				return;
-			}
-		}
-		if (this.hideComChat) {
-			if (!isOwnPlayer && (potentialType.equals("community_chat"))) {
-				e.setCanceled(true);
-				return;
-			}
-		}
+
 		if (this.hideGadgetDisable) {
-			if (min.startsWith("gadget> you disabled")) {
-				e.setCanceled(true);
-				return;
-			}
-			if (min.startsWith("gadget> you enabled")) {
+			if (messageMinimal.startsWith("gadget> you enabled") || messageMinimal.startsWith("gadget> you disabled")) {
 				e.setCanceled(true);
 				return;
 			}
 		}
+
 		if (this.lobbyFiltrationLevel >= 1) {
-			if (ampMessage.startsWith("&9Treasure>") && !ampMessage.startsWith("&9Treasure> &e" + PlexCore.getPlayerIGN())) {
+			if (message.startsWith("&9Treasure>") && !message.startsWith("&9Treasure> &e" + PlexCore.getPlayerIGN())) {
 				e.setCanceled(true);
 				return;
 			}
-			if (ampMessage.toLowerCase().startsWith("&2&lcarl the creeper>")) {
+			if (messageLowercase.startsWith("&2&lcarl the creeper>") || messageLowercase.startsWith("&2&lcarter the creeper>")) {
 				e.setCanceled(true);
 				return;
 			}
 		}
 		if (this.lobbyFiltrationLevel >= 2) {
-			if (ampMessage.startsWith("&9Stats Manager>")) {
+			if (message.startsWith("&9Stats Manager>")) {
 				e.setCanceled(true);
 				return;
 			}
-			if (ampMessage.startsWith("&9Friends> &7You have &e") && ampMessage.toLowerCase().contains("pending friend requests")) {
+			if (message.startsWith("&9Friends> &7You have &e") && message.toLowerCase().contains("pending friend requests")) {
+				e.setCanceled(true);
+				return;
+			}
+			if (messageMinimal.startsWith("join> immortal") && messageMinimal.endsWith("has joined the lobby.")) {
 				e.setCanceled(true);
 				return;
 			}
 		}
 		if (this.hideCommunityInvites) {
-			if (ampMessage.startsWith("&9Communities> &7You have been invited to join &e") && ampMessage.trim().endsWith("&7 communities!")) {
+			if (message.startsWith("&9Communities> &7You have been invited to join &e") && message.trim().endsWith("&7 communities!")) {
 				e.setCanceled(true);
 				return;
 			}
