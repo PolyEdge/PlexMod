@@ -4,6 +4,7 @@ import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
 
 import java.util.Map;
 
+@IFMLLoadingPlugin.TransformerExclusions({"cc.dyspore.plex"})
 public class PlexFMLPlugin implements IFMLLoadingPlugin {
     @Override
     public String[] getASMTransformerClass() {

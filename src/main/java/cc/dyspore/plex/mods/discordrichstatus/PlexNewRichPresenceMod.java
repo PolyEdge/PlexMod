@@ -1,6 +1,6 @@
 package cc.dyspore.plex.mods.discordrichstatus;
 
-import cc.dyspore.plex.core.mineplex.PlexLobbyType;
+import cc.dyspore.plex.core.mineplex.PlexMPLobby;
 import cc.dyspore.plex.core.util.PlexUtilChat;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -180,6 +180,9 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 		this.lobbyNames.put("ctf", "CTF");
 		this.lobbyNames.put("retro", "Retro");
 		this.lobbyNames.put("nano", "Nano Games");
+		this.lobbyNames.put("rr", "Rose Rush");
+		this.lobbyNames.put("hh", "Halloween Havoc");
+		this.lobbyNames.put("cc", "Christmas Chaos");
 		this.lobbyNames.put("event", "$In an Event");
 		this.lobbyNames.put("staff", "$In a Staff Server");
 		
@@ -235,7 +238,7 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 			presence.setDetails("AFK | " + gameState[0]);
 			presence.setSmallImage("afk", "AFK | " + gameState[0]);
 		}
-		if (Plex.gameState.currentLobby.type.equals(PlexLobbyType.GAME_INGAME)) {
+		if (Plex.gameState.currentLobby.type.equals(PlexMPLobby.LobbyType.GAME_INGAME)) {
 			if (Plex.gameState.currentLobby.currentGame != null) {
 				String game = Plex.gameState.currentLobby.currentGame.name.toLowerCase().trim();
 				if (this.gameIcons.containsKey(game) && !this.isAfk) {
@@ -246,7 +249,7 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 				}
 			}
 		}
-		if (Plex.gameState.currentLobby.type.equals(PlexLobbyType.CLANS_SERVER)) {
+		if (Plex.gameState.currentLobby.type.equals(PlexMPLobby.LobbyType.CLANS_SERVER)) {
 			presence.setSmallImage(gameIcons.get("clans"), "Playing Clans");
 		}
 		if (this.timerMode == 2 && Plex.gameState.joinTimeDT != null) {
@@ -318,17 +321,17 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 	
 	public String[] getPresenceStrings() {
 		String state = serverIGN(true);
-		PlexLobbyType lobbyType = Plex.gameState.currentLobby.type;
+		PlexMPLobby.LobbyType lobbyType = Plex.gameState.currentLobby.type;
 		if (lobbyType == null) {
 			return new String[] {"Playing on " + getServerIP(), serverIGN(false)};
 		}
-		if (lobbyType.equals(PlexLobbyType.UNDETERMINED) || lobbyType.equals(PlexLobbyType.UNKNOWN)) {
+		if (lobbyType.equals(PlexMPLobby.LobbyType.UNDETERMINED) || lobbyType.equals(PlexMPLobby.LobbyType.UNKNOWN)) {
 			return new String[] {"Playing on " + getServerIP(), serverIGN(false)};
 		}
-		if (lobbyType.equals(PlexLobbyType.CLANS_HUB)) {
+		if (lobbyType.equals(PlexMPLobby.LobbyType.CLANS_HUB)) {
 			return new String[] {"Clans Hub", state};
 		}
-		if (lobbyType.equals(PlexLobbyType.CLANS_SERVER)) {
+		if (lobbyType.equals(PlexMPLobby.LobbyType.CLANS_SERVER)) {
 			if (Plex.gameState.currentClansSeason == null) {
 				return new String[] {"Playing Clans", state};
 			}
@@ -338,13 +341,13 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 			}
 		}
 
-		if (lobbyType.equals(PlexLobbyType.MAIN_HUB)) {
+		if (lobbyType.equals(PlexMPLobby.LobbyType.MAIN_HUB)) {
 			return new String[] {this.wrappedLobbyRepresentation("Main Hub", "In ", ""), state};
 		}
-		if (lobbyType.equals(PlexLobbyType.GAME_LOBBY)) {
+		if (lobbyType.equals(PlexMPLobby.LobbyType.GAME_LOBBY)) {
 			return new String[] {this.wrappedLobbyRepresentation("Game Lobby", "Game Lobby: ", ""), state};
 		}
-		if (lobbyType.equals(PlexLobbyType.GAME_INGAME)) {
+		if (lobbyType.equals(PlexMPLobby.LobbyType.GAME_INGAME)) {
 			if (Plex.gameState.currentLobby.currentGame == null) {
 				return new String[] {"In a Game", state};
 			}
@@ -493,8 +496,8 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 	}
 
 	@Override
-	public void lobbyUpdated(PlexLobbyType type) {
-		if (type.equals(PlexLobbyType.E_GAME_UPDATED)) {
+	public void lobbyUpdated(PlexMPLobby.LobbyType type) {
+		if (type.equals(PlexMPLobby.LobbyType.E_GAME_UPDATED)) {
 			this.lastRPupdate = Minecraft.getSystemTime();
 			new Timer().schedule(new TimerTask() {
 				public void run() {
@@ -502,7 +505,7 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 				}
 			}, 250L);
 		}
-		if (type.equals(PlexLobbyType.E_WORLD_CHANGE)) {
+		if (type.equals(PlexMPLobby.LobbyType.E_WORLD_CHANGE)) {
 			this.lastRPupdate = Minecraft.getSystemTime();
 			new Timer().schedule(new TimerTask() {
 				public void run() {

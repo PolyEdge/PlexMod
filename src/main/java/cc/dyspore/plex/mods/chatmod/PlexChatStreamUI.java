@@ -14,7 +14,7 @@ public class PlexChatStreamUI extends PlexUIBase {
 
 	@Override
 	public void initGui(PlexUIModMenuScreen ui) {
-		Integer top = ui.startingYPos(94);
+		Integer top = ui.startingYPos(92);
 		Integer paneSize = ui.centeredPaneSize(2, 20, 160);
 		Integer pane1Pos = ui.centeredPanePos(-1, 2, 20, 160);
 		Integer pane2Pos = ui.centeredPanePos(0, 2, 20, 160);
@@ -25,11 +25,15 @@ public class PlexChatStreamUI extends PlexUIBase {
 		ui.addElement(new GuiButton(6, pane1Pos + 5, top + 23, paneSize - 10, 20, shownHidden("Party Chat", !modInstance.hidePartyChat)));
 		ui.addElement(new GuiButton(7, pane1Pos + 5, top + 46, paneSize - 10, 20, shownHidden("Team Chat", !modInstance.hideTeamChat)));
 		ui.addElement(new GuiButton(8, pane1Pos + 5, top + 69, paneSize - 10, 20, shownHidden("Community Chat", !modInstance.hideComChat)));
+		ui.addElement(new GuiButton(15, pane1Pos + 5, top + 92, paneSize - 10, 20, shownHidden("GWEN Bulletin", !modInstance.hideGwenBulletin)));
+
 
 		ui.addElement(new GuiButton(9, pane2Pos + 5, top + 0, paneSize - 10, 20, shownHidden("Community Invites", !modInstance.hideCommunityInvites)));
 		ui.addElement(new GuiButton(10, pane2Pos + 5, top + 23, paneSize - 10, 20, enabledDisabled("Adblocking", modInstance.adblocking)));
 		ui.addElement(new PlexUISlider(this, 11, pane2Pos + 5, top + 46, paneSize - 10, 20, (float)modInstance.MAX_LOBBY_FILTRATION / modInstance.MAX_LOBBY_FILTRATION, filtrationLevelDisplayString()));
-		ui.addElement(new GuiButton(14, pane2Pos + 5, top + 69, paneSize - 10, 20, shownHidden("Gadget Disable", !modInstance.hideGadgetDisable)));
+		ui.addElement(new GuiButton(14, pane2Pos + 5, top + 69, paneSize - 10, 20, shownHidden("Gadget Messages", !modInstance.hideGadgetMessages)));
+		ui.addElement(new GuiButton(16, pane2Pos + 5, top + 92, paneSize - 10, 20, shownHidden("Condition Messages", !modInstance.hideConditionMessages)));
+
 
 		//ui.addElement(new PlexUISlider(this, 12, pane2Pos + 5, top + 69, paneSize - 10, 20, Float.valueOf(PlexCore.getSharedValue("hideStream_barReductionIndex").integerValue) / PlexChatStreamMod.MAX_BAR_REDUCTION, barReductionDisplayString()));
 
@@ -102,8 +106,16 @@ public class PlexChatStreamUI extends PlexUIBase {
 			button.displayString = enabledDisabled("Adblocking", modInstance.adblocking);
 		}
 		if (button.id == 14) {
-			modInstance.hideGadgetDisable = !modInstance.hideGadgetDisable;
-			button.displayString = shownHidden("Gadget Disable", !modInstance.hideGadgetDisable);
+			modInstance.hideGadgetMessages = !modInstance.hideGadgetMessages;
+			button.displayString = shownHidden("Gadget Messages", !modInstance.hideGadgetMessages);
+		}
+		if (button.id == 15) {
+			modInstance.hideGwenBulletin = !modInstance.hideGwenBulletin;
+			button.displayString = shownHidden("GWEN Bulletin", !modInstance.hideGwenBulletin);
+		}
+		if (button.id == 16) {
+			modInstance.hideConditionMessages = !modInstance.hideConditionMessages;
+			button.displayString = shownHidden("Condition Messages", !modInstance.hideConditionMessages);
 		}
 	}
 }

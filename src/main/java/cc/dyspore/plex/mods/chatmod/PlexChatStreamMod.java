@@ -17,7 +17,6 @@ import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import cc.dyspore.plex.Plex;
-import cc.dyspore.plex.core.regex.PlexCoreRegex;
 import cc.dyspore.plex.core.regex.PlexCoreRegexEntry;
 import cc.dyspore.plex.core.PlexModBase;
 
@@ -37,11 +36,15 @@ public class PlexChatStreamMod extends PlexModBase {
 	public int lobbyFiltrationLevel = 0;
 	public boolean hideCommunityInvites = false;
 	public boolean adblocking = false;
-	public boolean hideGadgetDisable = false;
+	public boolean hideGadgetMessages = false;
+	public boolean hideGwenBulletin = false;
+	public boolean hideConditionMessages = false;
+
 	public int barReductionIndex = 0;
 	
 	public List<Pattern> adPatterns = new ArrayList<>();
 	public Boolean adBlockPostPadding = false;
+	public boolean gwenBulletinBuffer = false;
 
 	@Override
 	public String getModName() {
@@ -78,7 +81,9 @@ public class PlexChatStreamMod extends PlexModBase {
 		this.lobbyFiltrationLevel = this.modSetting("lobby_filtration_level", 0).getInt();
 		this.hideCommunityInvites = this.modSetting("hide_community_invites", false).getBoolean();
 		this.adblocking = this.modSetting("attempted_adblocking", false).getBoolean();
-		this.hideGadgetDisable = this.modSetting("hide_gadget_disable", false).getBoolean();
+		this.hideGadgetMessages = this.modSetting("hide_gadget_disable", false).getBoolean();
+		this.hideGwenBulletin = this.modSetting("hide_gwen_bulletin", false).getBoolean();
+		this.hideConditionMessages = this.modSetting("hide_condition_messages", false).getBoolean();
 		this.barReductionIndex = this.modSetting("bar_reduction_index", 0).getInt();
 		this.barReductionIndex = 0;
 
@@ -161,8 +166,8 @@ public class PlexChatStreamMod extends PlexModBase {
 			}
 		}
 
-		if (this.hideGadgetDisable) {
-			if (messageMinimal.startsWith("gadget> you enabled") || messageMinimal.startsWith("gadget> you disabled")) {
+		if (this.hideGadgetMessages) {
+			if (messageMinimal.startsWith("gadget> you enabled") || messageMinimal.startsWith("gadget> you disabled") || messageMinimal.startsWith("gadget> you took off") || messageMinimal.startsWith("gadget> set disabled")) {
 				e.setCanceled(true);
 				return;
 			}
@@ -174,6 +179,10 @@ public class PlexChatStreamMod extends PlexModBase {
 				return;
 			}
 			if (messageLowercase.startsWith("&2&lcarl the creeper>") || messageLowercase.startsWith("&2&lcarter the creeper>")) {
+				e.setCanceled(true);
+				return;
+			}
+			if (messageLowercase.startsWith("&9xp boost manager>")) {
 				e.setCanceled(true);
 				return;
 			}
@@ -194,6 +203,25 @@ public class PlexChatStreamMod extends PlexModBase {
 		}
 		if (this.hideCommunityInvites) {
 			if (message.startsWith("&9Communities> &7You have been invited to join &e") && message.trim().endsWith("&7 communities!")) {
+				e.setCanceled(true);
+				return;
+			}
+		}
+		if (this.hideGwenBulletin) {
+			if (messageMinimal.startsWith("-=[gwen anticheat bulletin]=-")) {
+				e.setCanceled(true);
+				this.gwenBulletinBuffer = true;
+				return;
+			}
+			if (this.gwenBulletinBuffer && message.startsWith("&7")) {
+				e.setCanceled(true);
+			}
+			else {
+				this.gwenBulletinBuffer = false;
+			}
+		}
+		if (this.hideConditionMessages) {
+			if (messageMinimal.startsWith("condition>")) {
 				e.setCanceled(true);
 				return;
 			}
@@ -247,7 +275,9 @@ public class PlexChatStreamMod extends PlexModBase {
 		this.modSetting("lobby_filtration_level", 0).set(this.lobbyFiltrationLevel);
 		this.modSetting("hide_community_invites", false).set(this.hideCommunityInvites);
 		this.modSetting("attempted_adblocking", false).set(this.adblocking);
-		this.modSetting("hide_gadget_disable", false).set(this.hideGadgetDisable);
+		this.modSetting("hide_gadget_disable", false).set(this.hideGadgetMessages);
+		this.modSetting("hide_gwen_bulletin", false).set(this.hideGwenBulletin);
+		this.modSetting("hide_condition_messages", false).set(this.hideConditionMessages);
 		this.modSetting("bar_reduction_index", 0).set(this.barReductionIndex);
 	}
 

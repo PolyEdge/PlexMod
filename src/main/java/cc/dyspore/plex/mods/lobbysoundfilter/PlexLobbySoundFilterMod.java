@@ -7,7 +7,6 @@ import cc.dyspore.plex.core.util.PlexUtilChat;
 import net.minecraftforge.client.event.sound.PlaySoundEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import cc.dyspore.plex.Plex;
-import cc.dyspore.plex.core.mineplex.PlexLobbyType;
 import cc.dyspore.plex.core.PlexModBase;
 import cc.dyspore.plex.mods.chatmod.PlexChatStreamCommand;
 
@@ -42,7 +41,7 @@ public class PlexLobbySoundFilterMod extends PlexModBase {
 		this.maxSoundRadius = this.modSetting("sounds_allowed_within", 0).getInt();
 		this.minSoundInRadiusLevel = this.modSetting("levels_allowed_within", 0).getInt();
 
-		//PlexCore.registerCommandListener(new PlexCommandListenerClientCommandListener("ts"));
+		//PlexCore.registerCommandListener(new PlexClientCommandListener("ts"));
 		//PlexCore.registerCommandHandler("ts", new PlexChatStreamCommand());
 		Plex.plexCommand.registerPlexCommand("sounds", new PlexChatStreamCommand());
 	}

@@ -13,13 +13,13 @@ import cc.dyspore.plex.mods.messagingscreen.PlexMessagingMessage;
 public class PlexMessagingChatMessageAdapter {
 	public Map<String, String> messageTags = new HashMap<String, String>();
 	public Map<String, String> channelFields = new HashMap<String, String>();
-	public String regexEntryName = "";
+	public String regexEntryName;
 	public Class<? extends PlexMessagingChannelBase> channelClass;
 	public PlexCoreRegexEntry regexEntry;
-	public String contentFormatString = "";
-	public String chatGroup = "";
+	public String contentFormatString;
+	public String chatGroup;
 	public String recipientEntityName = null;
-	public String channelName = "";
+	public String channelName;
 	public String author;
 	public boolean requiresChannelOpen = false;
 	public boolean requiresChatOpen = false;

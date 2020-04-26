@@ -5,7 +5,7 @@ import net.minecraft.client.Minecraft;
 
 import java.time.OffsetDateTime;
 
-public class PlexGame {
+public class PlexMPGame {
     public String name;
     public boolean spectating;
     public boolean ended;
@@ -13,7 +13,7 @@ public class PlexGame {
     public long startTimeMS;
     public OffsetDateTime startTimeDT;
 
-    public PlexGame(String name, boolean spectating) {
+    public PlexMPGame(String name, boolean spectating) {
         this.name = name;
         this.spectating = spectating;
 

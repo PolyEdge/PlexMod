@@ -1,7 +1,6 @@
 package cc.dyspore.plex.core;
 
-import cc.dyspore.plex.core.mineplex.PlexLobbyType;
-import net.minecraft.client.Minecraft;
+import cc.dyspore.plex.core.mineplex.PlexMPLobby;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.ConfigCategory;
 import net.minecraftforge.common.config.Property;
@@ -48,13 +47,21 @@ public abstract class PlexModBase {
 		MinecraftForge.EVENT_BUS.unregister(this);
 	}
 
-	public void lobbyUpdated(PlexLobbyType lobbyType) {}
+	public void lobbyUpdated(PlexMPLobby.LobbyType lobbyType) {}
+
+	protected void doModLoop() {
+		boolean isMineplex = Plex.gameState.isMineplex;
+		this.modLoop(isMineplex);
+		if (isMineplex) {
+			this.onlineModLoop();
+		}
+	}
 
 	public void onlineModLoop() {}
 
 	public void modLoop(boolean isOnline) {}
 
 	public long getLoopDelay() {
-		return 30;
+		return -1;
 	}
 }

@@ -19,7 +19,7 @@ import cc.dyspore.plex.core.util.PlexUtilTextures;
 //import PlexUtil;
 import cc.dyspore.plex.core.PlexModBase;
 
-public class PlexPlexMod extends PlexModBase {
+public class PlexMod extends PlexModBase {
 	public PlexCommandListener plexListener;
 	public static Map<String, String> socialMediaLinks = new ConcurrentHashMap<String, String>();
 	public static Map<String, ResourceLocation> socialMediaRenderInformation = new LinkedHashMap<String, ResourceLocation>();
@@ -34,10 +34,10 @@ public class PlexPlexMod extends PlexModBase {
 	public void modInit() {
 		Plex.logger.info(":: Plex Mod Version " + Plex.VERSION + (Plex.PATCHID == null ? "" : "-" + Plex.PATCHID) + (Plex.RELEASENOTICE == null ? "" : " [" + Plex.RELEASENOTICE + "]") );
 
-		this.plexListener = new PlexCommandListener("plex").setGlobal(true);
+		this.plexListener = new PlexCommandListener("plex").setAvailability(PlexCommandListener.Availability.GLOBAL);
 		this.plexListener.setHandler(Plex.plexCommand);
 		
-		PlexCore.registerUiTab("Plex", PlexPlexUI.class);
+		PlexCore.registerUiTab("Plex", PlexModUI.class);
 		
 		socialMediaRenderInformation.put("namemc", PlexUtilTextures.GUI_SM_NAMEMC_ICON);
 		socialMediaRenderInformation.put("twitter", PlexUtilTextures.GUI_SM_TWITTER_ICON);

@@ -11,7 +11,6 @@ import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import cc.dyspore.plex.Plex;
 import cc.dyspore.plex.core.PlexCore;
-import cc.dyspore.plex.core.mineplex.PlexLobbyType;
 import cc.dyspore.plex.core.PlexModBase;
 
 public class PlexFriendsListEnhancementsMod extends PlexModBase {
@@ -50,8 +49,8 @@ public class PlexFriendsListEnhancementsMod extends PlexModBase {
 		this.hideIncomingRequestsEnabled = this.modSetting("hide_incoming_friend_requests", false).getBoolean();
 		this.hideOutgoingRequestsEnabled = this.modSetting("hide_outgoing_friend_requests", false).getBoolean();
 
-		//PlexCore.registerCommandListener(new PlexCommandListenerClientCommandListener("ff"));
-		//PlexCore.registerCommandListener(new PlexCommandListenerClientCommandListener("fs"));
+		//PlexCore.registerCommandListener(new PlexClientCommandListener("ff"));
+		//PlexCore.registerCommandListener(new PlexClientCommandListener("fs"));
 		//PlexCore.registerCommandHandler("ff", new PlexFriendsListEnhancementsCommand());
 		//PlexCore.registerCommandHandler("fs", new PlexFriendsListEnhancementsCommand());
 		Plex.plexCommand.registerPlexCommand("friends", new PlexFriendsListEnhancementsCommand());

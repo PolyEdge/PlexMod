@@ -1,19 +1,15 @@
 package cc.dyspore.plex.mods.developmentmod;
 
-import cc.dyspore.plex.core.mineplex.PlexLobbyType;
+import cc.dyspore.plex.core.mineplex.PlexMPLobby;
 import cc.dyspore.plex.core.util.PlexUtilChat;
 import net.minecraft.util.IChatComponent;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.client.event.sound.PlaySoundEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import cc.dyspore.plex.Plex;
-import cc.dyspore.plex.core.PlexCore;
 import cc.dyspore.plex.core.regex.PlexCoreRegex;
 import cc.dyspore.plex.core.regex.PlexCoreRegexEntry;
 import cc.dyspore.plex.core.PlexModBase;
-
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class PlexDevelopmentMod extends PlexModBase {
 	public boolean chatStream = false;
@@ -90,12 +86,12 @@ public class PlexDevelopmentMod extends PlexModBase {
 	}
 
 	@Override
-	public void lobbyUpdated(PlexLobbyType type) {
+	public void lobbyUpdated(PlexMPLobby.LobbyType type) {
 		if (!this.lobbySwitchStream) {
 			return ;
 		}
 		String extra = "";
-		if (type.equals(PlexLobbyType.E_GAME_UPDATED)) {
+		if (type.equals(PlexMPLobby.LobbyType.E_GAME_UPDATED)) {
 			extra += PlexUtilChat.chatStyleText("BLUE", "game -> " + Plex.gameState.currentLobby.currentGame.name);
 		}
 		final String finalExtra = extra;

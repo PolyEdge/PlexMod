@@ -1,10 +1,15 @@
 package cc.dyspore.plex.core.regex;
 
+import scala.Char;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@Deprecated
 public class PlexCoreRegex {
 	public static String SPLIT_FORMAT_REGION = "((?:([^ \n]*?)(?<!\\\\)\\{\\{([^|]+?)\\|(.+?)(?<!\\\\)\\}\\}|[^ \n]+|\n)|( +))";
 	public static Pattern PATTERN_FORMAT_REGION = Pattern.compile(SPLIT_FORMAT_REGION); // why cant i keep the delimiter in java
@@ -37,18 +42,11 @@ public class PlexCoreRegex {
 	
 	public static String MATCH_DM_PLAYER_OFFLINE = "^&9Online Player Search> &e0&7 matches for \\[&e([A-Za-z0-9_]+)&7]\\.?$";
 	public static String MATCH_IMMORTAL_JOIN_LOBBY = "^&9Join> (:?&7)?&e&lIMMORTAL ([A-Za-z0-9_])+&7 has joined the lobby.$";
-
-	public static Pattern PATTERN_PLAYER_CHAT = Pattern.compile(MATCH_PLAYER_CHAT);
-	//public static Pattern PATTERN_PLAYER_MPS_CHAT = Pattern.compile(MATCH_PLAYER_MPS_CHAT);
-	public static Pattern PATTERN_PARTY_CHAT = Pattern.compile(MATCH_PARTY_CHAT);
-	public static Pattern PATTERN_TEAM_CHAT = Pattern.compile(MATCH_TEAM_CHAT);
-	public static Pattern PATTERN_DIRECT_MESSAGE = Pattern.compile(MATCH_DIRECT_MESSAGE);
 	
 	public static List<PlexCoreRegexEntry> regexEntries = new ArrayList<PlexCoreRegexEntry>();
 	
 	static {
 		addEntry("player_chat", MATCH_PLAYER_CHAT).addField(1, "level").addField(2, "rank").addField(3, "author").addField(4, "message").tag("chatMessage");
-		//addEntry("player_chat_mps", MATCH_PLAYER_MPS_CHAT).addField(1, "level").addField(2, "rank").addField(3, "author").addField(4, "message");
 		addEntry("party_chat", MATCH_PARTY_CHAT, "party").addField(1, "level").addField(2, "level2").addField(3, "author").addField(4, "message").addField(5, "rank").tag("chatMessage");
 		addEntry("team_chat", MATCH_TEAM_CHAT).addField(1, "level").addField(2, "rank").addField(3, "author").addField(4, "message").tag("chatMessage");
 		addEntry("direct_message", MATCH_DIRECT_MESSAGE).addField(1, "author").addField(2, "destination").addField(3, "message").tag("chatMessage");

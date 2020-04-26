@@ -13,22 +13,35 @@ import java.util.List;
 
 public class PlexCommandListener {
     private boolean enabled = true;
-    private boolean global = true;
+    private Availability activation = Availability.MINEPLEX;
+    private DisabledAction disabledAction = DisabledAction.PROMPT;
     private PlexCommandHandler handler;
 
-    public List<PlexCommandListenerClientCommandListener> listeners;
+    public List<PlexClientCommandListener> listeners;
 
     public PlexCommandListener(String ...commandNames) {
         this.listeners = new ArrayList<>();
         for (String name : commandNames) {
-            PlexCommandListenerClientCommandListener listener = new PlexCommandListenerClientCommandListener(name, this);
+            PlexClientCommandListener listener = new PlexClientCommandListener(name, this);
             this.listeners.add(listener);
             ClientCommandHandler.instance.registerCommand(listener);
         }
     }
 
     public boolean isActive() {
-        return (this.enabled && (this.global || Plex.gameState.isMineplex));
+        if (!this.enabled) {
+            return false;
+        }
+        switch (this.activation) {
+            case GLOBAL:
+                return true;
+            case MULTIPLAYER:
+                return Plex.gameState.isMultiplayer;
+            case MINEPLEX:
+                return Plex.gameState.isMineplex;
+            default:
+                return false;
+        }
     }
 
     public PlexCommandListener setHandler(PlexCommandHandler handler) {
@@ -41,8 +54,13 @@ public class PlexCommandListener {
         return this;
     }
 
-    public PlexCommandListener setGlobal(boolean global) {
-        this.global = global;
+    public PlexCommandListener setAvailability(Availability activation) {
+        this.activation = activation;
+        return this;
+    }
+
+    public PlexCommandListener setDisabledAction(DisabledAction disabledAction) {
+        this.disabledAction = disabledAction;
         return this;
     }
 
@@ -61,19 +79,38 @@ public class PlexCommandListener {
         return finalArgs.toArray(new String[0]);
     }
 
-    public void processCommand(PlexCommandListenerClientCommandListener item, ICommandSender sender, String[] args) throws CommandException  {
+    public void processCommand(PlexClientCommandListener item, ICommandSender sender, String[] args) throws CommandException  {
         if (!this.isActive() || this.handler == null) {
-            item.sendAsPlayerCommand(args);
+            switch (this.disabledAction) {
+                case PROMPT:
+                case PASSTHROUGH:
+                    item.sendToServer(args);
+            }
             return;
         }
         this.handler.processCommand(sender, getCommandNamespace(args), getCommandArgs(args));
     }
 
-    public List<String> processTabCompletion(PlexCommandListenerClientCommandListener item, ICommandSender sender, String[] args, BlockPos pos) {
+    public List<String> processTabCompletion(PlexClientCommandListener item, ICommandSender sender, String[] args, BlockPos pos) {
         if (!this.isActive() || this.handler == null) {
-            return Collections.emptyList();
+            switch (this.disabledAction) {
+                case PROMPT:
+                    return Collections.emptyList();
+                case PASSTHROUGH:
+                    return null;
+            }
         }
         return this.handler.tabCompletion(sender, getCommandNamespace(args), getCommandArgs(args), pos);
     }
 
+    public enum Availability {
+        GLOBAL,
+        MULTIPLAYER,
+        MINEPLEX
+    }
+
+    public enum DisabledAction {
+        PASSTHROUGH,
+        PROMPT
+    }
 }

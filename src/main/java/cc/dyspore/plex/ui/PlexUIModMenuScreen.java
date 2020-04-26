@@ -8,8 +8,8 @@ import cc.dyspore.plex.core.util.PlexUtilRender;
 import cc.dyspore.plex.core.util.PlexUtil;
 import cc.dyspore.plex.core.util.PlexUtilTextures;
 import cc.dyspore.plex.core.util.PlexUtilColour;
-import cc.dyspore.plex.mods.plexmod.PlexPlexMod;
-import cc.dyspore.plex.mods.plexmod.PlexPlexUI;
+import cc.dyspore.plex.mods.plexmod.PlexMod;
+import cc.dyspore.plex.mods.plexmod.PlexModUI;
 import cc.dyspore.plex.ui.widget.PlexUISlider;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
@@ -61,7 +61,7 @@ public class PlexUIModMenuScreen extends GuiScreen {
 	}
 
 	public PlexUIModMenuScreen(GuiScreen parent) {
-		this(new PlexPlexUI());
+		this(new PlexModUI());
 		this.parent = parent;
 	}
 	
@@ -304,11 +304,11 @@ public class PlexUIModMenuScreen extends GuiScreen {
 		int positionIncrement = iconSize + (iconSize / 6) + 2;
 		int positionX = this.width - ((barHeight - iconSize) / 2) - iconSize;
 		int positionY = ((barHeight - iconSize) / 2);
-		for (String item : PlexPlexMod.socialMediaRenderInformation.keySet()) {
-			if (PlexPlexMod.socialMediaLinks.containsKey(item)) {
+		for (String item : PlexMod.socialMediaRenderInformation.keySet()) {
+			if (PlexMod.socialMediaLinks.containsKey(item)) {
 				if (mouseX > positionX && mouseY > positionY && mouseX < positionX + iconSize && mouseY < positionY + iconSize) {
-					if (PlexPlexMod.socialMediaLinkMapping.containsKey(item)) {
-						PlexUtil.openWebsite(PlexPlexMod.socialMediaLinkMapping.get(item) + PlexPlexMod.socialMediaLinks.get(item));
+					if (PlexMod.socialMediaLinkMapping.containsKey(item)) {
+						PlexUtil.openWebsite(PlexMod.socialMediaLinkMapping.get(item) + PlexMod.socialMediaLinks.get(item));
 						return;
 					}
 				}
@@ -328,9 +328,9 @@ public class PlexUIModMenuScreen extends GuiScreen {
 		GlStateManager.disableDepth();
 		GlStateManager.enableBlend();
 		GlStateManager.enableAlpha();
-		for (String item : PlexPlexMod.socialMediaRenderInformation.keySet()) {
-			if (PlexPlexMod.socialMediaLinks.containsKey(item)) {
-				Plex.minecraft.renderEngine.bindTexture(PlexPlexMod.socialMediaRenderInformation.get(item));
+		for (String item : PlexMod.socialMediaRenderInformation.keySet()) {
+			if (PlexMod.socialMediaLinks.containsKey(item)) {
+				Plex.minecraft.renderEngine.bindTexture(PlexMod.socialMediaRenderInformation.get(item));
 				GuiScreen.drawScaledCustomSizeModalRect(positionX, positionY, 0.0F, 0.0F, 256, 256, iconSize, iconSize, 256.0F, 256.0F);
 				positionX -= positionIncrement;
 			}
@@ -344,8 +344,8 @@ public class PlexUIModMenuScreen extends GuiScreen {
 		int positionIncrement = iconSize + (iconSize / 6) + 2;
 		int positionX = this.width - ((barHeight - iconSize) / 2) - iconSize;
 		int positionY = ((barHeight - iconSize) / 2);
-		for (String item : PlexPlexMod.socialMediaRenderInformation.keySet()) {
-			if (PlexPlexMod.socialMediaLinks.containsKey(item)) {
+		for (String item : PlexMod.socialMediaRenderInformation.keySet()) {
+			if (PlexMod.socialMediaLinks.containsKey(item)) {
 				positionX -= positionIncrement;
 			}
 		}

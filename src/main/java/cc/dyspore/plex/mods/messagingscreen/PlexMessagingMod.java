@@ -1,6 +1,6 @@
 package cc.dyspore.plex.mods.messagingscreen;
 
-import cc.dyspore.plex.core.mineplex.PlexLobbyType;
+import cc.dyspore.plex.core.mineplex.PlexMPLobby;
 import cc.dyspore.plex.core.util.PlexUtilChat;
 import cc.dyspore.plex.mods.messagingscreen.channel.PlexMessagingChannelBase;
 import cc.dyspore.plex.mods.messagingscreen.translate.PlexMessagingChatMessageAdapter;
@@ -227,8 +227,8 @@ public class PlexMessagingMod extends PlexModBase {
 	}
 
 	@Override
-	public void lobbyUpdated(PlexLobbyType type) {
-		if (type.equals(PlexLobbyType.E_LOBBY_SWITCH)) {
+	public void lobbyUpdated(PlexMPLobby.LobbyType type) {
+		if (type.equals(PlexMPLobby.LobbyType.E_LOBBY_SWITCH)) {
 			this.channelManager.unreadyChannelsByClass(PlexMessagingCommunityChatChannel.class, false);
 			final PlexMessagingChannelManager finalManager = this.channelManager;
 			if (finalManager.selectedChannel != null) {

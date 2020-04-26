@@ -7,7 +7,7 @@ import java.util.TimerTask;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import cc.dyspore.plex.core.mineplex.PlexLobbyType;
+import cc.dyspore.plex.core.mineplex.PlexMPLobby;
 import cc.dyspore.plex.core.util.PlexUtilChat;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -92,7 +92,7 @@ public class PlexAutoThankMod extends PlexModBase {
 			this.thankQueue.cancelAll();
 			return;
 		}
-		if (Plex.gameState.currentLobby.type.equals(PlexLobbyType.CLANS_SERVER)) {
+		if (Plex.gameState.currentLobby.type.equals(PlexMPLobby.LobbyType.CLANS_SERVER)) {
 			this.lastThankWave = 0L;
 			this.thankQueue.cancelAll();
 			return;
@@ -204,8 +204,8 @@ public class PlexAutoThankMod extends PlexModBase {
 	}
 
 	@Override
-	public void lobbyUpdated(PlexLobbyType type) {
-		if (type.equals(PlexLobbyType.CLANS_SERVER)) {
+	public void lobbyUpdated(PlexMPLobby.LobbyType type) {
+		if (type.equals(PlexMPLobby.LobbyType.CLANS_SERVER)) {
 			new Timer().schedule(new TimerTask() {
 				public void run() {
 					PlexUtilChat.chatAddMessage(PlexUtilChat.PLEX + PlexUtilChat.chatStyleText("DARK_GRAY", "Note: AutoThank does not work on clans servers and is inactive until you leave this clans game."));

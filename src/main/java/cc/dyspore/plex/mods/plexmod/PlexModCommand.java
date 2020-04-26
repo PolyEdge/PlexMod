@@ -15,7 +15,7 @@ import cc.dyspore.plex.commands.client.PlexCommandHandler;
 import cc.dyspore.plex.commands.client.PlexCommandListener;
 import cc.dyspore.plex.core.PlexCore;
 
-public class PlexPlexCommand extends PlexCommandHandler {
+public class PlexModCommand extends PlexCommandHandler {
 	public Map<String, PlexCommandHandler> plexNamespace = new HashMap<String, PlexCommandHandler>();
 	public List<String> plexHelpMenu = new ArrayList<String>();
 	
@@ -38,7 +38,7 @@ public class PlexPlexCommand extends PlexCommandHandler {
 	@Override
 	public void processCommand(ICommandSender sender, String namespace, String[] args) throws CommandException {
 		if (args.length == 0) {
-			PlexCore.displayUIScreen(new PlexPlexUI());
+			PlexCore.displayUIScreen(new PlexModUI());
 		}
 		else if (args[0].equalsIgnoreCase("info")) {
 			PlexUtilChat.chatAddMessage(PlexUtilChat.getUiChatMessage("plex.modInfo"));

@@ -5,6 +5,7 @@ import cc.dyspore.plex.core.regex.chat.PlexCoreRegexChatMatch;
 
 import java.util.*;
 
+@Deprecated
 public class PlexCoreRegexManager {
     public static int MAX_CACHE = 2;
     private static List<Map.Entry<IChatComponent, PlexCoreRegexChatMatch>> cache = new ArrayList<>();

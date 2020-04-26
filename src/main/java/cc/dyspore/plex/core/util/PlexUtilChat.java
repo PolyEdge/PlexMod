@@ -5,38 +5,35 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IChatComponent;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class PlexUtilChat {
+    public static char FORMAT_SYMBOL_CHAR = (char) 167;
+    public static String FORMAT_SYMBOL = Character.toString(FORMAT_SYMBOL_CHAR);
+
     public static final String PLEX = chatStyleText("GOLD", "Plex") + chatStyleText("BLACK", ">") + chatStyleText("RESET", " ");
-    public static String FORMAT_SYMBOL = Character.toString ((char) 167);
-    public static Map<String, Integer> colourCode = new HashMap<>();
+    public static Map<String, Integer> colours = new HashMap<>();
+
+    public static PlexUtilCache<IChatComponent, String> formattedTextCache = new PlexUtilCache<>(20, true);
 
     static {
-        colourCode.put(null, 0xffffff);
-        colourCode.put("0", 0x000000);
-        colourCode.put("1", 0x0000aa);
-        colourCode.put("2", 0x00aa00);
-        colourCode.put("3", 0x00aaaa);
-        colourCode.put("4", 0xaa0000);
-        colourCode.put("5", 0xaa00aa);
-        colourCode.put("6", 0xffaa00);
-        colourCode.put("7", 0xaaaaaa);
-        colourCode.put("8", 0x555555);
-        colourCode.put("9", 0x5555ff);
-        colourCode.put("a", 0x55ff55);
-        colourCode.put("b", 0x55ffff);
-        colourCode.put("c", 0xff5555);
-        colourCode.put("d", 0xff55ff);
-        colourCode.put("e", 0xffff55);
-        colourCode.put("f", 0xffffff);
-    }
-
-    public static void chatAddMessage(String message) {
-        chatAddMessage(new ChatComponentText(message));
+        colours.put(null, 0xffffff);
+        colours.put("0", 0x000000);
+        colours.put("1", 0x0000aa);
+        colours.put("2", 0x00aa00);
+        colours.put("3", 0x00aaaa);
+        colours.put("4", 0xaa0000);
+        colours.put("5", 0xaa00aa);
+        colours.put("6", 0xffaa00);
+        colours.put("7", 0xaaaaaa);
+        colours.put("8", 0x555555);
+        colours.put("9", 0x5555ff);
+        colours.put("a", 0x55ff55);
+        colours.put("b", 0x55ffff);
+        colours.put("c", 0xff5555);
+        colours.put("d", 0xff55ff);
+        colours.put("e", 0xffff55);
+        colours.put("f", 0xffffff);
     }
 
     public static void chatAddMessage(IChatComponent message) {
@@ -47,8 +44,24 @@ public class PlexUtilChat {
         }
     }
 
+    public static void chatAddMessage(String message) {
+        chatAddMessage(new ChatComponentText(message));
+    }
+
+    public static void chatAddPrefixed(String message) {
+        chatAddMessage(PLEX + message);
+    }
+
     public static boolean chatIsMessage(byte messageType) {
         return (messageType == (byte) 0) || (messageType == (byte) 1);
+    }
+
+    public static String getFormattedChatText(IChatComponent ichatcomponent) {
+        String value = formattedTextCache.get(ichatcomponent);
+        if (value != null) {
+            return value;
+        }
+        return formattedTextCache.put(ichatcomponent, ichatcomponent.getFormattedText());
     }
 
     public static String chatStyleText(String ...args) {
@@ -183,7 +196,7 @@ public class PlexUtilChat {
 
     /**
      * Converts non-escaped ampersands with a subsequent valid formatting character in a string to formatting codes
-     * [Shortcut method to chatFromAmpersand(text, escape) with escape set to false]
+     * [Shortcut method to chatFromAmpersand(text, escape) with unescape set to false]
      *
      * @param input The chat message
      * @return the chat message, valid ampersands converted to formatting codes
@@ -194,7 +207,6 @@ public class PlexUtilChat {
 
     /**
      * Converts non-escaped ampersands with a subsequent valid formatting character in a string to formatting codes
-     * [Shortcut method to chatFromAmpersand(text, escape) with escape set to false]
      *
      * @param input The chat message
      * @param unescape Determines whether backslashes used to escape ampersands will be removed.
@@ -207,4 +219,32 @@ public class PlexUtilChat {
         }
         return input;
     }
+
+    /**
+     * Converts non-escaped ampersands in a string to formatting codes
+     * [Shortcut method to chatFromAnyAmpersand(text, escape) with unescape set to false]
+     *
+     * @param input The chat message
+     * @return the chat message, all ampersands converted to formatting codes
+     */
+    public static String chatFromAnyAmpersand(String input) {
+        return chatFromAmpersand(input, false);
+    }
+
+    /**
+     * Converts non-escaped ampersands in a string to formatting codes
+     *
+     * @param input The chat message
+     * @param unescape Determines whether backslashes used to escape ampersands will be removed.
+     * @return the chat message, all ampersands converted to formatting codes
+     */
+    public static String chatFromAnyAmpersand(String input, boolean unescape) {
+        input = input.replaceAll("(?<!\\\\)(?:((?:\\\\\\\\)*))&([0-9a-fA-FkKlLmMnNoOrR])", "$1" + FORMAT_SYMBOL + "$2");
+        if (unescape) {
+            input = input.replaceAll("\\\\(&[0-9a-fA-FkKlLmMnNoOrR])", "$1");
+        }
+        return input;
+    }
 }
+
+

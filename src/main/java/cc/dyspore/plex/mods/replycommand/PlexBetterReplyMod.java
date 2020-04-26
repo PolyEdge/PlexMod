@@ -49,12 +49,10 @@ public class PlexBetterReplyMod extends PlexModBase {
 		
 		PlexCore.registerUiTab("Reply", PlexBetterReplyUI.class);
 		
-		Plex.plexCommand.addPlexHelpCommand("reply", "Displays messagingscreen enhancements options");
+		Plex.plexCommand.addPlexHelpCommand("reply", "Displays messaging screen enhancements options");
 		Plex.plexCommand.addHelpCommand("rr", "$partial username", "Messages somebody who you have messaged with previously (without typing full ign)");
-		Plex.plexCommand.addHelpCommand("dms", "%page", "Shows DM history");
-		Plex.plexCommand.addHelpCommand("dms", "$user", "%page", "Shows previous DMs between you and a user.");
 
-		this.replyListener.setEnabled(this.modEnabled);
+		this.replyListener.setDisabledAction(PlexCommandListener.DisabledAction.PASSTHROUGH);
 	}
 	
 	@SubscribeEvent
@@ -89,6 +87,5 @@ public class PlexBetterReplyMod extends PlexModBase {
 	public void saveModConfig() {
 		this.modSetting("better_reply_enabled", false).set(this.modEnabled);
 		this.modSetting("reply_timeout_seconds", 300).set(this.replyTimeoutSeconds);
-		this.replyListener.setEnabled(this.modEnabled);
 	}
 }

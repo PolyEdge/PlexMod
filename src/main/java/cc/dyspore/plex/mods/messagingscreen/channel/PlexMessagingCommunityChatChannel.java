@@ -43,7 +43,7 @@ public class PlexMessagingCommunityChatChannel extends PlexMessagingChannelBase 
 		if (this.getTag("comColour") == null) {
 			return 0xffffffff;
 		}
-		return PlexUtilChat.colourCode.get(this.getTag("comColour"));
+		return PlexUtilChat.colours.get(this.getTag("comColour"));
 	}
 
 	@Override

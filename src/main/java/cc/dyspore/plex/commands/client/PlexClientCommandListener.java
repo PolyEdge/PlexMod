@@ -1,21 +1,19 @@
 package cc.dyspore.plex.commands.client;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.StringJoiner;
+import java.util.*;
 
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
+import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.util.BlockPos;
 import cc.dyspore.plex.Plex;
 
-public class PlexCommandListenerClientCommandListener extends CommandBase {
+public class PlexClientCommandListener implements ICommand {
 	public String commandName;
 	public PlexCommandListener parent;
 	
-	public PlexCommandListenerClientCommandListener(String commandName, PlexCommandListener parent) {
+	public PlexClientCommandListener(String commandName, PlexCommandListener parent) {
 		this.commandName = commandName;
 		this.parent = parent;
 	}
@@ -26,7 +24,7 @@ public class PlexCommandListenerClientCommandListener extends CommandBase {
 		return allArgs.toArray(new String[0]);
 	}
 
-	public void sendAsPlayerCommand(String[] args) {
+	public void sendToServer(String[] args) {
 		if (args.length == 0 || !args[0].toLowerCase().equals(this.commandName.toLowerCase())) {
 			args = this.getArgs(args);
 		}
@@ -46,23 +44,34 @@ public class PlexCommandListenerClientCommandListener extends CommandBase {
 	public String getCommandUsage(ICommandSender sender) {
 		return null;
 	}
-	
-	public boolean canSenderUseCommand(ICommandSender sender) {
+
+	@Override
+	public List<String> getCommandAliases() {
+		return Collections.emptyList();
+	}
+
+	@Override
+	public void processCommand(ICommandSender sender, String[] args) throws CommandException {
+		this.parent.processCommand(this, sender, this.getArgs(args));
+	}
+
+	@Override
+	public List<String> addTabCompletionOptions(ICommandSender sender, String[] args, BlockPos pos) {
+		return this.parent.processTabCompletion(this, sender, this.getArgs(args), pos);
+	}
+
+	@Override
+	public boolean canCommandSenderUseCommand(ICommandSender sender) {
 		return true;
 	}
 	
 	@Override
-	public int getRequiredPermissionLevel() {
-		return 0;
+	public boolean isUsernameIndex(String[] args, int index) {
+		return false;
 	}
-	
+
 	@Override
-	public void processCommand(ICommandSender sender, String[] args) throws CommandException {
-		this.parent.processCommand(this, sender, this.getArgs(args));
-	}	
-	
-	@Override
-	public List<String> addTabCompletionOptions(ICommandSender sender, String[] args, BlockPos pos) {
-		return this.parent.processTabCompletion(this, sender, this.getArgs(args), pos);
+	public int compareTo(ICommand command) {
+		return this.getCommandName().compareTo(command.getCommandName());
 	}
 }

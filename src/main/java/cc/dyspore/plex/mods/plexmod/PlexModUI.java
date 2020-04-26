@@ -6,7 +6,7 @@ import cc.dyspore.plex.ui.PlexUIBase;
 import cc.dyspore.plex.ui.PlexUIModMenuScreen;
 import cc.dyspore.plex.ui.widget.PlexUISlider;
 
-public class PlexPlexUI extends PlexUIBase {
+public class PlexModUI extends PlexUIBase {
 
 	@Override
 	public String uiGetTitle() {

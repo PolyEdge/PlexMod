@@ -7,12 +7,12 @@ import java.util.List;
 import java.util.Random;
 
 import cc.dyspore.plex.core.PlexCore;
+import cc.dyspore.plex.core.mineplex.PlexMPLobby;
 import cc.dyspore.plex.core.util.PlexUtilChat;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import cc.dyspore.plex.Plex;
-import cc.dyspore.plex.core.mineplex.PlexLobbyType;
 import cc.dyspore.plex.core.PlexModBase;
 
 public class PlexAutoGGMod extends PlexModBase {
@@ -260,7 +260,7 @@ public class PlexAutoGGMod extends PlexModBase {
 	}
 
 	@Override
-	public void lobbyUpdated(PlexLobbyType type) {
+	public void lobbyUpdated(PlexMPLobby.LobbyType type) {
 		this.gameOverTime = null;
 		this.sentGG = false;
 		this.scheduleGGatChatUnsilence = false;

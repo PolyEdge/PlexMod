@@ -1,11 +1,11 @@
-package cc.dyspore.plex.core;
+package cc.dyspore.plex.core.util;
 
 import cc.dyspore.plex.core.util.PlexUtilMojang;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class PlexCorePersistentPlayerManager {
+public class PlexUtilPlayers {
     public Map<String, String> uuidToName = new HashMap<>();
 
     public String updatePlayerData(String playerData) {
