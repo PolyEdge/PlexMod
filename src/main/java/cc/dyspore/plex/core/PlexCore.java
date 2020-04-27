@@ -21,7 +21,7 @@ public class PlexCore {
 	private static List<PlexUITab> uiTabList = new ArrayList<>();
 
 	private static PlexCoreEventLoop eventLoopMods = PlexCoreEventLoop.create("modLoop").setClock(50);
-	private static PlexCoreEventLoop eventLoopInternal = PlexCoreEventLoop.create("modLoop").setClock(25);
+	private static PlexCoreEventLoop eventLoopInternal = PlexCoreEventLoop.create("internalLoop").setClock(25);
 
 	private PlexCore() {
 	}
