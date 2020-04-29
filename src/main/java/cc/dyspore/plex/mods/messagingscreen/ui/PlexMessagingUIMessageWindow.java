@@ -414,7 +414,7 @@ public final class PlexMessagingUIMessageWindow extends GuiScreen {
 					this.drawMessage(message, itemStartY, messageState);
 					if (this.hoverEventsEnabled) {
 						PlexMessagingMessageHoverState hoverState = this.getMessageHoverState(message, itemStartY, messageState, mouseX, mouseY);
-						if (hoverState.IS_SELECTED) {
+						if (hoverState.isSelected) {
 							this.processMouseHover(message, hoverState, message.callbacks);
 						}
 					}
@@ -452,7 +452,7 @@ public final class PlexMessagingUIMessageWindow extends GuiScreen {
 				renderItem = true;
 				author = true;
 				if (previousMessage != null) {
-					if (previousMessage.author.equals(message.author) && previousMessage.position.equals(message.position)) {
+					if (previousMessage.author.equals(message.author) && previousMessage.position == message.position) {
 						author = false;
 					}
 				}
@@ -498,7 +498,7 @@ public final class PlexMessagingUIMessageWindow extends GuiScreen {
 				renderItem = true;
 				author = true;
 				if (previousMessage != null) {
-					if (previousMessage.author.equals(message.author) && previousMessage.position.equals(message.position)) {
+					if (previousMessage.author.equals(message.author) && previousMessage.position == message.position) {
 						author = false;
 					}
 				}
@@ -509,7 +509,7 @@ public final class PlexMessagingUIMessageWindow extends GuiScreen {
 			if (renderItem) {
 				int itemStartY = this.getChatStartY() + (currentY - viewportTop);
 				PlexMessagingMessageHoverState hoverState = this.getMessageHoverState(message, itemStartY, messageState, mouseX, mouseY);
-				if (hoverState.IS_SELECTED) {
+				if (hoverState.isSelected) {
 					return hoverState;
 				}
 				int itemTotalHeight = this.getRenderData(message, messageState).totalHeight;
@@ -657,7 +657,7 @@ public final class PlexMessagingUIMessageWindow extends GuiScreen {
 				renderItem = true;
 				author = true;
 				if (previousMessage != null) {
-					if (previousMessage.author.equals(message.author) && previousMessage.position.equals(message.position)) {
+					if (previousMessage.author.equals(message.author) && previousMessage.position == message.position) {
 						author = false;
 					}
 				}
@@ -674,7 +674,7 @@ public final class PlexMessagingUIMessageWindow extends GuiScreen {
 					this.drawMessage(message, itemStartY, messageState);
 					if (this.hoverEventsEnabled) {
 						PlexMessagingMessageHoverState hoverState = this.getMessageHoverState(message, itemStartY, messageState, mouseX, mouseY);
-						if (hoverState.IS_SELECTED) {
+						if (hoverState.isSelected) {
 							this.processMouseHover(message, hoverState, message.callbacks);
 						}
 					}

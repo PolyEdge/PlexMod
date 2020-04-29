@@ -3,45 +3,45 @@ package cc.dyspore.plex.mods.messagingscreen.render;
 import cc.dyspore.plex.mods.messagingscreen.PlexMessagingMessage;
 
 public class PlexMessagingMessageHoverState {
-	public boolean IS_SELECTED = false;
+	public boolean isSelected = false;
 
 	public int mouseX = 0;
 	public int mouseY = 0;
 	public String selectedWord = null;
-	public Integer localStringOffset = null;
-	public Integer globalStringOffset = null;
+	public int localStringOffset;
+	public int globalStringOffset;
 	public PlexMessagingMessageTextData selectedLine = null;
 	public boolean messageSelected = false;
 	public boolean headSelected = false;
 	public boolean authorSelected = false;
 	public PlexMessagingMessage message;
 	
-	public PlexMessagingMessageHoverState SET_SELECTED(boolean selected) {
-		this.IS_SELECTED = selected;
+	private PlexMessagingMessageHoverState setSelected(boolean selected) {
+		this.isSelected = selected;
 		return this;
 	}
 	
-	public PlexMessagingMessageHoverState SET_SELECTED_IF_TRUE(boolean ifTrue) {
+	private PlexMessagingMessageHoverState setSelectedIfTrue(boolean ifTrue) {
 		if (ifTrue) {
-			this.IS_SELECTED = true;
+			this.isSelected = true;
 		}
 		return this;
 	}
 	
 	public PlexMessagingMessageHoverState setMessageSelected(boolean selected) {
-		this.SET_SELECTED_IF_TRUE(selected);
+		this.setSelectedIfTrue(selected);
 		this.messageSelected = selected;
 		return this;
 	}
 	
 	public PlexMessagingMessageHoverState setAuthorSelected(boolean selected) {
-		this.SET_SELECTED_IF_TRUE(selected);
+		this.setSelectedIfTrue(selected);
 		this.authorSelected = selected;
 		return this;
 	}
 	
 	public PlexMessagingMessageHoverState setHeadSelected(boolean selected) {
-		this.SET_SELECTED_IF_TRUE(selected);
+		this.setSelectedIfTrue(selected);
 		this.headSelected = selected;
 		return this;
 	}
@@ -52,25 +52,25 @@ public class PlexMessagingMessageHoverState {
 	}
 	
 	public PlexMessagingMessageHoverState setSelectedWord(String word) {
-		this.SET_SELECTED_IF_TRUE(word != null);
+		this.setSelectedIfTrue(word != null);
 		this.selectedWord = word;
 		return this;
 	}
 
 	public PlexMessagingMessageHoverState setSelectedLine(PlexMessagingMessageTextData line) {
-		this.SET_SELECTED_IF_TRUE(line != null);
+		this.setSelectedIfTrue(line != null);
 		this.selectedLine = line;
 		return this;
 	}
 
 	public PlexMessagingMessageHoverState setHoveredLocalStringOffset(int stringOffset) {
-		this.SET_SELECTED_IF_TRUE(stringOffset != -1);
+		this.setSelectedIfTrue(stringOffset != -1);
 		this.localStringOffset = stringOffset;
 		return this;
 	}
 
 	public PlexMessagingMessageHoverState setHoveredGlobalStringOffset(int stringOffset) {
-		this.SET_SELECTED_IF_TRUE(stringOffset != -1);
+		this.setSelectedIfTrue(stringOffset != -1);
 		this.globalStringOffset = stringOffset;
 		return this;
 	}

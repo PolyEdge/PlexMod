@@ -22,7 +22,7 @@ public class PlexBetterReplyCommand extends PlexCommandHandler {
 	@Override
 	public void processCommand(ICommandSender sender, String namespace, String[] args) throws CommandException {
 		PlexBetterReplyMod instance = PlexCore.modInstance(PlexBetterReplyMod.class);
-		if (namespace.equals("plex.messages")) {
+		if (namespace.equals("plex.reply")) {
 			PlexCore.displayUIScreen(new PlexBetterReplyUI());
 		}
 		else if (namespace.equals("r")) {

@@ -65,9 +65,9 @@ public class PlexCommandQueueManager {
 	}
 	
 	public void removeCompleted(List<PlexCommandQueueCommand> commandList) {
-		List<PlexCommandQueueCommand> completed = new ArrayList<PlexCommandQueueCommand>();
+		List<PlexCommandQueueCommand> completed = new ArrayList<>();
 		for (PlexCommandQueueCommand command : commandList) {
-			if (command.isTerminate()) {
+			if (command.isDone()) {
 				completed.add(command);
 			}
 		}
@@ -105,7 +105,7 @@ public class PlexCommandQueueManager {
 		List<PlexCommandQueueCommand> potentialCommands = new ArrayList<>();
 
 		for (PlexCommandQueueCommand command : queueList) {
-			if (command.isSent() && !command.isTerminate() && command.getBlocksQueue()) {
+			if (command.isSent() && !command.isDone() && command.getBlocksQueue()) {
 				context.blockingGroups.add(command.getGroup());
 			}
 		}

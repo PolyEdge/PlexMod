@@ -14,10 +14,10 @@ public class PlexChatStreamUI extends PlexUIBase {
 
 	@Override
 	public void initGui(PlexUIModMenuScreen ui) {
-		Integer top = ui.startingYPos(92);
-		Integer paneSize = ui.centeredPaneSize(2, 20, 160);
-		Integer pane1Pos = ui.centeredPanePos(-1, 2, 20, 160);
-		Integer pane2Pos = ui.centeredPanePos(0, 2, 20, 160);
+		int top = ui.startingYPos(92);
+		int paneSize = ui.centeredPaneSize(2, 20, 160);
+		int pane1Pos = ui.centeredPanePos(-1, 2, 20, 160);
+		int pane2Pos = ui.centeredPanePos(0, 2, 20, 160);
 
 		PlexChatStreamMod modInstance = PlexCore.modInstance(PlexChatStreamMod.class);
 		
@@ -49,15 +49,15 @@ public class PlexChatStreamUI extends PlexUIBase {
 	
 	public String filtrationLevelDisplayString() {
         PlexChatStreamMod modInstance = PlexCore.modInstance(PlexChatStreamMod.class);
-		Integer level = modInstance.lobbyFiltrationLevel;
-		return "Lobby Chat Filter: " + (level.equals(0) ? "Disabled" : (level));
+		int level = modInstance.lobbyFiltrationLevel;
+		return "Lobby Chat Filter: " + (level == 0 ? "Disabled" : (level));
 	}
 	
 	public String barReductionDisplayString() {
 		PlexChatStreamMod modInstance = PlexCore.modInstance(PlexChatStreamMod.class);
-		Integer level = modInstance.barReductionIndex;
+		int level = modInstance.barReductionIndex;
 		java.util.Map.Entry<Integer, Integer> barReductionValues = modInstance.BAR_REDUCTION.get(level);
-		return "Bar Reduction: " + (level.equals(0) ? "Disabled" : ((float) barReductionValues.getValue() / (float) barReductionValues.getKey() * 100) + "%");
+		return "Bar Reduction: " + (level == 0 ? "Disabled" : ((float) barReductionValues.getValue() / (float) barReductionValues.getKey() * 100) + "%");
 	}
 	
 	@Override
@@ -74,7 +74,7 @@ public class PlexChatStreamUI extends PlexUIBase {
 	}
 
 	@Override
-	public Integer pageForegroundColour() {
+	public int pageForegroundColour() {
 		return 0xff0cb2ff;
 	}
 

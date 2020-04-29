@@ -17,15 +17,19 @@ public class PlexMessagingMessage {
 	public int POSITION_LEFT = 0;
 	public int POSITION_RIGHT = 1;
 	
-	public Integer type = 0;
+	public int type = 0;
 	public String content = "";
-	public Integer defaultColour = 0xb5b5b5;
-	public Integer colour;
-	public Integer defaultBackgroundColour = 0x65757575;
-	public Integer backgroundColour;
+
+	public int colour;
+	public int backgroundColour;
+	public boolean hasColour = false;
+	public boolean hasBackgroundColour = false;
+	public int defaultColour = 0xb5b5b5;
+	public int defaultBackgroundColour = 0x65757575;
+
 	public String author = "";
 	public Long time = 0L;
-	public Integer position = 0;
+	public int position = 0;
 	public String playerHead = null;
 
 	public Boolean countsAsUnread = true;
@@ -80,16 +84,28 @@ public class PlexMessagingMessage {
 		return this;
 	}
 	
-	public PlexMessagingMessage setColour(Integer colour) {
+	public PlexMessagingMessage setColour(int colour) {
 		this.colour = colour;
+		this.hasColour = true;
 		return this;
 	}
 	
-	public PlexMessagingMessage setBackgroundColour(Integer colour) {
+	public PlexMessagingMessage setBackgroundColour(int colour) {
 		this.backgroundColour = colour;
+		this.hasBackgroundColour = true;
 		return this;
 	}
-	
+
+	public PlexMessagingMessage removeColour() {
+		this.hasColour = false;
+		return this;
+	}
+
+	public PlexMessagingMessage removeBackgroundColour() {
+		this.hasBackgroundColour = false;
+		return this;
+	}
+
 	public PlexMessagingMessage setContent(String content) {
 		this.content = content;
 		return this;
@@ -126,7 +142,7 @@ public class PlexMessagingMessage {
 	}
 	
 	public int getColour() {
-		if (this.colour != null) {
+		if (this.hasColour) {
 			return this.colour;
 		}
 		if (this.channel != null) {
@@ -136,13 +152,13 @@ public class PlexMessagingMessage {
 	}
 	
 	public int getBackgroundColour() {
-		if (this.backgroundColour != null) {
+		if (this.hasBackgroundColour) {
 			return this.backgroundColour;
 		}
 		if (this.channel != null) {
 			return this.channel.getMessageBackgroundColour();
 		}
-		return this.defaultColour;
+		return this.defaultBackgroundColour;
 	}
 
 	public String getBreakdownItemByIndex(int index) {

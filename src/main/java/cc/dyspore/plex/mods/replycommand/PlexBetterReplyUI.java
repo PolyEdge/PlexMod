@@ -15,9 +15,9 @@ public class PlexBetterReplyUI extends PlexUIBase {
 	@Override
 	public void initGui(PlexUIModMenuScreen ui) {
 		PlexBetterReplyMod instance = PlexCore.modInstance(PlexBetterReplyMod.class);
-		Integer top = ui.startingYPos(52);
-		Integer paneSize = ui.centeredPaneSize(1, 20, 160);
-		Integer pane1Pos = ui.centeredPanePos(0, 1, 20, 160);
+		int top = ui.startingYPos(52);
+		int paneSize = ui.centeredPaneSize(1, 20, 160);
+		int pane1Pos = ui.centeredPanePos(0, 1, 20, 160);
 		ui.addElement(new GuiButton(5, pane1Pos + 5, top + 0, paneSize - 10, 20, buttonDisplayString("Better Reply", instance.modEnabled)));
 		ui.addElement(new PlexUISlider(this, 6, pane1Pos + 5, top + 23, paneSize - 10, 20, (float)instance.replyTimeoutSeconds / PlexBetterReplyMod.MAX_REPLY_TIMEOUT, timeoutDisplayString()));
 	}
@@ -42,7 +42,7 @@ public class PlexBetterReplyUI extends PlexUIBase {
 	}
 	
 	@Override
-	public Integer pageForegroundColour() {
+	public int pageForegroundColour() {
 		return 0xff0cff28;
 	}
 

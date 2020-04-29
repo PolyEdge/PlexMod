@@ -8,8 +8,11 @@ import net.minecraft.util.IChatComponent;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 
 import java.awt.Desktop;
+import java.io.IOException;
 import java.lang.reflect.Field;
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.time.OffsetDateTime;
 import java.util.*;
@@ -37,16 +40,16 @@ public class PlexUtil {
 
 	// clamping
 	
-	public static Integer clamp(Integer num, Integer min, Integer max) {
-		return ((min == null && max == null) ? num : (min == null ? (num <= max ? num : max) : (max == null ? (num >= min ? num : min) : (num >= min ? (num <= max ? num : max) : min))));
+	public static int clamp(int num, int min, int max) {
+		return Math.max(min, Math.min(max, num));
 	}
 	
-	public static Float clamp(Float num, Float min, Float max) {
-		return ((min == null && max == null) ? num : (min == null ? (num <= max ? num : max) : (max == null ? (num >= min ? num : min) : (num >= min ? (num <= max ? num : max) : min))));
+	public static float clamp(float num, float min, float max) {
+		return Math.max(min, Math.min(max, num));
 	}
-	
-	public static Long clamp(Long num, Long min, Long max) {
-		return ((min == null && max == null) ? num : (min == null ? (num <= max ? num : max) : (max == null ? (num >= min ? num : min) : (num >= min ? (num <= max ? num : max) : min))));
+
+	public static long clamp(long num, long min, long max) {
+		return Math.max(min, Math.min(max, num));
 	}
 
 	// colour operations
@@ -54,13 +57,13 @@ public class PlexUtil {
 	// misc
 
 	public static List<String> matchStringToList(String input, List<String> list) {
-		ArrayList<String> matches = new ArrayList<String>();
+		ArrayList<String> matches = new ArrayList<>();
 		for (String item : list) {
 			if (item.toLowerCase().contains(input.toLowerCase())) {
 				matches.add(item);
 			}
 			if (item.equalsIgnoreCase(input)) {
-				List<String> output = new ArrayList<String>();
+				List<String> output = new ArrayList<>();
 				output.add(item);
 				return output;
 			}
@@ -68,7 +71,7 @@ public class PlexUtil {
 		if (matches.size() < 2) {
 			return matches;
 		}
-		ArrayList<String> prefixMatches = new ArrayList<String>();
+		ArrayList<String> prefixMatches = new ArrayList<>();
 		for (String item : matches) {
 			if (item.toLowerCase().startsWith(input.toLowerCase())) {
 				prefixMatches.add(item);
@@ -98,10 +101,10 @@ public class PlexUtil {
 
 	// pages
 	
-	public static <T> List<T> listPage(Integer page, Integer pageSize, List<T> list) {
-		List<T> output = new ArrayList<T>();
-		Integer index = (page - 1) * pageSize;
-		for (Integer indexAdd = 0; indexAdd < pageSize; indexAdd++) {
+	public static <T> List<T> listPage(int page, int pageSize, List<T> list) {
+		List<T> output = new ArrayList<>();
+		int index = (page - 1) * pageSize;
+		for (int indexAdd = 0; indexAdd < pageSize; indexAdd++) {
 			if (index + indexAdd >= list.size()) {
 				break;
 			}
@@ -110,38 +113,38 @@ public class PlexUtil {
 		return output;
 	}
 	
-	public static <T> int listPageCount(Integer pageSize, List<T> list) {
+	public static <T> int listPageCount(int pageSize, List<T> list) {
 		if (list.size() == 0) {
 			return 1;
 		}
-		return 1 + (int) Math.floor(((double) list.size() - 1.0D) / Double.valueOf(pageSize));
+		return 1 + (int) Math.floor(((double) list.size() - 1.0D) / (double) pageSize);
 	}
 	
-	public static int listSizePage(Integer pageSize, Integer itemCount) {
+	public static int listSizePage(int pageSize, int itemCount) {
 		if (itemCount == 0) {
 			return 1;
 		}
-		return 1 + (int) Math.floor((Double.valueOf(itemCount) - 1.0D) / Double.valueOf(pageSize));
+		return 1 + (int) Math.floor(((double) itemCount - 1.0D) / (double) pageSize);
 	}
 
 	// network
 	
-	public static void openWebsite(String url) {
+	public static void openURL(String url) {
+		if (!Desktop.isDesktopSupported()) {
+			return;
+		}
+		Desktop desktop = Desktop.getDesktop();
+		if (!desktop.isSupported(Desktop.Action.BROWSE)) {
+			return;
+		}
+		if (!(url.toLowerCase().startsWith("http://") || url.toLowerCase().startsWith("https://"))) {
+			url = "http://" + url;
+		}
 		try {
-			if (!Desktop.isDesktopSupported()) {
-				return;
-			}
-			Desktop desktop = Desktop.getDesktop();
-			if (!desktop.isSupported(Desktop.Action.BROWSE)) {
-				return;
-			}
-			if (!(url.toLowerCase().startsWith("http://") || url.toLowerCase().startsWith("https://"))) {
-				url = "http://" + url;
-			}
 			URI uri = new URL(url).toURI();
 			desktop.browse(uri);
 		}
-		catch (Exception e) {}
+		catch (IOException | URISyntaxException ignored) {}
 	}
 
 	// data

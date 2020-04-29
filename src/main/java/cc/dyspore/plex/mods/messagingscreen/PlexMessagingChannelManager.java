@@ -17,7 +17,7 @@ public class PlexMessagingChannelManager {
 	public boolean autoReady = true;
 	public List<PlexMessagingChannelBase> channels = new ArrayList<>();
 	public List<PlexMessagingChannelBase> displayedChannels = new ArrayList<>();
-	public Long lastChannelChange = 0L;
+	public long lastChannelChange = 0L;
 	
 	public PlexMessagingChannelManager() {
 		MinecraftForge.EVENT_BUS.register(this);

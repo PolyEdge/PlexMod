@@ -69,7 +69,7 @@ public class PlexCoreEventLoop {
             synchronized (this.loopTasks) {
                 this.updateTaskLists();
             }
-            sleep = this.threadDoLoop();
+            sleep = this.doLoop();
         }
     }
 
@@ -112,7 +112,7 @@ public class PlexCoreEventLoop {
         }
     }
 
-    private long threadDoLoop() {
+    private long doLoop() {
         boolean doTasks = this.runTasks.get();
         long clock = this.clockMs.get();
         this.runTasksCallback.set(doTasks);

@@ -18,7 +18,7 @@ public class PlexMessagingPartyChatChannel extends PlexMessagingSingleEntityChan
 	}
 	
 	@Override
-	public Integer getDisplayColour() {
+	public int getDisplayColour() {
 		return 0xffe820e8;
 	}
 
@@ -34,7 +34,7 @@ public class PlexMessagingPartyChatChannel extends PlexMessagingSingleEntityChan
 	}
 
 	@Override
-	public Integer getMaxMessageLength() {
+	public int getMaxMessageLength() {
 		return 99;
 	}
 }

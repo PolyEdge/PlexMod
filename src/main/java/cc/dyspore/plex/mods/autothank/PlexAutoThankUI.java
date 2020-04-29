@@ -14,9 +14,9 @@ public class PlexAutoThankUI extends PlexUIBase {
 
 	@Override
 	public void initGui(PlexUIModMenuScreen ui) {
-		Integer top = ui.startingYPos(41);
-		Integer paneSize = ui.centeredPaneSize(1, 20, 160);
-		Integer pane1Pos = ui.centeredPanePos(0, 1, 20, 160);
+		int top = ui.startingYPos(41);
+		int paneSize = ui.centeredPaneSize(1, 20, 160);
+		int pane1Pos = ui.centeredPanePos(0, 1, 20, 160);
 		ui.addElement(new GuiButton(5, pane1Pos + 5, top + 0, paneSize - 10, 20, buttonDisplayString("AutoThank", PlexCore.modInstance(PlexAutoThankMod.class).modEnabled)));
 		ui.addElement(new GuiButton(6, pane1Pos + 5, top + 23, paneSize - 10, 20, buttonDisplayString("Compact Messages", PlexCore.modInstance(PlexAutoThankMod.class).compactMessagesEnabled)));
 
@@ -31,7 +31,7 @@ public class PlexAutoThankUI extends PlexUIBase {
 	}
 	
 	@Override
-	public Integer pageForegroundColour() {
+	public int pageForegroundColour() {
 		return 0xff00ffc3;
 	}
 

@@ -6,9 +6,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class PlexUtilPlayers {
-    public Map<String, String> uuidToName = new HashMap<>();
+    public static Map<String, String> uuidToName = new HashMap<>();
 
-    public String updatePlayerData(String playerData) {
+    public static String updatePlayerData(String playerData) {
         if (playerData.startsWith("!")) {
             playerData = playerData.substring(1);
         }
@@ -62,7 +62,7 @@ public class PlexUtilPlayers {
         return (updatedData ? "" : "!") + uuid + ":" + name;
     }
 
-    public boolean isPlayerDataUpdated(String playerData) {
+    public static boolean isPlayerDataUpdated(String playerData) {
         if (playerData.startsWith("!")) {
             playerData = playerData.substring(1);
         }
@@ -81,10 +81,10 @@ public class PlexUtilPlayers {
             uuid = PlexUtilMojang.toFormattedUUID(seperation[0]);
             name = seperation[1];
         }
-        return this.uuidToName.containsKey(uuid);
+        return uuidToName.containsKey(uuid);
     }
 
-    public String[] extractPlayerData(String playerData) {
+    public static String[] extractPlayerData(String playerData) {
         if (playerData.startsWith("!")) {
             playerData = playerData.substring(1);
         }
@@ -106,11 +106,11 @@ public class PlexUtilPlayers {
         return new String[] {uuid, name};
     }
 
-    public String getPlayerNameFromData(String name) {
-        return this.extractPlayerData(name)[1];
+    public static String getPlayerNameFromData(String name) {
+        return extractPlayerData(name)[1];
     }
 
-    public String getPlayerUUIDFromData(String name) {
-        return this.extractPlayerData(name)[0];
+    public static String getPlayerUUIDFromData(String name) {
+        return extractPlayerData(name)[0];
     }
 }

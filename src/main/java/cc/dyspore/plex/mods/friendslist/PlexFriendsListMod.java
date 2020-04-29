@@ -13,7 +13,7 @@ import cc.dyspore.plex.Plex;
 import cc.dyspore.plex.core.PlexCore;
 import cc.dyspore.plex.core.PlexModBase;
 
-public class PlexFriendsListEnhancementsMod extends PlexModBase {
+public class PlexFriendsListMod extends PlexModBase {
 	public String MATCH_LIST_TOP = "&b&m=+\\[&lFriends&b&m]=+";
 	public String MATCH_REQUEST_OUTGOING = "&c&lCancel - &7([a-zA-Z0-9_]{1,20}) Friendship Request";
 	public String MATCH_OFFLINE = "&c&lDelete - &7([a-zA-Z0-9_]{1,20}) - &7Offline for &7[0-9]+\\.{0,1}[0-9]{0,1} (Day|Hour|Minute|Second)(s){0,1}";
@@ -51,14 +51,14 @@ public class PlexFriendsListEnhancementsMod extends PlexModBase {
 
 		//PlexCore.registerCommandListener(new PlexClientCommandListener("ff"));
 		//PlexCore.registerCommandListener(new PlexClientCommandListener("fs"));
-		//PlexCore.registerCommandHandler("ff", new PlexFriendsListEnhancementsCommand());
-		//PlexCore.registerCommandHandler("fs", new PlexFriendsListEnhancementsCommand());
-		Plex.plexCommand.registerPlexCommand("friends", new PlexFriendsListEnhancementsCommand());
+		//PlexCore.registerCommandHandler("ff", new PlexFriendsListCommand());
+		//PlexCore.registerCommandHandler("fs", new PlexFriendsListCommand());
+		Plex.plexCommand.registerPlexCommand("friends", new PlexFriendsListCommand());
 		
 		Plex.plexCommand.addPlexHelpCommand("friends", "Displays friends list options");
 		Plex.plexCommand.addHelpCommand("ff search", "fs", "Searches your friends list for a player (chat only)");
 		
-		PlexCore.registerUiTab("Friends", PlexFriendsListEnhancementsUI.class);
+		PlexCore.registerUiTab("Friends", PlexFriendsListUI.class);
 	}
 	
 	@SubscribeEvent

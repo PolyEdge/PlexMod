@@ -358,17 +358,17 @@ public class PlexUIAutoCompleteTextField {
 
     public void autoCompleteWithItem(PlexUIAutoCompleteItem item) {
         this.setAutoCompleteListVisible(false);
-        String output = "";
+        StringBuilder output = new StringBuilder();
         String[] words = this.text.getText().split("\\s", -1);
-        if (this.text.getText().endsWith(" ")) {
-
-        }
+        //if (this.text.getText().endsWith(" ")) {
+        //
+        //}
         for (int wordIndex = 0; wordIndex < words.length - 1; wordIndex++) {
-            output = output + words[wordIndex] + " ";
+            output.append(words[wordIndex]).append(" ");
         }
-        output = output + item.autoCompleteText + " ";
+        output.append(item.autoCompleteText).append(" ");
         item.selected = false;
-        this.text.setText(output);
+        this.text.setText(output.toString());
         this.text.setCursorPositionEnd();
         if (this.clearFiltersOnComplete) {
             this.clearInclusionFilters();
@@ -387,16 +387,16 @@ public class PlexUIAutoCompleteTextField {
         this.autoCompleteList.setVisible(listVisible);
 
         if (listVisible) {
-            PlexUtilRender.drawGradientRect(this.autoCompleteList.startX, this.autoCompleteList.startY - 2, this.autoCompleteList.endX, this.autoCompleteList.endY + 2, PlexUtilColour.replace(this.listBackgroundColour, null, null, null, 230), PlexUtilColour.replace(this.listBackgroundColour, null, null, null, 230));
+            PlexUtilRender.drawGradientRect(this.autoCompleteList.startX, this.autoCompleteList.startY - 2, this.autoCompleteList.endX, this.autoCompleteList.endY + 2, PlexUtilColour.setAlpha(this.listBackgroundColour,  230), PlexUtilColour.setAlpha(this.listBackgroundColour, 230));
         }
 
         this.autoCompleteList.drawScreen(par1, par2, par3);
 
         if (listVisible) {
-            PlexUtilRender.drawGradientRect(this.autoCompleteList.startX - 1, this.autoCompleteList.startY - 15, this.autoCompleteList.endX + 1 , this.autoCompleteList.startY - 2,  PlexUtilColour.replace(this.listBackgroundColour, null, null, null, 255), PlexUtilColour.replace(this.listBackgroundColour, null, null, null, 255));
-            PlexUtilRender.drawGradientRect(this.autoCompleteList.startX - 1, this.autoCompleteList.startY - 2, this.autoCompleteList.endX + 1, this.autoCompleteList.startY, PlexUtilColour.replace(this.listBackgroundColour, null, null, null, 255), PlexUtilColour.replace(this.listBackgroundColour, null, null, null, 0));
-            PlexUtilRender.drawGradientRect(this.autoCompleteList.startX - 1, this.autoCompleteList.endY + 2, this.autoCompleteList.endX + 1, this.autoCompleteList.endY + 15, PlexUtilColour.replace(this.listBackgroundColour, null, null, null, 255), PlexUtilColour.replace(this.listBackgroundColour, null, null, null, 255));
-            PlexUtilRender.drawGradientRect(this.autoCompleteList.startX - 1, this.autoCompleteList.endY, this.autoCompleteList.endX + 1, this.autoCompleteList.endY + 2, PlexUtilColour.replace(this.listBackgroundColour, null, null, null, 0), PlexUtilColour.replace(this.listBackgroundColour, null, null, null, 255));
+            PlexUtilRender.drawGradientRect(this.autoCompleteList.startX - 1, this.autoCompleteList.startY - 15, this.autoCompleteList.endX + 1 , this.autoCompleteList.startY - 2,  PlexUtilColour.setAlpha(this.listBackgroundColour,  255), PlexUtilColour.setAlpha(this.listBackgroundColour,  255));
+            PlexUtilRender.drawGradientRect(this.autoCompleteList.startX - 1, this.autoCompleteList.startY - 2, this.autoCompleteList.endX + 1, this.autoCompleteList.startY, PlexUtilColour.setAlpha(this.listBackgroundColour, 255), PlexUtilColour.setAlpha(this.listBackgroundColour, 0));
+            PlexUtilRender.drawGradientRect(this.autoCompleteList.startX - 1, this.autoCompleteList.endY + 2, this.autoCompleteList.endX + 1, this.autoCompleteList.endY + 15, PlexUtilColour.setAlpha(this.listBackgroundColour,  255), PlexUtilColour.setAlpha(this.listBackgroundColour,  255));
+            PlexUtilRender.drawGradientRect(this.autoCompleteList.startX - 1, this.autoCompleteList.endY, this.autoCompleteList.endX + 1, this.autoCompleteList.endY + 2, PlexUtilColour.setAlpha(this.listBackgroundColour, 0), PlexUtilColour.setAlpha(this.listBackgroundColour, 255));
 
             PlexUtilRender.drawScaledHorizontalLine(this.autoCompleteList.startX - 1, this.autoCompleteList.endX, this.autoCompleteList.startY - 15, 0, 1.0F, this.listBorderColour);
             PlexUtilRender.drawScaledHorizontalLine(this.autoCompleteList.startX - 1, this.autoCompleteList.endX, this.autoCompleteList.endY + 15, 0, 1.0F, this.listBorderColour);

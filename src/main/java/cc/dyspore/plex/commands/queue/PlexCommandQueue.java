@@ -54,10 +54,10 @@ public class PlexCommandQueue {
     }
 
     public void removeCompleted() {
-        List<PlexCommandQueueCommand> completed = new ArrayList<PlexCommandQueueCommand>();
+        List<PlexCommandQueueCommand> completed = new ArrayList<>();
         synchronized (queueItems) {
             for (PlexCommandQueueCommand command : queueItems) {
-                if (command.isTerminate()) {
+                if (command.isDone()) {
                     completed.add(command);
                 }
             }

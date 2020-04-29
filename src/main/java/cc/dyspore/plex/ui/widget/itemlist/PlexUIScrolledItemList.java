@@ -101,7 +101,7 @@ public class PlexUIScrolledItemList extends GuiScreen {
 	}
 	
 	public int heightOrDefault(PlexUIScrolledItem item) {
-		Integer itemHeight = item.listItemGetHeight();
+		int itemHeight = item.listItemGetHeight();
 		return itemHeight <= 0 ? defaultEntryHeight : itemHeight;
 	}
 	
@@ -148,7 +148,7 @@ public class PlexUIScrolledItemList extends GuiScreen {
 					searchItems.add(items.get(index));
 				}
 			}
-			catch (Throwable e) {}
+			catch (Throwable ignored) {}
 		}
 		return searchItems;
 	}
@@ -318,13 +318,10 @@ public class PlexUIScrolledItemList extends GuiScreen {
 			String itemText = item.listItemGetText();
 			int itemForegroundColour = item.listItemGetForegroundColour();
 			int itemBackgroundColour = 0x60777777;
-			if ((Integer)itemForegroundColour == null) {
-				itemForegroundColour = 0xffffffff;
-			}
 			
 			if (isSelected) {
-				itemForegroundColour = PlexUtilColour.multiply(itemForegroundColour, 1.60F);
-				itemBackgroundColour = PlexUtilColour.multiply(itemBackgroundColour, 1.60F);
+				itemForegroundColour = PlexUtilColour.multiply(itemForegroundColour, 1.40F);
+				itemBackgroundColour = PlexUtilColour.multiply(itemBackgroundColour, 1.40F);
 			}
 			if (isMouseOver) {
 				itemForegroundColour = PlexUtilColour.multiply(itemForegroundColour, 1.20F);

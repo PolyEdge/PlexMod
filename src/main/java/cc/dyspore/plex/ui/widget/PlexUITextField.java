@@ -6,12 +6,12 @@ import net.minecraft.client.renderer.GlStateManager;
 
 public class PlexUITextField extends net.minecraft.client.gui.Gui {
 	public GuiTextField text;
-	public Integer id;
+	public int id;
 	public FontRenderer fontRendererInstance;
-	public Integer xPosition;
-	public Integer yPosition;
-	public Integer itemWidth;
-	public Integer itemHeight;
+	public int xPosition;
+	public int yPosition;
+	public int itemWidth;
+	public int itemHeight;
 	 
 	public PlexUITextField(int componentId, FontRenderer fontrendererObj, int x, int y, int par5Width, int par6Height) {
 		this.id = componentId;

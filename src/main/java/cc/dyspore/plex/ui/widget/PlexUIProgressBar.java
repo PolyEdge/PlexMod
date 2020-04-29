@@ -107,6 +107,6 @@ public class PlexUIProgressBar extends GuiScreen {
 	
 	public void drawScreen(int par1, int par2, float par3) {
 		updateProgressBar();
-		PlexUtilRender.drawScaledGradientRect(this.startX, this.startY, (int) (this.startX + (this.barWidth * this.displayProgress)), this.startY + this.barHeight, 0, 1.0F, (int) PlexUtilColour.replace(this.displayColour, null, null, null, 255), (int) PlexUtilColour.replace(this.displayColour, null, null, null, 255));
+		PlexUtilRender.drawScaledGradientRect(this.startX, this.startY, (int) (this.startX + (this.barWidth * this.displayProgress)), this.startY + this.barHeight, 0, 1.0F, (int) PlexUtilColour.replace(this.displayColour, -1, -1, -1, 255), (int) PlexUtilColour.replace(this.displayColour, -1, -1, -1, 255));
 	}
 }

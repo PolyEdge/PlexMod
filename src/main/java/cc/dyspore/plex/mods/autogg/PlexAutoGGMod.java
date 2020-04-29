@@ -29,7 +29,7 @@ public class PlexAutoGGMod extends PlexModBase {
 	public double MAX_DELAY = 5.0D;
 	
 	public String subtitleText = "";
-	public int useGGMessage = 0;
+	public int currentGGMessage = 0;
 	public PlexAutoGGMessage lastGGMessage;
 	public Long gameOverTime = null;
 	public Long ggSendTime = null;
@@ -44,7 +44,7 @@ public class PlexAutoGGMod extends PlexModBase {
 
 		this.ggMessages = new ArrayList<>();
 		this.handleVersionCrossover();
-		List<String> messages = Arrays.asList(Plex.config.get(this.getModName(), "autogg_messages_list", new String[0]).getStringList());
+		String[] messages = Plex.config.get(this.getModName(), "autogg_messages_list", new String[0]).getStringList();
 		for (String message : messages) {
 			this.ggMessages.add(new PlexAutoGGMessage(message));
 		}
@@ -210,22 +210,22 @@ public class PlexAutoGGMod extends PlexModBase {
 		return messages;
 	}
 
-	public PlexAutoGGMessage getGG() {
+	public PlexAutoGGMessage getGGMessage() {
 		List<PlexAutoGGMessage> messages = this.getValidGGMessages();
 		if (messages.size() == 0) {
 			return null;
 		}
+		if (messages.size() == 1) {
+			return messages.get(0);
+		}
 		if (this.ggMode == 0) {
-			if (this.useGGMessage >= messages.size()) {
-				this.useGGMessage = 0;
+			if (this.currentGGMessage >= messages.size()) {
+				this.currentGGMessage = 0;
 			}
-			this.useGGMessage += 1;
-			return messages.get(this.useGGMessage - 1);
+			this.currentGGMessage++;
+			return messages.get(this.currentGGMessage - 1);
 		}
 		if (this.ggMode == 1) {
-			if (messages.size() == 1) {
-				return messages.get(0);
-			}
 			List<PlexAutoGGMessage> selection = new ArrayList<>();
 			for (PlexAutoGGMessage message : messages) {
 				if (message != this.lastGGMessage) {
@@ -239,7 +239,7 @@ public class PlexAutoGGMod extends PlexModBase {
 	}
 	
 	public void sendGG() {
-		PlexAutoGGMessage ggMessage = this.getGG();
+		PlexAutoGGMessage ggMessage = this.getGGMessage();
 		if (ggMessage != null) {
 			Plex.minecraft.thePlayer.sendChatMessage(ggMessage.message);
 		}

@@ -167,9 +167,9 @@ public class PlexAutoGGUI extends PlexUIBase {
 	}
 	
 	@Override
-	public void mouseClicked(int par1, int par2, int btn) {
-		this.ggMessagesList.mouseClicked(par1, par2, btn);
-		this.ggMessageEdit.mouseClicked(par1, par2, btn);
+	public void mouseClicked(int par1, int par2, int button) {
+		this.ggMessagesList.mouseClicked(par1, par2, button);
+		this.ggMessageEdit.mouseClicked(par1, par2, button);
 		this.updateSelectedItem();
 	}
 
@@ -195,18 +195,18 @@ public class PlexAutoGGUI extends PlexUIBase {
 	}
 	
 	@Override
-	public void keyTyped(char par1, int par2) {
-		if (par2 == 200) {
+	public void keyTyped(char character, int keyCode) {
+		if (keyCode == 200) {
 			this.moveSelection(-1);
 		}
-		else if (par2 == 208) {
+		else if (keyCode == 208) {
 			this.moveSelection(1);
 		}
-		else if (par2 == 28) {
+		else if (keyCode == 28) {
 			this.newItem();
 		}
 		else {
-			this.ggMessageEdit.keyTyped(par1, par2);
+			this.ggMessageEdit.keyTyped(character, keyCode);
 		}
 		this.updateSelectedItem();
 		PlexAutoGGMessage selectedMessage = this.getSelectedItem();
@@ -216,9 +216,9 @@ public class PlexAutoGGUI extends PlexUIBase {
 	}
 	
 	@Override
-	public void drawScreen(int par1, int par2, float par3) {
-		this.ggMessagesList.drawScreen(par1, par2, par3);
-		this.ggMessageEdit.drawScreen(par1, par2, par3);
+	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+		this.ggMessagesList.drawScreen(mouseX, mouseY, partialTicks);
+		this.ggMessageEdit.drawScreen(mouseX, mouseY, partialTicks);
 	}
 
 	public String ggModeDisplayString() {
@@ -255,7 +255,7 @@ public class PlexAutoGGUI extends PlexUIBase {
 	}
 	
 	@Override
-	public Integer pageForegroundColour() {
+	public int pageForegroundColour() {
 		return 0xffe0c908;
 	}
 

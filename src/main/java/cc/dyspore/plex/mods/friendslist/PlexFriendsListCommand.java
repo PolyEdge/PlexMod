@@ -13,7 +13,7 @@ import cc.dyspore.plex.Plex;
 import cc.dyspore.plex.commands.client.PlexCommandHandler;
 import cc.dyspore.plex.core.PlexCore;
 
-public class PlexFriendsListEnhancementsCommand extends PlexCommandHandler {
+public class PlexFriendsListCommand extends PlexCommandHandler {
 	
 	public ArrayList<String> displayValues = new ArrayList<String>(Arrays.asList("outgoing", "incoming", "offline", "online"));
 
@@ -24,9 +24,9 @@ public class PlexFriendsListEnhancementsCommand extends PlexCommandHandler {
 
 	@Override
 	public void processCommand(ICommandSender sender, String namespace, String[] args) throws CommandException {
-		PlexFriendsListEnhancementsMod instance = PlexCore.modInstance(PlexFriendsListEnhancementsMod.class);
+		PlexFriendsListMod instance = PlexCore.modInstance(PlexFriendsListMod.class);
 		if (namespace.equals("plex.friends")) {
-			PlexCore.displayUIScreen(new PlexFriendsListEnhancementsUI());
+			PlexCore.displayUIScreen(new PlexFriendsListUI());
 		}
 		else if (namespace.equals("ff")) {
 			if (args.length == 0) {

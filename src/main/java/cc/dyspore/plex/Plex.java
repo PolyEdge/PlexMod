@@ -54,7 +54,6 @@ public class Plex {
 	@EventHandler
 	public void init(FMLInitializationEvent event) {
 		MinecraftForge.EVENT_BUS.register(listeners);
-		PlexUtilTextures.loadTextures();
 
 		PlexCore.getInternalLoop().addTask(listeners::handleLobbyData);
 		PlexCore.getInternalLoop().addTask(queue::processQueue);

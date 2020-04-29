@@ -124,51 +124,51 @@ public class PlexUIScrollbar {
 		}
 	}
 	
-	public Integer toYPostion(float sliderValue) {
+	public int toYPostion(float sliderValue) {
 		return this.getScaledBarRangeTopY() + (int)((getScaledBarRangeBottomY() - getScaledBarRangeTopY()) * sliderValue);
 	}
 	
-	public Float toSliderValue(Integer yPosition) {
+	public float toSliderValue(int yPosition) {
 		return (float)(yPosition - this.getScaledBarRangeTopY()) / (float)(getScaledBarRangeBottomY() - getScaledBarRangeTopY());
 	}
 	
-	public Integer getScaledBarSize() {
-		Integer totalPixels = this.barBottom - this.barTop;
+	public int getScaledBarSize() {
+		int totalPixels = this.barBottom - this.barTop;
 		return (int)(totalPixels * this.barScale);		
 	}
 	
-	public Integer getScaledBarRangeTopY() {
+	public int getScaledBarRangeTopY() {
 		return this.barTop + (this.getScaledBarSize() / 2);
 	}
 	
-	public Integer getScaledBarRangeBottomY() {
+	public int getScaledBarRangeBottomY() {
 		return this.barBottom - (this.getScaledBarSize() / 2);
 	}
 	
-	public Integer getScaledBarSliderTopY() {
+	public int getScaledBarSliderTopY() {
 		return getScaledBarRangeTopY() + (this.getScaledBarSize() / 2);
 	}
 	
-	public Integer getScaledBarSliderBottomY() {
+	public int getScaledBarSliderBottomY() {
 		return this.barBottom - (this.getScaledBarSize() / 2);
 	}
 	
-	public Integer getBarYPos() {
+	public int getBarYPos() {
 		if (this.velocityEnabled) {
 			return this.toYPostion(this.targetPos); 
 		}
 		return this.toYPostion(this.scrollValue);
 	}
 	
-	public Integer[] getBarWidgetPosition() {
-		return new Integer[] {this.barTop, this.barBottom, this.barXPosition, this.barXPosition + this.barWidth};
+	public int[] getBarWidgetPosition() {
+		return new int[] {this.barTop, this.barBottom, this.barXPosition, this.barXPosition + this.barWidth};
 	}	
 
-	public Integer[] getBarSliderPosition() {
-		Integer barSize = getScaledBarSize();
-		Integer rangeTop = getScaledBarRangeTopY();
-		Integer rangeBottom = getScaledBarRangeBottomY();
-		Integer barSizeRange = rangeBottom - rangeTop;
+	public int[] getBarSliderPosition() {
+		int barSize = getScaledBarSize();
+		int rangeTop = getScaledBarRangeTopY();
+		int rangeBottom = getScaledBarRangeBottomY();
+		int barSizeRange = rangeBottom - rangeTop;
 		
 		float scrollVal;
 		if (this.velocityEnabled) {
@@ -178,10 +178,10 @@ public class PlexUIScrollbar {
 			scrollVal = this.scrollValue;
 		}
 		
-		Integer barCenterY = rangeTop + (int)(barSizeRange * scrollVal);
-		Integer barTopY = barCenterY - (barSize / 2);
-		Integer barBottomY = barCenterY + (barSize / 2);
-		return new Integer[] {barTopY, barBottomY, this.barXPosition, this.barXPosition + this.barWidth};
+		int barCenterY = rangeTop + (int)(barSizeRange * scrollVal);
+		int barTopY = barCenterY - (barSize / 2);
+		int barBottomY = barCenterY + (barSize / 2);
+		return new int[] {barTopY, barBottomY, this.barXPosition, this.barXPosition + this.barWidth};
 	}
 
 	public void update() {
@@ -204,16 +204,14 @@ public class PlexUIScrollbar {
 		if (!barVisible()) {
 			return;
 		}
-		//Tessellator tessellator = Tessellator.getInstance();
-		//WorldRenderer worldrenderer = tessellator.getWorldRenderer();
 		
-		Integer[] widgetPos = getBarWidgetPosition();
+		int[] widgetPos = getBarWidgetPosition();
 		int top = widgetPos[0];
 		int bottom = widgetPos[1];
 		int left = widgetPos[2];
 		int right = widgetPos[3];
 		
-		Integer[] barPos = getBarSliderPosition();
+		int[] barPos = getBarSliderPosition();
 		int sbarTop = barPos[0];
 		int sbarBottom = barPos[1];
 		int sbarLeft = barPos[2];
@@ -222,42 +220,10 @@ public class PlexUIScrollbar {
         PlexUtilRender.drawRect(left, top, right, bottom, 0xff000000);
 		PlexUtilRender.drawRect(sbarLeft, sbarTop, sbarRight, sbarBottom, 0xff808080);
 		PlexUtilRender.drawRect(sbarLeft, sbarTop, sbarRight - 1, sbarBottom - 1, 0xffc0c0c0);
-
-        
-        // original source just in case
-//        GlStateManager.enableBlend();
-//        GlStateManager.tryBlendFuncSeparate(770, 771, 0, 1);
-//        GlStateManager.disableAlpha();
-//        GlStateManager.shadeModel(7425);
-//        GlStateManager.disableTexture2D(); 
-//        
-//        worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
-//		worldrenderer.pos(left, bottom, 0.0D).tex(0.0D, 1.0D).color(0, 0, 0, 255).endVertex();
-//		worldrenderer.pos(right, bottom, 0.0D).tex(1.0D, 1.0D).color(0, 0, 0, 255).endVertex();
-//		worldrenderer.pos(right, top, 0.0D).tex(1.0D, 0.0D).color(0, 0, 0, 255).endVertex();
-//		worldrenderer.pos(left, top, 0.0D).tex(0.0D, 0.0D).color(0, 0, 0, 255).endVertex();
-//		tessellator.draw();
-//		worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
-//		worldrenderer.pos(sbarLeft, sbarBottom, 0.0D).tex(0.0D, 1.0D).color(128, 128, 128, 255).endVertex();
-//		worldrenderer.pos(sbarRight, sbarBottom, 0.0D).tex(1.0D, 1.0D).color(128, 128, 128, 255).endVertex();
-//		worldrenderer.pos(sbarRight, sbarTop, 0.0D).tex(1.0D, 0.0D).color(128, 128, 128, 255).endVertex();
-//		worldrenderer.pos(sbarLeft, sbarTop, 0.0D).tex(0.0D, 0.0D).color(128, 128, 128, 255).endVertex();
-//		tessellator.draw();
-//		worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
-//		worldrenderer.pos(sbarLeft, sbarBottom + 1.0D, 0.0D).tex(0.0D, 1.0D).color(192, 192, 192, 255).endVertex();
-//		worldrenderer.pos(sbarRight - 1.0D, sbarBottom + 1.0D, 0.0D).tex(1.0D, 1.0D).color(192, 192, 192, 255).endVertex();
-//		worldrenderer.pos(sbarRight - 1.0D, sbarTop, 0.0D).tex(1.0D, 0.0D).color(192, 192, 192, 255).endVertex();
-//		worldrenderer.pos(sbarLeft, sbarTop + 1.0D, 0.0D).tex(0.0D, 0.0D).color(192, 192, 192, 255).endVertex();
-//		tessellator.draw();
-//        
-//		GlStateManager.enableTexture2D();
-//        GlStateManager.shadeModel(7424);
-//        GlStateManager.enableAlpha();
-//        GlStateManager.disableBlend();
 	}
 
 	public boolean mouseOverSlider(int mouseX, int mouseY) {
-		Integer[] barPos = getBarSliderPosition();
+		int[] barPos = getBarSliderPosition();
 		int sbarTop = barPos[0];
 		int sbarBottom = barPos[1];
 		int sbarLeft = barPos[2];
@@ -266,7 +232,7 @@ public class PlexUIScrollbar {
 	}
 
 	public boolean mouseOverWidget(int mouseX, int mouseY) {
-		Integer[] widgetPos = getBarWidgetPosition();
+		int[] widgetPos = getBarWidgetPosition();
 		int top = widgetPos[0];
 		int bottom = widgetPos[1];
 		int left = widgetPos[2];
@@ -305,17 +271,4 @@ public class PlexUIScrollbar {
 	public void mouseReleased(int p_146118_1_, int p_146118_2_) {
 		this.isHeld = false;
 	}
-
-//	public void mouseInput()
-//	{
-//		int wheel = Mouse.getEventDWheel();
-//		if (wheel > 0) {
-//			this.scrollY += this.speed;
-//		} else if (wheel < 0) {
-//			this.scrollY -= this.speed;
-//		}
-//		if (wheel != 0) {
-//			checkOutOfBorders();
-//		}
-//	}
 }

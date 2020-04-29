@@ -20,15 +20,15 @@ public class PlexAutoFriendUI extends PlexUIBase {
 	@Override
 	public void initGui(PlexUIModMenuScreen ui) {
 		PlexAutoFriendMod instance = PlexCore.modInstance(PlexAutoFriendMod.class);
-		Integer top = ui.startingYPos(112);
-		Integer paneSize = ui.centeredPaneSize(1, 20, 160);
-		Integer pane1Pos = ui.centeredPanePos(0, 1, 20, 160);
+		int top = ui.startingYPos(112);
+		int paneSize = ui.centeredPaneSize(1, 20, 160);
+		int pane1Pos = ui.centeredPanePos(0, 1, 20, 160);
 		ui.addElement(new GuiButton(5, pane1Pos + 5, top + 0, paneSize - 10, 20, buttonDisplayString("AutoFriend", instance.modEnabled)));
 
 	}
 	
 	@Override
-	public void mouseClicked(int par1, int par2, int btn) {
+	public void mouseClicked(int par1, int par2, int button) {
 	}
 	
 	@Override
@@ -36,11 +36,11 @@ public class PlexAutoFriendUI extends PlexUIBase {
 	}
 	
 	@Override
-	public void keyTyped(char par1, int par2) {
+	public void keyTyped(char character, int keyCode) {
 	}
 	
 	@Override
-	public void drawScreen(int par1, int par2, float par3) {
+	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
 	}
 	
 	public String buttonDisplayString(String prefix, Boolean enabled) {
@@ -56,7 +56,7 @@ public class PlexAutoFriendUI extends PlexUIBase {
 	}
 	
 	@Override
-	public Integer pageForegroundColour() {
+	public int pageForegroundColour() {
 		return 0xffe0c908;
 	}
 

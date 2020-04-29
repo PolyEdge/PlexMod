@@ -121,7 +121,7 @@ public class PlexCommandQueueCommand {
         return this.sendTimes.size() > 0;
     }
 
-    public boolean isTerminate() {
+    public boolean isDone() {
         if (this.completionStatus == 0 || this.completionStatus == 1) {
             return true;
         }

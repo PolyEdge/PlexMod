@@ -64,7 +64,7 @@ public abstract class PlexMessagingChannelBase implements PlexUIScrolledItem, Co
 	
 	public abstract void sendMessage(String message);
 	
-	public abstract Integer getMaxMessageLength();
+	public abstract int getMaxMessageLength();
 	
 	public void channelSelected() {}
 	
@@ -78,11 +78,11 @@ public abstract class PlexMessagingChannelBase implements PlexUIScrolledItem, Co
 		return "";
 	}
 	
-	public Integer getDisplayColour() {
+	public int getDisplayColour() {
 		return 0xffffff;
 	}
 	
-	public Integer getMessageBackgroundColour() {
+	public int getMessageBackgroundColour() {
 		return 0x65757575;
 	}
 	
@@ -174,7 +174,6 @@ public abstract class PlexMessagingChannelBase implements PlexUIScrolledItem, Co
 			}
 		}
 	}
-
 	
 	public List<PlexMessagingMessage> getAllMessagesSinceLastRead() {
 		List<PlexMessagingMessage> messages = new ArrayList<PlexMessagingMessage>();

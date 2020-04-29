@@ -26,7 +26,7 @@ public class PlexMessagingPrivateMessagesChannel extends PlexMessagingChannelBas
 	}
 	
 	@Override
-	public Integer getDisplayColour() {
+	public int getDisplayColour() {
 		return 0xffffaa00;
 	}
 	
@@ -48,7 +48,7 @@ public class PlexMessagingPrivateMessagesChannel extends PlexMessagingChannelBas
 	}
 
 	@Override
-	public Integer getMaxMessageLength() {
+	public int getMaxMessageLength() {
 		return 100 - ("/w " + this.recipientEntityName + " ").length();
 	}
 }

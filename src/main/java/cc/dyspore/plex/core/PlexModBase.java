@@ -13,7 +13,7 @@ public abstract class PlexModBase {
 	
 	public abstract String getModName();
 
-	public Property modSetting(String name, Integer def) {
+	public Property modSetting(String name, int def) {
 		return Plex.config.get(this.getModName(), name, def);
 	}
 
@@ -21,15 +21,15 @@ public abstract class PlexModBase {
 		return Plex.config.get(this.getModName(), name, def);
 	}
 
-	public Property modSetting(String name, Boolean def) {
+	public Property modSetting(String name, boolean def) {
 		return Plex.config.get(this.getModName(), name, def);
 	}
 
-	public Property modSetting(String name, Float def) {
+	public Property modSetting(String name, float def) {
 		return Plex.config.get(this.getModName(), name, def);
 	}
 
-	public Property modSetting(String name, Double def) {
+	public Property modSetting(String name, double def) {
 		return Plex.config.get(this.getModName(), name, def);
 	}
 

@@ -19,7 +19,7 @@ public class PlexClientCommandListener implements ICommand {
 	}
 
 	public String[] getArgs(String[] args) {
-		List<String> allArgs = new ArrayList<String>(Arrays.asList(args));
+		List<String> allArgs = new ArrayList<>(Arrays.asList(args));
 		allArgs.add(0, this.commandName);
 		return allArgs.toArray(new String[0]);
 	}

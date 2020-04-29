@@ -5,7 +5,7 @@ import cc.dyspore.plex.ui.widget.PlexUISlider;
 import net.minecraft.client.gui.GuiButton;
 
 public abstract class PlexUIBase {
-	public PlexUIModMenuScreen parentUI;
+	public PlexUIModMenuScreen guiScreen;
 	
 	public abstract String uiGetTitle();
 	
@@ -15,53 +15,46 @@ public abstract class PlexUIBase {
 	
 	public abstract void uiButtonClicked(GuiButton button);
 	
-	public String customGlobalTitle() {
-		return "Plex Mod";
+	public int pageForegroundColour() {
+		return 0xffffffff;
 	}
-	
-	public Integer titleFadeColour1() {
-		return 0x00e69500;
+
+	public int pageBackgroundColour() {
+		return 0x00ffffff;
 	}
-	
-	public Integer titleFadeColour2() {
-		return 0x00e69500;
+
+	public PlexUtilColour.PaletteState pageForegroundState() {
+		return PlexUtilColour.PaletteState.FIXED;
 	}
-	
-	public Integer pageBackgroundColour() {
-		return PlexUtilColour.fromRGB(255, 255, 255, 0);
+
+
+	public PlexUtilColour.PaletteState pageBackgroundState() {
+		return PlexUtilColour.PaletteState.FIXED;
 	}
-	
-	public Integer pageForegroundColour() {
-		return -1;
-	}
-	
-	public Integer pageBackgroundTransparency() {
+
+	public int pageBackgroundTransparency() {
 		return 35;
 	}
-	
-	public Boolean disableDoneButton() {
-		return false;
-	}
-	
-	public Boolean disableUiFade() {
+
+	public boolean disableDoneButton() {
 		return false;
 	}
 
-	public Boolean disablePlexUi() {
+	public boolean disablePlexUi() {
 		return false;
 	}
-	
-	public Boolean disableSidebar() {
+
+	public boolean disableSidebar() {
 		return false;
 	}
-	
-	public void keyTyped(char par1, int par2) {}
+
+	public void keyTyped(char character, int keyCode) {}
 
 	public boolean escapeTyped() {
 		return true;
 	}
 	
-	public void mouseClicked(int x, int y, int btn) {}
+	public void mouseClicked(int x, int y, int button) {}
 	
 	public void mouseReleased(int mouseX, int mouseY, int state) {}
 	
@@ -71,7 +64,7 @@ public abstract class PlexUIBase {
 	
 	public void updateScreen() {}
 	
-	public void drawScreen(int par1, int par2, float par3) {}
+	public void drawScreen(int mouseX, int mouseY, float partialTicks) {}
 	
 	public void uiOpened() {}
 	

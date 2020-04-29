@@ -1,5 +1,6 @@
 package cc.dyspore.plex.mods.plexmod;
 
+import cc.dyspore.plex.core.util.PlexUtilColour;
 import net.minecraft.client.gui.GuiButton;
 import cc.dyspore.plex.Plex;
 import cc.dyspore.plex.ui.PlexUIBase;
@@ -18,18 +19,18 @@ public class PlexModUI extends PlexUIBase {
 	}
 	
 	@Override
-	public void drawScreen(int par1, int par2, float par3) {
-		Integer top = parentUI.getCenteredStartY(30);
-		Integer paneSize = parentUI.centeredPaneSize(1, 20, 160);
-		Integer pane1Pos = parentUI.centeredPanePos(0, 1, 20, 160);
-		parentUI.drawCenteredString(parentUI.getFontRenderer(), "Plex Mod", pane1Pos + paneSize / 2, top + 0, 0xffffff); 
-		parentUI.drawCenteredString(parentUI.getFontRenderer(), "v" + Plex.VERSION + (Plex.PATCHID == null ? "" : "-" + Plex.PATCHID), pane1Pos + paneSize / 2, top + 10, 0xffffff);
+	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+		int top = guiScreen.getCenteredStartY(30);
+		int paneSize = guiScreen.centeredPaneSize(1, 20, 160);
+		int pane1Pos = guiScreen.centeredPanePos(0, 1, 20, 160);
+		guiScreen.drawCenteredString(guiScreen.getFontRenderer(), "Plex Mod", pane1Pos + paneSize / 2, top + 0, 0xffffff);
+		guiScreen.drawCenteredString(guiScreen.getFontRenderer(), "v" + Plex.VERSION + (Plex.PATCHID == null ? "" : "-" + Plex.PATCHID), pane1Pos + paneSize / 2, top + 10, 0xffffff);
 		if (Plex.RELEASENOTICE != null) {
-			parentUI.drawCenteredString(parentUI.getFontRenderer(), "[" + Plex.RELEASENOTICE + "]", pane1Pos + paneSize / 2, top + 30, 0xffe500);
+			guiScreen.drawCenteredString(guiScreen.getFontRenderer(), "[" + Plex.RELEASENOTICE + "]", pane1Pos + paneSize / 2, top + 30, 0xffe500);
 			
 		}
 		
-		parentUI.drawCenteredString(parentUI.getFontRenderer(), "Command list - /plex help", pane1Pos + paneSize / 2, parentUI.zoneEndY() - 12, 0xffffff);
+		guiScreen.drawCenteredString(guiScreen.getFontRenderer(), "Command list - /plex help", pane1Pos + paneSize / 2, guiScreen.zoneEndY() - 12, 0xffffff);
 	}
 
 	@Override
@@ -41,15 +42,30 @@ public class PlexModUI extends PlexUIBase {
 
 	}
 
-	public Integer pageBackgroundColour() {
-		return -1; // -1 = chroma
+	//@Override
+	//public int pageForegroundColour() {
+	//	return -1;
+	//}
+//
+	//@Override
+	//public int pageBackgroundColour() {
+	//	return -1; // -1 = chroma
+	//}
+
+	@Override
+	public PlexUtilColour.PaletteState pageForegroundState() {
+		return PlexUtilColour.PaletteState.CHROMA;
 	}
-	
-	public Integer pageForegroundColour() {
-		return -1;
+
+	@Override
+	public PlexUtilColour.PaletteState pageBackgroundState() {
+		return PlexUtilColour.PaletteState.CHROMA;
 	}
-	
-	public Integer pageBackgroundTransparency() {
+
+	@Override
+	public int pageBackgroundTransparency() {
 		return 35;
 	}
+
+
 }

@@ -10,7 +10,6 @@ import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.client.resources.DefaultPlayerSkin;
-import net.minecraft.client.resources.SkinManager;
 import net.minecraft.util.ResourceLocation;
 
 import java.io.InputStreamReader;
@@ -86,11 +85,7 @@ public class PlexUtilMojang {
         uuidLookupTimes.putIfAbsent(friendlyIgn, 0L);
         if (Minecraft.getSystemTime() > uuidLookupTimes.get(friendlyIgn) + 30000L && requestIfNeeded) {
             uuidLookupTimes.put(friendlyIgn, Minecraft.getSystemTime());
-            new Thread(new Runnable() {
-                public void run() {
-                    fetchUUID(ign);
-                }
-            }).start();
+            new Thread(() -> fetchUUID(ign)).start();
         }
         if (nameToUuid.containsKey(friendlyIgn)) {
             return nameToUuid.get(friendlyIgn);
@@ -104,6 +99,9 @@ public class PlexUtilMojang {
 
     public static String getName(String playerUuid, boolean requestIfNeeded) {
         final String uuid = toFormattedUUID(playerUuid);
+        if (uuid == null) {
+            return null;
+        }
         if (uuidToName.get(uuid) == null) {
             NetworkPlayerInfo playerInfo = Plex.minecraft.getNetHandler().getPlayerInfo(UUID.fromString(uuid));
             if (playerInfo != null) {
@@ -119,11 +117,7 @@ public class PlexUtilMojang {
         nameLookupTimes.putIfAbsent(uuid, 0L);
         if (Minecraft.getSystemTime() > nameLookupTimes.get(uuid) + 30000L && requestIfNeeded) {
             nameLookupTimes.put(uuid, Minecraft.getSystemTime());
-            new Thread(new Runnable() {
-                public void run() {
-                    fetchIGN(uuid);
-                }
-            }).start();
+            new Thread(() -> fetchIGN(uuid)).start();
         }
         if (uuidToName.containsKey(uuid)) {
             return uuidToName.get(uuid);
@@ -142,7 +136,7 @@ public class PlexUtilMojang {
         if (player.getId() == null && player.getName() == null) {
             return getDefaultSkin();
         }
-        String playerUUID = null;
+        String playerUUID;
         if (player.getId() == null) {
             playerUUID = getUUID(player.getName().toLowerCase(), true);
         }
@@ -159,11 +153,7 @@ public class PlexUtilMojang {
         if (Minecraft.getSystemTime() > skinLookupTimes.get(playerUUID) + 30000L && requestIfNeeded) {
             skinLookupTimes.put(playerUUID, Minecraft.getSystemTime());
             final GameProfile playerGameProfile = new GameProfile(UUID.fromString(playerUUID), player.getName());
-            new Thread(new Runnable() {
-                public void run() {
-                    fetchSkin(playerGameProfile);
-                }
-            }).start();
+            new Thread(() -> fetchSkin(playerGameProfile)).start();
         }
         if (uuidToTexture.containsKey(playerUUID)) {
             return uuidToTexture.get(playerUUID);
@@ -185,6 +175,9 @@ public class PlexUtilMojang {
             uuidInputReader.close();
             final String playerUUID = apiResponse.getAsJsonObject().get("id").getAsString();
             final String formattedPlayerUUID = toFormattedUUID(playerUUID);
+            if (formattedPlayerUUID == null) {
+                return null;
+            }
             nameToUuid.put(ign.toLowerCase(), formattedPlayerUUID);
             uuidToName.put(formattedPlayerUUID, ign);
             return playerUUID;
@@ -198,6 +191,9 @@ public class PlexUtilMojang {
 
     public static String fetchIGN(String uuid) {
         uuid = toFormattedUUID(uuid);
+        if (uuid == null) {
+            return null;
+        }
         if (uuidToName.containsKey(uuid)) {
             return uuidToName.get(uuid);
         }
@@ -233,7 +229,7 @@ public class PlexUtilMojang {
         //PlexUtil.chatAddMessage("loading skin " + player.getId() + (player.getName() == null ? "" : " // " + player.getName()));
         Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> skinCache = Plex.minecraft.getSkinManager().loadSkinFromCache(player);
         if (skinCache.containsKey(MinecraftProfileTexture.Type.SKIN)) {
-            uuidToTexture.put(uuid, Plex.minecraft.getSkinManager().loadSkin((MinecraftProfileTexture) skinCache.get(MinecraftProfileTexture.Type.SKIN), MinecraftProfileTexture.Type.SKIN));
+            uuidToTexture.put(uuid, Plex.minecraft.getSkinManager().loadSkin(skinCache.get(MinecraftProfileTexture.Type.SKIN), MinecraftProfileTexture.Type.SKIN));
             return;
         }
 
@@ -245,11 +241,9 @@ public class PlexUtilMojang {
             }
         }
 
-        Plex.minecraft.getSkinManager().loadProfileTextures(profile, new SkinManager.SkinAvailableCallback() {
-            public void skinAvailable(MinecraftProfileTexture.Type type, ResourceLocation resourceLocation, MinecraftProfileTexture profileTexture) {
-                if (type == MinecraftProfileTexture.Type.SKIN) {
-                    uuidToTexture.put(player.getId().toString(), resourceLocation);
-                }
+        Plex.minecraft.getSkinManager().loadProfileTextures(profile, (type, resourceLocation, profileTexture) -> {
+            if (type == MinecraftProfileTexture.Type.SKIN) {
+                uuidToTexture.put(player.getId().toString(), resourceLocation);
             }
         }, true);
     }

@@ -39,7 +39,7 @@ public class PlexMessagingCommunityChatChannel extends PlexMessagingChannelBase 
 	}
 	
 	@Override
-	public Integer getDisplayColour() {
+	public int getDisplayColour() {
 		if (this.getTag("comColour") == null) {
 			return 0xffffffff;
 		}
@@ -61,7 +61,7 @@ public class PlexMessagingCommunityChatChannel extends PlexMessagingChannelBase 
 	}
 
 	@Override
-	public Integer getMaxMessageLength() {
+	public int getMaxMessageLength() {
 		return 99;
 	}
 }
