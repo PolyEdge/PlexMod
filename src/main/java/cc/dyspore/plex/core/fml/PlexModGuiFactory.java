@@ -1,6 +1,6 @@
 package cc.dyspore.plex.core.fml;
 
-import cc.dyspore.plex.ui.PlexUIModMenuScreen;
+import cc.dyspore.plex.ui.PlexUIModMenu;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraftforge.fml.client.IModGuiFactory;
@@ -15,7 +15,7 @@ public class PlexModGuiFactory implements IModGuiFactory {
 
     @Override
     public Class<? extends GuiScreen> mainConfigGuiClass() {
-        return PlexUIModMenuScreen.class;
+        return PlexUIModMenu.class;
     }
 
     @Override

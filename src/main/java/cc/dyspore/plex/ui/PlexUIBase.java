@@ -5,11 +5,11 @@ import cc.dyspore.plex.ui.widget.PlexUISlider;
 import net.minecraft.client.gui.GuiButton;
 
 public abstract class PlexUIBase {
-	public PlexUIModMenuScreen guiScreen;
+	public PlexUIModMenu guiScreen;
 	
 	public abstract String uiGetTitle();
 	
-	public abstract void initGui(PlexUIModMenuScreen ui);
+	public abstract void initGui(PlexUIModMenu ui);
 	
 	public abstract void uiSliderInteracted(PlexUISlider slider);
 	

@@ -1,9 +1,9 @@
 package cc.dyspore.plex.mods.chatmod;
 
+import cc.dyspore.plex.ui.PlexUIModMenu;
 import net.minecraft.client.gui.GuiButton;
 import cc.dyspore.plex.core.PlexCore;
 import cc.dyspore.plex.ui.PlexUIBase;
-import cc.dyspore.plex.ui.PlexUIModMenuScreen;
 import cc.dyspore.plex.ui.widget.PlexUISlider;
 
 public class PlexChatStreamUI extends PlexUIBase {
@@ -13,7 +13,7 @@ public class PlexChatStreamUI extends PlexUIBase {
 	}
 
 	@Override
-	public void initGui(PlexUIModMenuScreen ui) {
+	public void initGui(PlexUIModMenu ui) {
 		int top = ui.startingYPos(92);
 		int paneSize = ui.centeredPaneSize(2, 20, 160);
 		int pane1Pos = ui.centeredPanePos(-1, 2, 20, 160);

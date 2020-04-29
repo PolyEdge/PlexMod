@@ -20,7 +20,7 @@ public enum PlexModSocialMedia {
     public boolean available;
 
     PlexModSocialMedia(String serializedName, String linkFormat, ResourceLocation icon, int iconWidth, int iconHeight) {
-        this.name = serializedName;
+        this.name = serializedName.trim();
         this.linkPrefix = linkFormat;
         this.icon = icon;
         this.iconWidth = iconWidth;
@@ -31,8 +31,9 @@ public enum PlexModSocialMedia {
     }
 
     public static void activate(String serializedName, String urlPath) {
+        String trimmedName = serializedName.trim();
         for (PlexModSocialMedia socialMedia : PlexModSocialMedia.values()) {
-            if (socialMedia.name.trim().equalsIgnoreCase(serializedName.trim())) {
+            if (socialMedia.name.equalsIgnoreCase(trimmedName)) {
                 socialMedia.load(urlPath);
                 return;
             }

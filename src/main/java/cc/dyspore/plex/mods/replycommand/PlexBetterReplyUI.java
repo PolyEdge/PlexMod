@@ -3,7 +3,7 @@ package cc.dyspore.plex.mods.replycommand;
 import net.minecraft.client.gui.GuiButton;
 import cc.dyspore.plex.core.PlexCore;
 import cc.dyspore.plex.ui.PlexUIBase;
-import cc.dyspore.plex.ui.PlexUIModMenuScreen;
+import cc.dyspore.plex.ui.PlexUIModMenu;
 import cc.dyspore.plex.ui.widget.PlexUISlider;
 
 public class PlexBetterReplyUI extends PlexUIBase {
@@ -13,7 +13,7 @@ public class PlexBetterReplyUI extends PlexUIBase {
 	}
 
 	@Override
-	public void initGui(PlexUIModMenuScreen ui) {
+	public void initGui(PlexUIModMenu ui) {
 		PlexBetterReplyMod instance = PlexCore.modInstance(PlexBetterReplyMod.class);
 		int top = ui.startingYPos(52);
 		int paneSize = ui.centeredPaneSize(1, 20, 160);

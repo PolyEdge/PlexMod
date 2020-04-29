@@ -5,7 +5,7 @@ import cc.dyspore.plex.core.util.PlexUtil;
 import cc.dyspore.plex.core.util.PlexUtilColour;
 import cc.dyspore.plex.mods.messagingscreen.ui.PlexMessagingUIMessageWindow;
 import cc.dyspore.plex.ui.PlexUIBase;
-import cc.dyspore.plex.ui.PlexUIModMenuScreen;
+import cc.dyspore.plex.ui.PlexUIModMenu;
 import cc.dyspore.plex.ui.widget.*;
 import org.lwjgl.input.Keyboard;
 
@@ -83,17 +83,17 @@ public class PlexMessagingUIScreen extends PlexUIBase {
 		if (Plex.minecraft.currentScreen == null) {
 			return false;
 		}
-		if (!Plex.minecraft.currentScreen.getClass().equals(PlexUIModMenuScreen.class)) {
+		if (!Plex.minecraft.currentScreen.getClass().equals(PlexUIModMenu.class)) {
 			return false;
 		}
-		if (!((PlexUIModMenuScreen) Plex.minecraft.currentScreen).childUI.getClass().equals(PlexMessagingUIScreen.class)) {
+		if (!((PlexUIModMenu) Plex.minecraft.currentScreen).childUI.getClass().equals(PlexMessagingUIScreen.class)) {
 			return false;
 		}
 		return true;
 	}
 
 	@Override
-	public void initGui(PlexUIModMenuScreen ui) {
+	public void initGui(PlexUIModMenu ui) {
 		int bottom = ui.zoneEndY() - 4;
 		int startX = ui.zoneStartX() + 6;
 		int sizeX = ui.horizontalPixelCount() - (getContactsPaneSize()) - 8 - 24;
@@ -496,7 +496,7 @@ public class PlexMessagingUIScreen extends PlexUIBase {
 		
 	
 		//PlexUIScreen.drawRect(this.guiScreen.zoneEndX() - (getContactsPaneSize()), this.guiScreen.zoneStartY(), this.guiScreen.zoneEndX(), this.guiScreen.zoneEndY(), 0xaa10100f);
-		//PlexUIModMenuScreen.drawRect(this.guiScreen.zoneStartX(), this.guiScreen.zoneStartY(), this.guiScreen.zoneEndX() - (getContactsPaneSize()), this.guiScreen.zoneEndY() - 30, 0x23ffffff);
+		//PlexUIModMenu.drawRect(this.guiScreen.zoneStartX(), this.guiScreen.zoneStartY(), this.guiScreen.zoneEndX() - (getContactsPaneSize()), this.guiScreen.zoneEndY() - 30, 0x23ffffff);
 		GuiScreen.drawRect(this.guiScreen.zoneEndX() - getContactsPaneSize(), this.guiScreen.zoneStartY(), this.guiScreen.zoneEndX(), this.guiScreen.zoneEndY(), 0x65000000);
 		
 		this.contactsList.drawScreen(mouseX, mouseY, partialTicks);

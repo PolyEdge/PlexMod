@@ -8,12 +8,9 @@ import cc.dyspore.plex.core.util.PlexUtilRender;
 import cc.dyspore.plex.core.util.PlexUtil;
 import cc.dyspore.plex.core.util.PlexUtilTextures;
 import cc.dyspore.plex.core.util.PlexUtilColour;
-import cc.dyspore.plex.mods.plexmod.PlexMod;
 import cc.dyspore.plex.mods.plexmod.PlexModSocialMedia;
 import cc.dyspore.plex.mods.plexmod.PlexModUI;
-import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
@@ -21,8 +18,8 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
 import cc.dyspore.plex.Plex;
 
-public class PlexUIModMenuScreen extends GuiScreen {
-	public static List<SocialMediaButton> socialMediaButtons = new ArrayList<>();
+public class PlexUIModMenu extends GuiScreen {
+	public static final List<SocialMediaButton> socialMediaButtons = Collections.synchronizedList(new ArrayList<>());
 	public static List<String> ees = new ArrayList<>();
 	public static Random random = new Random();
 	public static long paletteFadeTime = 500L;
@@ -37,21 +34,22 @@ public class PlexUIModMenuScreen extends GuiScreen {
 	public String ee;
 	public boolean eee;
 	
-	public PlexUIModMenuScreen(PlexUIBase screen, GuiScreen parent, PlexUtilColour.ColourPalette palette) {
+	public PlexUIModMenu(PlexUIBase screen, GuiScreen parent, PlexUtilColour.ColourPalette palette) {
 		this.childUI = screen;
 		this.parent = parent;
 		this.palette = palette != null ? palette : new PlexUtilColour.ColourPalette(4, 0xffffffff, null, paletteFadeTime);
 		this.updateGuiState();
+		updateSocialMedia();
 
 		this.ee = ees.get(random.nextInt(ees.size()));
 		this.eee = false;
 	}
 
-	public PlexUIModMenuScreen(PlexUIBase screen) {
+	public PlexUIModMenu(PlexUIBase screen) {
 		this(screen, null, null);
 	}
 
-	public PlexUIModMenuScreen(GuiScreen parent) {
+	public PlexUIModMenu(GuiScreen parent) {
 		this(new PlexModUI(), parent, null);
 	}
 
@@ -181,7 +179,9 @@ public class PlexUIModMenuScreen extends GuiScreen {
 		this.palette.setColour(1, this.childUI.pageBackgroundColour(), this.childUI.pageBackgroundState());
 		this.palette.setColour(2, PlexUtilColour.fromRGB(0, 0, 0, this.childUI.pageBackgroundTransparency()), PlexUtilColour.PaletteState.FIXED);
 	}
-	
+
+	//
+
 	@Override
 	public void actionPerformed(GuiButton button) {
 		this.childUI.uiButtonClicked(button);
@@ -195,7 +195,7 @@ public class PlexUIModMenuScreen extends GuiScreen {
 		else if (this.plexInterfaceUiTabs.containsKey(button.id) && !this.childUI.disablePlexUi()) {
 			PlexCore.saveAllConfig();
 			try {
-				this.mc.displayGuiScreen(new PlexUIModMenuScreen(this.plexInterfaceUiTabs.get(button.id).getGuiClass().newInstance(), this.parent, this.palette));
+				this.mc.displayGuiScreen(new PlexUIModMenu(this.plexInterfaceUiTabs.get(button.id).getGuiClass().newInstance(), this.parent, this.palette));
 			}
 			catch (InstantiationException | IllegalAccessException ignored) {}
 		}
@@ -215,19 +215,22 @@ public class PlexUIModMenuScreen extends GuiScreen {
 	}
 	
 	@Override
-	protected void mouseClicked(int par1, int par2, int btn) throws IOException {
-		if (btn == 0) {
-			for (GuiButton button : this.plexInterfaceButtonList) {
-				if (button.mousePressed(this.mc, par1, par2)) {
-					button.playPressSound(this.mc.getSoundHandler());
-					this.plexInterfaceButtonPressed(button);
+	protected void mouseClicked(int mouseX, int mouseY, int button) throws IOException {
+		if (button == 0) {
+			for (GuiButton guiButton : this.plexInterfaceButtonList) {
+				if (guiButton.mousePressed(this.mc, mouseX, mouseY)) {
+					guiButton.playPressSound(this.mc.getSoundHandler());
+					this.plexInterfaceButtonPressed(guiButton);
 				}
 			}
 		}		
-
-		clickSocialMedia(par1, par2);
-		super.mouseClicked(par1, par2, btn);
-		this.childUI.mouseClicked(par1, par2, btn);
+		synchronized (socialMediaButtons) {
+			for (SocialMediaButton socialMediaButton : socialMediaButtons) {
+				socialMediaButton.click(this, mouseX, mouseY);
+			}
+		}
+		super.mouseClicked(mouseX, mouseY, button);
+		this.childUI.mouseClicked(mouseX, mouseY, button);
 	}
 	
 	@Override
@@ -261,6 +264,8 @@ public class PlexUIModMenuScreen extends GuiScreen {
 		this.childUI.uiClosed();
 	}
 
+	//
+
 	public FontRenderer getFontRenderer() {
 		return this.fontRendererObj;
 	}
@@ -273,69 +278,39 @@ public class PlexUIModMenuScreen extends GuiScreen {
 		return PlexUtilColour.replace(this.palette.getActiveColour(1), -1, -1, -1, PlexUtilColour.channel(this.palette.getActiveColour(2), 3));
 	}
 	
-	public void clickSocialMedia(int mouseX, int mouseY) {
-		int iconSize = 16;
-		int barHeight = 25;
-		int positionIncrement = iconSize + (iconSize / 6) + 2;
-		int positionX = this.width - ((barHeight - iconSize) / 2) - iconSize;
-		int positionY = ((barHeight - iconSize) / 2);
-		for (String item : PlexMod.socialMediaRenderInformation.keySet()) {
-			if (PlexMod.socialMediaLinks.containsKey(item)) {
-				if (mouseX > positionX && mouseY > positionY && mouseX < positionX + iconSize && mouseY < positionY + iconSize) {
-					if (PlexMod.socialMediaLinkMapping.containsKey(item)) {
-						PlexUtil.openURL(PlexMod.socialMediaLinkMapping.get(item) + PlexMod.socialMediaLinks.get(item));
-						return;
-					}
-				}
-				positionX -= positionIncrement;
-			}
-		}		
-	}
-	
-	public void drawSocialMedia() {
-		int iconSize = 16;
-		int barHeight = 25;
-		int positionIncrement = iconSize + (iconSize / 6) + 2;
-		int positionX = this.width - ((barHeight - iconSize) / 2) - iconSize;
-		int positionY = ((barHeight - iconSize) / 2);
-		GL11.glPushMatrix();
-		GlStateManager.resetColor();
-		GlStateManager.disableDepth();
-		GlStateManager.enableBlend();
-		GlStateManager.enableAlpha();
-		for (String item : PlexMod.socialMediaRenderInformation.keySet()) {
-			if (PlexMod.socialMediaLinks.containsKey(item)) {
-				Plex.minecraft.renderEngine.bindTexture(PlexMod.socialMediaRenderInformation.get(item));
-				GuiScreen.drawScaledCustomSizeModalRect(positionX, positionY, 0.0F, 0.0F, 256, 256, iconSize, iconSize, 256.0F, 256.0F);
-				positionX -= positionIncrement;
-			}
-		}
-		GL11.glPopMatrix();
-	}
-
-	public int getSocialMediaStartX() {
-		int iconSize = 16;
-		int barHeight = 25;
-		int positionIncrement = iconSize + (iconSize / 6) + 2;
-		int positionX = this.width - ((barHeight - iconSize) / 2) - iconSize;
-		int positionY = ((barHeight - iconSize) / 2);
-		for (String item : PlexMod.socialMediaRenderInformation.keySet()) {
-			if (PlexMod.socialMediaLinks.containsKey(item)) {
-				positionX -= positionIncrement;
-			}
-		}
-		return positionX + positionIncrement;
-	}
-	
 	private void drawHeaderImage() {
-		GL11.glPushMatrix();
+		//GL11.glPushMatrix();
 		Plex.minecraft.renderEngine.bindTexture(PlexUtilTextures.GUI_BANNER_TEXTURE);
 		GlStateManager.resetColor();
 		GlStateManager.disableDepth();
 		GlStateManager.enableBlend();
 		GlStateManager.enableAlpha();
 		GuiScreen.drawScaledCustomSizeModalRect(20, 0, 0.0F, 0.0F, 880, 200, 110, 25, 880.0F, 200.0F);
-		GL11.glPopMatrix();
+		//GL11.glPopMatrix();
+	}
+
+	private void drawSocialMedia(int mouseX, int mouseY) {
+		//GL11.glPushMatrix();
+		GlStateManager.resetColor();
+		GlStateManager.disableDepth();
+		GlStateManager.enableBlend();
+		GlStateManager.enableAlpha();
+		synchronized (socialMediaButtons) {
+			for (SocialMediaButton button : socialMediaButtons) {
+				button.draw(this, mouseX, mouseY);
+			}
+		}
+		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+		//GL11.glPopMatrix();
+	}
+
+	private int getPaddedSocialMediaLocation() {
+		synchronized (socialMediaButtons) {
+			if (socialMediaButtons.size() == 0) {
+				return this.width;
+			}
+			return socialMediaButtons.get(0).getX(this);
+		}
 	}
 
 	@Override
@@ -343,12 +318,12 @@ public class PlexUIModMenuScreen extends GuiScreen {
 		this.updatePlexInterface();
 		this.updateGuiState();
 
-		int foregroundColour = getForegroundColour();
-		int backgroundColour = getBackgroundColour();
+		int foregroundColour = this.getForegroundColour();
+		int backgroundColour = this.getBackgroundColour();
 		
 		if (!this.childUI.disablePlexUi()) {
-			drawGradientRect(0, 0, this.width, this.height, -1072689136, -804253680); // screen fill	
-			drawRect(this.zoneStartX(), this.zoneStartY(), this.zoneEndX(), this.zoneEndY(), backgroundColour); // zone fill			
+			drawGradientRect(0, 0, this.width, this.height, -1072689136, -804253680); // screen fill
+			drawRect(this.zoneStartX(), this.zoneStartY(), this.zoneEndX(), this.zoneEndY(), backgroundColour); // zone fill
 		}
 
 		this.childUI.drawScreen(mouseX, mouseY, par3);
@@ -373,8 +348,8 @@ public class PlexUIModMenuScreen extends GuiScreen {
 			}
 
 			drawCenteredString(this.fontRendererObj, this.childUI.uiGetTitle(), this.zoneCenterX(), 35, 16777215); // Local title
-			drawHeaderImage();
-			drawSocialMedia();
+			this.drawHeaderImage();
+			this.drawSocialMedia(mouseX, mouseY);
 
 			String lobbyName;
 			if (!Plex.gameState.isMineplex) {
@@ -387,7 +362,7 @@ public class PlexUIModMenuScreen extends GuiScreen {
 				lobbyName = Plex.gameState.currentLobby.name;
 			}
 
-			if (mouseX > this.getSocialMediaStartX() - 35 && mouseX < this.getSocialMediaStartX() - 10 && mouseY > 2 && mouseY < 24 && Mouse.isButtonDown(1)) {
+			if (mouseX > this.getPaddedSocialMediaLocation() - 30 && mouseX < this.getPaddedSocialMediaLocation() - 5 && mouseY > 2 && mouseY < 24 && Mouse.isButtonDown(1)) {
 				lobbyName = ee;
 				this.eee = true;
 			}
@@ -396,7 +371,7 @@ public class PlexUIModMenuScreen extends GuiScreen {
 				this.eee = false;
 			}
 
-			PlexUtilRender.drawScaledStringRightSide(lobbyName, this.getSocialMediaStartX() - 5, 8, 0xdf8214, 1.0F, false);
+			PlexUtilRender.drawScaledStringRightSide(lobbyName, this.getPaddedSocialMediaLocation() - 2, 8, 0xdf8214, 1.0F, false);
 		}
 
 		
@@ -407,14 +382,35 @@ public class PlexUIModMenuScreen extends GuiScreen {
 		super.drawScreen(mouseX, mouseY, par3);
 	}
 
+	static {
+		ees.add("Hey There!!!");
+		ees.add("Subscribe to PewDiePie");
+		ees.add("Worpp was here");
+		ees.add("what u lookin at");
+		ees.add(":)");
+		ees.add("moo");
+		ees.add("insert witty easter egg here");
+		ees.add("<o/");
+		ees.add("22.flp");
+		ees.add("swag");
+		ees.add("oh yeah yeah");
+		ees.add("void u prolly find this first");
+	}
+
 	public static void updateSocialMedia() {
+		synchronized (socialMediaButtons) {
+			doUpdateSocialMedia();
+		}
+	}
+
+	private static void doUpdateSocialMedia() {
 		socialMediaButtons.clear();
 		int iconSize = 16;
 		int topBarHeight = 25;
 
-		int positionIncrement = iconSize + (iconSize / 6) + 2;
-		int positionX = -((topBarHeight - iconSize) / 2) - iconSize;
 		int positionY = ((topBarHeight - iconSize) / 2);
+		int positionX = -positionY;
+		int positionIncrement = iconSize + (iconSize / 6) + 2;
 
 		List<PlexModSocialMedia> socialMediaList = Arrays.asList(PlexModSocialMedia.values());
 		Collections.reverse(socialMediaList);
@@ -423,31 +419,14 @@ public class PlexUIModMenuScreen extends GuiScreen {
 			if (!socialMedia.available) {
 				continue;
 			}
-			//socialMediaButtons.add(new SocialMediaButton())
-			//if (PlexMod.socialMediaLinks.containsKey(item)) {
-			//	Plex.minecraft.renderEngine.bindTexture(PlexMod.socialMediaRenderInformation.get(item));
-			//	GuiScreen.drawScaledCustomSizeModalRect(positionX, positionY, 0.0F, 0.0F, 256, 256, iconSize, iconSize, 256.0F, 256.0F);
-			//	positionX -= positionIncrement;
-			//}
+			socialMediaButtons.add(new SocialMediaButton(positionX - iconSize, positionY, iconSize, iconSize, socialMedia));
+			positionX -= positionIncrement;
 		}
-	}
-
-	static {
-		ees.add("Hey There!!!");
-		ees.add("Subscribe to PewDiePie");
-		ees.add("Worpp was here");
-		ees.add("what u lookin at");
-		ees.add("*wave check*");
-		ees.add("moo");
-		ees.add("insert witty easter egg here");
-		ees.add("<o/");
-		ees.add("22.flp");
-		ees.add("swag");
-		ees.add("oh yeah yeah");
-		ees.add("void u prolly find this first xd");
+		socialMediaButtons.add(0, new SocialMediaButton(positionX));
 	}
 
 	static class SocialMediaButton {
+		private boolean isDummy;
 		private int x;
 		private int y;
 		public int width;
@@ -455,12 +434,53 @@ public class PlexUIModMenuScreen extends GuiScreen {
 
 		public PlexModSocialMedia socialMedia;
 
-		public SocialMediaButton(int x, int y, int width, int height, PlexModSocialMedia socialMedia) {
+		private SocialMediaButton(int x) {
+			this(x, 0, 0, 0, null);
+			this.isDummy = true;
+		}
+
+		private SocialMediaButton(int x, int y, int width, int height, PlexModSocialMedia socialMedia) {
 			this.x = x;
 			this.y = y;
 			this.width = width;
 			this.height = height;
 			this.socialMedia = socialMedia;
+		}
+
+		public int getX(GuiScreen guiScreen) {
+			return guiScreen.width + this.x;
+		}
+
+		public int getY(GuiScreen guiScreen) {
+			return this.y;
+		}
+
+		public boolean isHovered(GuiScreen guiScreen, int mouseX, int mouseY) {
+			int x = this.getX(guiScreen);
+			int y = this.getY(guiScreen);
+			return mouseX >= x && mouseY >= y && mouseX <= x + this.width && mouseY <= y + this.width && !this.isDummy;
+		}
+
+		public void click(GuiScreen guiScreen, int mouseX, int mouseY) {
+			if (!this.isDummy && this.isHovered(guiScreen, mouseX, mouseY)) {
+				PlexUtil.openURL(this.socialMedia.link);
+			}
+		}
+
+		public void draw(GuiScreen guiScreen, int mouseX, int mouseY) {
+			if (this.isDummy || this.socialMedia == null || !this.socialMedia.available) {
+				return;
+			}
+
+			Plex.minecraft.renderEngine.bindTexture(socialMedia.icon);
+
+			if (this.isHovered(guiScreen, mouseX, mouseY)) {
+				GlStateManager.color(0.85F, 0.85F, 0.85F, 1.0F);
+			}
+			else {
+				GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+			}
+			GuiScreen.drawScaledCustomSizeModalRect(this.getX(guiScreen), this.getY(guiScreen), 0.0F, 0.0F, socialMedia.iconWidth, socialMedia.iconHeight, this.width, this.height, socialMedia.iconWidth, socialMedia.iconHeight);
 		}
 	}
 }

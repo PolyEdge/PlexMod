@@ -4,7 +4,7 @@ import cc.dyspore.plex.core.util.PlexUtilColour;
 import net.minecraft.client.gui.GuiButton;
 import cc.dyspore.plex.Plex;
 import cc.dyspore.plex.ui.PlexUIBase;
-import cc.dyspore.plex.ui.PlexUIModMenuScreen;
+import cc.dyspore.plex.ui.PlexUIModMenu;
 import cc.dyspore.plex.ui.widget.PlexUISlider;
 
 public class PlexModUI extends PlexUIBase {
@@ -15,7 +15,7 @@ public class PlexModUI extends PlexUIBase {
 	}
 
 	@Override
-	public void initGui(PlexUIModMenuScreen ui) {
+	public void initGui(PlexUIModMenu ui) {
 	}
 	
 	@Override

@@ -4,7 +4,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import cc.dyspore.plex.core.mineplex.PlexMPLobby;
-import cc.dyspore.plex.ui.PlexUIModMenuScreen;
+import cc.dyspore.plex.ui.PlexUIModMenu;
 import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.entity.player.EntityPlayer;
 import cc.dyspore.plex.Plex;
@@ -165,7 +165,7 @@ public class PlexCore {
 	 */
 	public static void displayUIScreen(PlexUIBase screen) {
 		if (screen != null) {
-			Plex.listeners.setTargetGuiScreen(new PlexUIModMenuScreen(screen));
+			Plex.listeners.setTargetGuiScreen(new PlexUIModMenu(screen));
 		}
 		else {
 			Plex.listeners.setTargetGuiScreen(null);

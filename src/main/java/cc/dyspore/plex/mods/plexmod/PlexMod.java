@@ -8,6 +8,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import cc.dyspore.plex.ui.PlexUIModMenu;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.google.gson.stream.JsonReader;
@@ -22,9 +23,6 @@ import cc.dyspore.plex.core.PlexModBase;
 
 public class PlexMod extends PlexModBase {
 	public PlexCommandListener plexListener;
-	public static Map<String, String> socialMediaLinks = new ConcurrentHashMap<>();
-	public static Map<String, ResourceLocation> socialMediaRenderInformation = new LinkedHashMap<>();
-	public static Map<String, String> socialMediaLinkMapping = new HashMap<>();
 
 	@Override
 	public String getModName() {
@@ -40,17 +38,10 @@ public class PlexMod extends PlexModBase {
 		
 		PlexCore.registerUiTab("Plex", PlexModUI.class);
 
-		socialMediaRenderInformation.put("discord_server", PlexUtilTextures.GUI_SM_DISCORD_ICON);
-		socialMediaRenderInformation.put("twitter", PlexUtilTextures.GUI_SM_TWITTER_ICON);
-		socialMediaRenderInformation.put("namemc", PlexUtilTextures.GUI_SM_NAMEMC_ICON);
-
-		socialMediaLinkMapping.put("discord_server", "https://discord.gg");
-		socialMediaLinkMapping.put("twitter", "https://twitter.com");
-		socialMediaLinkMapping.put("namemc", "https://namemc.com");
-
 		new Thread(() -> {
 			try {
-
+				this.loadSocialMedia();
+				PlexUIModMenu.updateSocialMedia();
 			}
 			catch (Throwable e) {
 				Plex.logger.info("[PlexMod] exception getting social media links");
@@ -76,7 +67,7 @@ public class PlexMod extends PlexModBase {
 		socialMediaInput.close();
 		for (Map.Entry<String, JsonElement> object : apiResponse.getAsJsonObject().entrySet()) {
 			try {
-				socialMediaLinks.put(object.getKey(), object.getValue().getAsString());
+				PlexModSocialMedia.activate(object.getKey(), object.getValue().getAsString());
 			}
 			catch (Throwable ignored) {}
 		}

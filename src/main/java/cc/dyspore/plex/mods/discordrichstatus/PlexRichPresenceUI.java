@@ -3,7 +3,7 @@ package cc.dyspore.plex.mods.discordrichstatus;
 import net.minecraft.client.gui.GuiButton;
 import cc.dyspore.plex.core.PlexCore;
 import cc.dyspore.plex.ui.PlexUIBase;
-import cc.dyspore.plex.ui.PlexUIModMenuScreen;
+import cc.dyspore.plex.ui.PlexUIModMenu;
 import cc.dyspore.plex.ui.widget.PlexUISlider;
 
 public class PlexRichPresenceUI extends PlexUIBase {
@@ -14,7 +14,7 @@ public class PlexRichPresenceUI extends PlexUIBase {
 	}
 
 	@Override
-	public void initGui(PlexUIModMenuScreen ui) {
+	public void initGui(PlexUIModMenu ui) {
 		int top = ui.startingYPos(135);
 		int paneSize = ui.centeredPaneSize(1, 20, 160);
 		int pane1Pos = ui.centeredPanePos(0, 1, 20, 160);

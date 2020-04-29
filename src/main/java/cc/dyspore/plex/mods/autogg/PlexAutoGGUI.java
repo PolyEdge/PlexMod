@@ -1,11 +1,11 @@
 package cc.dyspore.plex.mods.autogg;
 
 import cc.dyspore.plex.core.util.PlexUtil;
+import cc.dyspore.plex.ui.PlexUIModMenu;
 import net.minecraft.client.gui.GuiButton;
 import cc.dyspore.plex.Plex;
 import cc.dyspore.plex.core.PlexCore;
 import cc.dyspore.plex.ui.PlexUIBase;
-import cc.dyspore.plex.ui.PlexUIModMenuScreen;
 import cc.dyspore.plex.ui.widget.PlexUISlider;
 import cc.dyspore.plex.ui.widget.PlexUITextField;
 import cc.dyspore.plex.ui.widget.itemlist.PlexUIScrolledItemList;
@@ -27,7 +27,7 @@ public class PlexAutoGGUI extends PlexUIBase {
 	}
 
 	@Override
-	public void initGui(PlexUIModMenuScreen ui) {
+	public void initGui(PlexUIModMenu ui) {
 		int top = ui.startingYPos(180);
 		int paneSize = ui.centeredPaneSize(2, 20, 160);
 		int pane1Pos = ui.centeredPanePos(-1, 2, 20, 160);

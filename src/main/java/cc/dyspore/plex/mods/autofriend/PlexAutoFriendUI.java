@@ -2,7 +2,7 @@ package cc.dyspore.plex.mods.autofriend;
 
 import cc.dyspore.plex.core.PlexCore;
 import cc.dyspore.plex.ui.PlexUIBase;
-import cc.dyspore.plex.ui.PlexUIModMenuScreen;
+import cc.dyspore.plex.ui.PlexUIModMenu;
 import cc.dyspore.plex.ui.widget.PlexUISlider;
 import cc.dyspore.plex.ui.widget.PlexUITextField;
 import net.minecraft.client.gui.GuiButton;
@@ -18,7 +18,7 @@ public class PlexAutoFriendUI extends PlexUIBase {
 	}
 
 	@Override
-	public void initGui(PlexUIModMenuScreen ui) {
+	public void initGui(PlexUIModMenu ui) {
 		PlexAutoFriendMod instance = PlexCore.modInstance(PlexAutoFriendMod.class);
 		int top = ui.startingYPos(112);
 		int paneSize = ui.centeredPaneSize(1, 20, 160);
