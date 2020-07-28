@@ -71,6 +71,6 @@ public class PlexUISlider extends GuiButton {
 	}
 	
 	private void updateCallback() {
-		this.parentUI.uiSliderInteracted(this);
+		this.parentUI.onSliderInteract(this);
 	}
 }

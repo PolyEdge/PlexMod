@@ -3,8 +3,6 @@ package cc.dyspore.plex;
 import cc.dyspore.plex.core.PlexCore;
 import cc.dyspore.plex.core.PlexCoreListeners;
 import cc.dyspore.plex.core.util.PlexUtilPlayers;
-import cc.dyspore.plex.core.mineplex.PlexMPState;
-import cc.dyspore.plex.core.util.PlexUtilTextures;
 import cc.dyspore.plex.commands.queue.PlexCommandQueueManager;
 import cc.dyspore.plex.mods.autogg.PlexAutoGGMod;
 import cc.dyspore.plex.mods.autothank.PlexAutoThankMod;
@@ -26,19 +24,17 @@ import cc.dyspore.plex.mods.autofriend.PlexAutoFriendMod;
 
 import org.apache.logging.log4j.Logger;
 
-
 @Mod(modid = Plex.MODID, version = Plex.VERSION, clientSideOnly = true, acceptedMinecraftVersions = "[1.8.8,1.8.9]", guiFactory = "cc.dyspore.plex.core.fml.PlexModGuiFactory", canBeDeactivated = false)
 public class Plex {
-	public static final String MODID = "polyedge_plex";
-	public static final String VERSION = "0.4";
-	public static final String PATCHID = "PATCH_8";
-	public static final String RELEASENOTICE = "Welcome to 0.4!";
+	public static final String MODID   = "polyedge_plex";
+	public static final String VERSION = "0.5";
+	public static final String PATCHID = null;
+	public static final String NOTICE  = "Welcome to 0.4!";
 
 	public static Minecraft minecraft = Minecraft.getMinecraft();
 	public static Configuration config;
 	public static Logger logger;
 
-	public static PlexMPState gameState = new PlexMPState();
 	public static PlexCommandQueueManager queue = new PlexCommandQueueManager();
 	public static PlexCoreListeners listeners = new PlexCoreListeners();
 	public static PlexModCommand plexCommand = new PlexModCommand();
@@ -55,7 +51,7 @@ public class Plex {
 	public void init(FMLInitializationEvent event) {
 		MinecraftForge.EVENT_BUS.register(listeners);
 
-		PlexCore.getInternalLoop().addTask(listeners::handleLobbyData);
+		PlexCore.getInternalLoop().addTask(listeners::tickLobby);
 		PlexCore.getInternalLoop().addTask(queue::processQueue);
 
 		PlexCore.register(new PlexMod());

@@ -3,7 +3,6 @@ package cc.dyspore.plex.mods.messagingscreen.channel;
 import cc.dyspore.plex.Plex;
 import cc.dyspore.plex.core.util.PlexUtilChat;
 import cc.dyspore.plex.commands.queue.PlexCommandQueue;
-import cc.dyspore.plex.commands.queue.PlexCommandQueueCommand;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 
 public class PlexMessagingCommunityChatChannel extends PlexMessagingChannelBase {
@@ -48,10 +47,10 @@ public class PlexMessagingCommunityChatChannel extends PlexMessagingChannelBase 
 
 	@Override
 	public void readyChannel() {
-		PlexCommandQueueCommand comCommand = new PlexCommandQueueCommand("communityChatChannel", "/com chat " + this.recipientEntityName);
+		PlexCommandQueue.Command comCommand = new PlexCommandQueue.Command("communityChatChannel", "/com chat " + this.recipientEntityName);
 		comCommand.setCompleteOnSend(true);
 		commandQueue.cancelAll();
-		commandQueue.addCommand(comCommand);
+		commandQueue.add(comCommand);
 	}
 
 	@Override

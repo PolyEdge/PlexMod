@@ -8,12 +8,12 @@ import cc.dyspore.plex.ui.widget.PlexUISlider;
 
 public class PlexFriendsListUI extends PlexUIBase {
 	@Override
-	public String uiGetTitle() {
+	public String getTitle() {
 		return "Friends List Enhancements";
 	}
 
 	@Override
-	public void initGui(PlexUIModMenu ui) {
+	public void initScreen(PlexUIModMenu ui) {
 		PlexFriendsListMod instance = PlexCore.modInstance(PlexFriendsListMod.class);
 		int top = ui.startingYPos(72);
 		int paneSize = ui.centeredPaneSize(1, 20, 160);
@@ -28,7 +28,7 @@ public class PlexFriendsListUI extends PlexUIBase {
 	}
 
 	@Override
-	public void uiSliderInteracted(PlexUISlider slider) {
+	public void onSliderInteract(PlexUISlider slider) {
 	}
 	
 	@Override
@@ -37,7 +37,7 @@ public class PlexFriendsListUI extends PlexUIBase {
 	}
 
 	@Override
-	public void uiButtonClicked(GuiButton button) {
+	public void onButtonInteract(GuiButton button) {
 		PlexFriendsListMod instance = PlexCore.modInstance(PlexFriendsListMod.class);
 		if (button.id == 5) {
 			instance.hideIncomingRequestsEnabled = !instance.hideIncomingRequestsEnabled;

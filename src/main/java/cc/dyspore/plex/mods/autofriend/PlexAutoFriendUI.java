@@ -13,12 +13,12 @@ public class PlexAutoFriendUI extends PlexUIBase {
 	public PlexUITextField secondaryMessageField;
 	
 	@Override
-	public String uiGetTitle() {
+	public String getTitle() {
 		return "AutoFriend";
 	}
 
 	@Override
-	public void initGui(PlexUIModMenu ui) {
+	public void initScreen(PlexUIModMenu ui) {
 		PlexAutoFriendMod instance = PlexCore.modInstance(PlexAutoFriendMod.class);
 		int top = ui.startingYPos(112);
 		int paneSize = ui.centeredPaneSize(1, 20, 160);
@@ -28,7 +28,7 @@ public class PlexAutoFriendUI extends PlexUIBase {
 	}
 	
 	@Override
-	public void mouseClicked(int par1, int par2, int button) {
+	public void onMousePressed(int par1, int par2, int button) {
 	}
 	
 	@Override
@@ -36,7 +36,7 @@ public class PlexAutoFriendUI extends PlexUIBase {
 	}
 	
 	@Override
-	public void keyTyped(char character, int keyCode) {
+	public void onKeyPressed(char character, int keyCode) {
 	}
 	
 	@Override
@@ -52,7 +52,7 @@ public class PlexAutoFriendUI extends PlexUIBase {
 	}
 
 	@Override
-	public void uiSliderInteracted(PlexUISlider slider) {
+	public void onSliderInteract(PlexUISlider slider) {
 	}
 	
 	@Override
@@ -61,7 +61,7 @@ public class PlexAutoFriendUI extends PlexUIBase {
 	}
 
 	@Override
-	public void uiButtonClicked(GuiButton button) {
+	public void onButtonInteract(GuiButton button) {
 		PlexAutoFriendMod instance = PlexCore.modInstance(PlexAutoFriendMod.class);
 		if (button.id == 5) {
 			instance.modEnabled = !instance.modEnabled;

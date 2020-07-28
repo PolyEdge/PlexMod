@@ -3,25 +3,23 @@ package cc.dyspore.plex.commands.queue;
 import cc.dyspore.plex.core.util.PlexUtilChat;
 import net.minecraft.client.Minecraft;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-// this queue promises 2 things
-
-// 1 - higher priority (0 = highest) commands are executed first if possible (which is almost always)
-// 2 - queue groups MUST be dispatched in order
+import java.util.*;
 
 
+/**
+ * this queue promises 2 things:<br/>
+ * 1 - queue groups MUST be dispatched in order excluding commands explicitly marked as not requiring to be. these are
+ * also ignored when determining ordering
+ * 2 - higher priority (0 = highest) commands are executed first if possible (which is almost always)<br/><br/>
+*/
 public class PlexCommandQueueManager {
-	private final List<PlexCommandQueueCommand> queuedCommands = Collections.synchronizedList(new ArrayList<>());
-
-	private Thread thread;
+	private final List<PlexCommandQueue.Command> queuedCommands = Collections.synchronizedList(new ArrayList<>());
+	private ProcessContext processContext = new ProcessContext();
 
 	public long lastCommandSent = 0L;
 	public boolean debug = false;
 
-	private boolean sendCommand(PlexCommandQueueCommand command) {
+	private boolean sendCommand(PlexCommandQueue.Command command) {
 		if (command.sendCommand()) {
 			lastCommandSent = Minecraft.getSystemTime();
 			showDebug(command);
@@ -34,18 +32,18 @@ public class PlexCommandQueueManager {
 		}
 	}
 
-	public PlexCommandQueueCommand addCommandToQueue(PlexCommandQueueCommand command) {
+	public PlexCommandQueue.Command addCommandToQueue(PlexCommandQueue.Command command) {
 		this.queuedCommands.add(command);
 		return command;
 	}
 
 
-	public void showDebug(PlexCommandQueueCommand command) {
+	public void showDebug(PlexCommandQueue.Command command) {
 		if (!this.debug) {
 			return;
 		}
 		StringBuilder debug = new StringBuilder(); //PlexUtil.chatStyleText("DARK_RED", "BOLD", "== Queued Commands ==");
-		for (PlexCommandQueueCommand com : this.queuedCommands) {
+		for (PlexCommandQueue.Command com : this.queuedCommands) {
 			debug.append(PlexUtilChat.chatStyleText(com.isSent() ? "GREEN" : "BLUE", com.command));// + " " + PlexUtil.chatStyleText("BLUE", com.tag) + ": " + PlexUtil.chatStyleText("DARK_GRAY", com.toString()) + " " + PlexUtil.chatStyleText("GOLD", "" + com.priority);
 			debug.append(" ");
 		}
@@ -58,15 +56,15 @@ public class PlexCommandQueueManager {
 		this.queuedCommands.clear();
 	}
 	
-	public void cancelAll(List<PlexCommandQueueCommand> commandList) {
-		for (PlexCommandQueueCommand command : commandList) {
+	public void cancelAll(List<PlexCommandQueue.Command> commandList) {
+		for (PlexCommandQueue.Command command : commandList) {
 			command.cancel();
 		}
 	}
 	
-	public void removeCompleted(List<PlexCommandQueueCommand> commandList) {
-		List<PlexCommandQueueCommand> completed = new ArrayList<>();
-		for (PlexCommandQueueCommand command : commandList) {
+	public void removeCompleted(List<PlexCommandQueue.Command> commandList) {
+		List<PlexCommandQueue.Command> completed = new ArrayList<>();
+		for (PlexCommandQueue.Command command : commandList) {
 			if (command.isDone()) {
 				completed.add(command);
 			}
@@ -74,20 +72,21 @@ public class PlexCommandQueueManager {
 		commandList.removeAll(completed);
 	}
 
-	public List<Integer> getPrioritySet(List<PlexCommandQueueCommand> commandList) {
+	public List<Integer> getPrioritySet(List<PlexCommandQueue.Command> commandList) {
 		List<Integer> priorities = new ArrayList<>();
-		for (PlexCommandQueueCommand command : commandList) {
-			if (!priorities.contains(command.getPriority())) {
-				priorities.add(command.getPriority());
+		for (PlexCommandQueue.Command command : commandList) {
+			int priority = command.getPriority();
+			if (!priorities.contains(priority)) {
+				priorities.add(priority);
 			}
 		}
 		Collections.sort(priorities);
 		return priorities;
 	}
 
-	public List<PlexCommandQueueCommand> getCommandsWithPriority(List<PlexCommandQueueCommand> commandList, int priority) {
-		List<PlexCommandQueueCommand> commands = new ArrayList<>();
-		for (PlexCommandQueueCommand command : commandList) {
+	public List<PlexCommandQueue.Command> getCommandsWithPriority(List<PlexCommandQueue.Command> commandList, int priority) {
+		List<PlexCommandQueue.Command> commands = new ArrayList<>();
+		for (PlexCommandQueue.Command command : commandList) {
 			if (command.getPriority() == priority) {
 				commands.add(command);
 			}
@@ -95,26 +94,25 @@ public class PlexCommandQueueManager {
 		return commands;
 	}
 
-	public void processQueueList(List<PlexCommandQueueCommand> queueList) {
-		processQueueList(queueList, new PlexCommandQueueProcessContext());
+	public void processQueueList(List<PlexCommandQueue.Command> queueList) {
+		processQueueList(queueList, new ProcessContext());
 	}
 
-	public void processQueueList(List<PlexCommandQueueCommand> queueList, PlexCommandQueueProcessContext context) {  // returns ignore groups for other priorities
-		removeCompleted(queueList);
+	public void processQueueList(List<PlexCommandQueue.Command> queueList, ProcessContext context) {  // returns ignore groups for other priorities
+		this.removeCompleted(queueList);
+		List<PlexCommandQueue.Command> potentialCommands = new ArrayList<>();
 
-		List<PlexCommandQueueCommand> potentialCommands = new ArrayList<>();
-
-		for (PlexCommandQueueCommand command : queueList) {
+		for (PlexCommandQueue.Command command : queueList) {
 			if (command.isSent() && !command.isDone() && command.getBlocksQueue()) {
 				context.blockingGroups.add(command.getGroup());
 			}
 		}
 
-		for (PlexCommandQueueCommand command : queueList) {
+		for (PlexCommandQueue.Command command : queueList) {
 			if (context.blockingGroups.contains(command.getGroup())) {
 				continue;
 			}
-			if (command.isAwaitResend()) {
+			if (command.isAwaitingResend()) {
 				potentialCommands.add(command);
 				if (command.getBlocksQueue()) {
 					context.blockingGroups.add(command.getGroup());
@@ -122,8 +120,8 @@ public class PlexCommandQueueManager {
 			}
 		}
 
-		for (PlexCommandQueueCommand command : queueList) {
-			if (command.isSent() || command.isAwaitResend()) {
+		for (PlexCommandQueue.Command command : queueList) {
+			if (command.isSent() || command.isAwaitingResend()) {
 				continue;
 			}
 			if (command.getRespectQueueOrder() && context.blockingGroups.contains(command.getGroup())) {
@@ -135,7 +133,7 @@ public class PlexCommandQueueManager {
 			}
 		}
 
-		for (PlexCommandQueueCommand command : potentialCommands) {
+		for (PlexCommandQueue.Command command : potentialCommands) {
 			if (!command.isSent() && command.isSendable()) {
 				context.sendError = sendCommand(command);
 				break;
@@ -146,12 +144,22 @@ public class PlexCommandQueueManager {
 	public void processQueue() {
 		synchronized (this.queuedCommands) {
 			this.removeCompleted(this.queuedCommands);
-			PlexCommandQueueProcessContext context = new PlexCommandQueueProcessContext();
-			List<Integer> priorities = getPrioritySet(this.queuedCommands);
+			this.processContext.reset();
+			List<Integer> priorities = this.getPrioritySet(this.queuedCommands);
 			for (int priority : priorities) {
-				List<PlexCommandQueueCommand> commands = getCommandsWithPriority(this.queuedCommands, priority);
-				this.processQueueList(commands, context);
+				List<PlexCommandQueue.Command> commands = this.getCommandsWithPriority(this.queuedCommands, priority);
+				this.processQueueList(commands, this.processContext);
 			}
+		}
+	}
+
+	public static class ProcessContext {
+		public Set<String> blockingGroups = new HashSet<>();
+		public boolean sendError = false;
+
+		public void reset() {
+			this.blockingGroups.clear();
+			this.sendError = false;
 		}
 	}
 }

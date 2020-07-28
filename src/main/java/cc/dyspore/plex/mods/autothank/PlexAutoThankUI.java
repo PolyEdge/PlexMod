@@ -8,12 +8,12 @@ import cc.dyspore.plex.ui.widget.PlexUISlider;
 
 public class PlexAutoThankUI extends PlexUIBase {
 	@Override
-	public String uiGetTitle() {
+	public String getTitle() {
 		return "AutoThank";
 	}
 
 	@Override
-	public void initGui(PlexUIModMenu ui) {
+	public void initScreen(PlexUIModMenu ui) {
 		int top = ui.startingYPos(41);
 		int paneSize = ui.centeredPaneSize(1, 20, 160);
 		int pane1Pos = ui.centeredPanePos(0, 1, 20, 160);
@@ -27,7 +27,7 @@ public class PlexAutoThankUI extends PlexUIBase {
 	}
 	
 	@Override
-	public void uiSliderInteracted(PlexUISlider slider) {
+	public void onSliderInteract(PlexUISlider slider) {
 	}
 	
 	@Override
@@ -36,7 +36,7 @@ public class PlexAutoThankUI extends PlexUIBase {
 	}
 
 	@Override
-	public void uiButtonClicked(GuiButton button) {
+	public void onButtonInteract(GuiButton button) {
 		if (button.id == 5) {
 			PlexCore.modInstance(PlexAutoThankMod.class).modEnabled = !PlexCore.modInstance(PlexAutoThankMod.class).modEnabled;
 			button.displayString = buttonDisplayString("AutoThank", PlexCore.modInstance(PlexAutoThankMod.class).modEnabled);

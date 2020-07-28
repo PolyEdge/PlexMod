@@ -3,7 +3,6 @@ package cc.dyspore.plex.core;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-import cc.dyspore.plex.core.mineplex.PlexMPLobby;
 import cc.dyspore.plex.ui.PlexUIModMenu;
 import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.entity.player.EntityPlayer;
@@ -59,7 +58,7 @@ public class PlexCore {
 		else {
 			getModLoop().addTask(mod::doModLoop);
 		}
-		PlexCore.saveAllConfig();
+		PlexCore.saveConfiguration();
 	}
 
 	/**
@@ -96,24 +95,10 @@ public class PlexCore {
 	 * @param name  Title of the UI tab
 	 * @param clazz Class of the UI tab
 	 */
-	public static PlexUITab registerUiTab(String name, Class<? extends PlexUIBase> clazz) {
+	public static PlexUITab registerMenuTab(String name, Class<? extends PlexUIBase> clazz) {
 		PlexUITab tab = new PlexUITab(clazz, name);
 		uiTabList.add(tab);
 		return tab;
-	}
-
-	/**
-	 * Gets the title of the UI tab registered at the given index
-	 * 
-	 * @param pos Index of the tab
-	 * @return Title of the tab if it exists, null otherwise
-	 * @see PlexUIBase
-	 */
-	public static PlexUITab getUiTabAt(Integer pos) {
-		if (pos >= uiTabList.size()) {
-			return null;
-		}
-		return uiTabList.get(pos);
 	}
 
 	/**
@@ -122,16 +107,16 @@ public class PlexCore {
 	 * @return the UI tab list
 	 * @see PlexUIBase
 	 */
-	public static List<PlexUITab> getUiTabList() {
+	public static List<PlexUITab> getMenuTabs() {
 		return uiTabList;
 	}
 
 	/**
 	 * Save all mod config files
 	 */
-	public static void saveAllConfig() {
+	public static void saveConfiguration() {
 		for (PlexModBase mod : modules.values()) {
-			mod.saveModConfig();
+			mod.saveConfig();
 		}
 		Plex.config.save();
 	}
@@ -141,9 +126,9 @@ public class PlexCore {
 	 * 
 	 * @see PlexModBase
 	 */
-	public static void joinedMineplex() {
+	public static void dispatchJoin() {
 		for (final PlexModBase mod : modules.values()) {
-			mod.joinedMineplex();
+			mod.onJoin();
 		}
 	}
 
@@ -152,9 +137,20 @@ public class PlexCore {
 	 * 
 	 * @see PlexModBase
 	 */
-	public static void leftMineplex() {
+	public static void dispatchLeave() {
 		for (final PlexModBase mod : modules.values()) {
-			mod.leftMineplex();
+			mod.onLeave();
+		}
+	}
+
+	/**
+	 * Dispatches to all mods that the lobby has been updated
+	 *
+	 * @param lobbyType       Type of the lobby or LobbyType.E_LOBBY_SWITCH for indiciating exactly when a change occurs.
+	 */
+	public static void dispatchLobbyChanged(PlexMP.LobbyType lobbyType) {
+		for (PlexModBase mod : modules.values()) {
+			mod.onLobbyUpdate(lobbyType);
 		}
 	}
 
@@ -163,7 +159,7 @@ public class PlexCore {
 	 * 
 	 * @param screen Screen to display
 	 */
-	public static void displayUIScreen(PlexUIBase screen) {
+	public static void displayMenu(PlexUIBase screen) {
 		if (screen != null) {
 			Plex.listeners.setTargetGuiScreen(new PlexUIModMenu(screen));
 		}
@@ -177,7 +173,7 @@ public class PlexCore {
 	 * 
 	 * @return The player's IGN, or null if not in-game
 	 */
-	public static String getPlayerIGN() {
+	public static String getPlayerName() {
 		return Plex.minecraft.getSession().getUsername();
 	}
 
@@ -187,8 +183,8 @@ public class PlexCore {
 	 * 
 	 * @return List of players' usernames in the current world
 	 */
-	public static List<String> getPlayerIGNList() {
-		return getPlayerIGNList(false);
+	public static List<String> getLoadedPlayerNames() {
+		return getLoadedPlayerNames(false);
 	}
 
 	/**
@@ -197,9 +193,9 @@ public class PlexCore {
 	 * @param lowercase Make all player names lowercase
 	 * @return The list of names, or null if not in a world
 	 */
-	public static List<String> getPlayerIGNList(boolean lowercase) {
+	public static List<String> getLoadedPlayerNames(boolean lowercase) {
 		try {
-			List<String> result = new ArrayList<String>();
+			List<String> result = new ArrayList<>();
 			for (EntityPlayer player : Plex.minecraft.theWorld.playerEntities) {
 				result.add(lowercase ? player.getName().toLowerCase() : player.getName());
 			}
@@ -216,8 +212,8 @@ public class PlexCore {
 	 *
 	 * @return List of players' usernames in the current world
 	 */
-	public static List<String> getPlayerIGNTabList() {
-		return getPlayerIGNTabList(false);
+	public static List<String> getTablistPlayerNames() {
+		return getTablistPlayerNames(false);
 	}
 
 	/**
@@ -226,7 +222,7 @@ public class PlexCore {
 	 * @param lowercase Make all player names lowercase
 	 * @return The list of names, or null if not in a world
 	 */
-	public static List<String> getPlayerIGNTabList(boolean lowercase) {
+	public static List<String> getTablistPlayerNames(boolean lowercase) {
 		List<String> playerNameList = new ArrayList<>();
 		for (NetworkPlayerInfo player : Plex.minecraft.thePlayer.sendQueue.getPlayerInfoMap()) {
 			String name = player.getGameProfile().getName();
@@ -238,17 +234,6 @@ public class PlexCore {
 		return playerNameList;
 	}
 
-
-	/**
-	 * Dispatches to all mods that the lobby has been updated
-	 * 
-	 * @param lobbyType       Type of the lobby or LobbyType.E_LOBBY_SWITCH for indiciating exactly when a change occurs.
-	 */
-	public static void dispatchLobbyChanged(PlexMPLobby.LobbyType lobbyType) {
-		for (PlexModBase mod : modules.values()) {
-			mod.lobbyUpdated(lobbyType);
-		}		
-	}
 
 	public static class PlexUITab {
 		private Class<? extends PlexUIBase> guiClass;

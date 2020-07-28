@@ -23,7 +23,7 @@ public class PlexBetterReplyCommand extends PlexCommandHandler {
 	public void processCommand(ICommandSender sender, String namespace, String[] args) throws CommandException {
 		PlexBetterReplyMod instance = PlexCore.modInstance(PlexBetterReplyMod.class);
 		if (namespace.equals("plex.reply")) {
-			PlexCore.displayUIScreen(new PlexBetterReplyUI());
+			PlexCore.displayMenu(new PlexBetterReplyUI());
 		}
 		else if (namespace.equals("r")) {
 			if (instance.currentConversation == null) {

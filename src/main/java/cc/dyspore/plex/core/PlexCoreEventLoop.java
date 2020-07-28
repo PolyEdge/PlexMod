@@ -11,8 +11,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class PlexCoreEventLoop {
-    public static Map<String, PlexCoreEventLoop> instances = new HashMap<>();
-
     public String name;
     private final List<Runnable> loopTasks = Collections.synchronizedList(new ArrayList<>());
     private final Map<Runnable, Long> tasksClock = new ConcurrentHashMap<>();
@@ -31,16 +29,7 @@ public class PlexCoreEventLoop {
     private List<Runnable> threadPreviousErrored;
 
     public static PlexCoreEventLoop create(String name) {
-        if (instances.containsKey(name)) {
-            throw new IllegalArgumentException("Event loop with \"" + name + "\" already exists");
-        }
-        PlexCoreEventLoop loop = new PlexCoreEventLoop(name);
-        instances.put(name, loop);
-        return loop;
-    }
-
-    public static PlexCoreEventLoop get(String name) {
-        return instances.get(name);
+        return new PlexCoreEventLoop(name);
     }
 
     private PlexCoreEventLoop(String name) {

@@ -1,9 +1,13 @@
 package cc.dyspore.plex.core.util;
 
 import cc.dyspore.plex.Plex;
+import net.minecraft.client.network.NetHandlerPlayClient;
+import net.minecraft.network.INetHandler;
+import net.minecraft.network.play.client.C01PacketChatMessage;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IChatComponent;
+import net.minecraftforge.fml.client.FMLClientHandler;
 
 import java.util.*;
 
@@ -34,6 +38,15 @@ public class PlexUtilChat {
         colours.put("d", 0xff55ff);
         colours.put("e", 0xffff55);
         colours.put("f", 0xffffff);
+    }
+
+    public static boolean chatSendMessageToServer(String message) {
+        INetHandler netHandler = FMLClientHandler.instance().getClientPlayHandler();
+        if (netHandler instanceof NetHandlerPlayClient) {
+            ((NetHandlerPlayClient) netHandler).addToSendQueue(new C01PacketChatMessage(message));
+            return true;
+        }
+        return false;
     }
 
     public static void chatAddMessage(IChatComponent message) {

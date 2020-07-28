@@ -74,22 +74,22 @@ public class PlexChatStreamMod extends PlexModBase {
 		this.BAR_REDUCTION.add(new java.util.AbstractMap.SimpleEntry<>(8, 2));
 		this.MAX_BAR_REDUCTION = BAR_REDUCTION.size() - 1;
 		
-		this.hidePlayerChat = this.modSetting("hide_player_chat", false).getBoolean();
-		this.hidePartyChat = this.modSetting("hide_team_chat", false).getBoolean();
-		this.hideTeamChat = this.modSetting("hide_team_chat", false).getBoolean();
-		this.hideComChat = this.modSetting("hide_community_chat", false).getBoolean();
-		this.lobbyFiltrationLevel = this.modSetting("lobby_filtration_level", 0).getInt();
-		this.hideCommunityInvites = this.modSetting("hide_community_invites", false).getBoolean();
-		this.adblocking = this.modSetting("attempted_adblocking", false).getBoolean();
-		this.hideGadgetMessages = this.modSetting("hide_gadget_disable", false).getBoolean();
-		this.hideGwenBulletin = this.modSetting("hide_gwen_bulletin", false).getBoolean();
-		this.hideConditionMessages = this.modSetting("hide_condition_messages", false).getBoolean();
-		this.barReductionIndex = this.modSetting("bar_reduction_index", 0).getInt();
+		this.hidePlayerChat = this.configValue("hide_player_chat", false).getBoolean();
+		this.hidePartyChat = this.configValue("hide_team_chat", false).getBoolean();
+		this.hideTeamChat = this.configValue("hide_team_chat", false).getBoolean();
+		this.hideComChat = this.configValue("hide_community_chat", false).getBoolean();
+		this.lobbyFiltrationLevel = this.configValue("lobby_filtration_level", 0).getInt();
+		this.hideCommunityInvites = this.configValue("hide_community_invites", false).getBoolean();
+		this.adblocking = this.configValue("attempted_adblocking", false).getBoolean();
+		this.hideGadgetMessages = this.configValue("hide_gadget_disable", false).getBoolean();
+		this.hideGwenBulletin = this.configValue("hide_gwen_bulletin", false).getBoolean();
+		this.hideConditionMessages = this.configValue("hide_condition_messages", false).getBoolean();
+		this.barReductionIndex = this.configValue("bar_reduction_index", 0).getInt();
 		this.barReductionIndex = 0;
 
 		Plex.plexCommand.registerPlexCommand("chat", new PlexChatStreamCommand());
 
-		PlexCore.registerUiTab("Chat", PlexChatStreamUI.class);
+		PlexCore.registerMenuTab("Chat", PlexChatStreamUI.class);
 		
 		for (String exp : this.AD_MATCHERS) {
 			this.adPatterns.add(Pattern.compile(exp));
@@ -112,7 +112,7 @@ public class PlexChatStreamMod extends PlexModBase {
 		for (PlexCoreRegexChatMatchItem item : match.getEntries()) {
 			if (item.hasTag("chatMessage") || entry == null) {
 				entry = item.entry;
-				String playerName = PlexCore.getPlayerIGN();
+				String playerName = PlexCore.getPlayerName();
 				if (playerName != null && entry.hasField("author")) {
 					isOwnPlayer = playerName.equalsIgnoreCase(entry.getField(e.message.getFormattedText(), "author"));
 				}
@@ -174,7 +174,7 @@ public class PlexChatStreamMod extends PlexModBase {
 		}
 
 		if (this.lobbyFiltrationLevel >= 1) {
-			if (message.startsWith("&9Treasure>") && !message.startsWith("&9Treasure> &e" + PlexCore.getPlayerIGN())) {
+			if (message.startsWith("&9Treasure>") && !message.startsWith("&9Treasure> &e" + PlexCore.getPlayerName())) {
 				e.setCanceled(true);
 				return;
 			}
@@ -256,29 +256,29 @@ public class PlexChatStreamMod extends PlexModBase {
 	}
 
 	@Override
-	public void joinedMineplex() {
+	public void onJoin() {
 		MinecraftForge.EVENT_BUS.register(this);
 	}
 
 	@Override
-	public void leftMineplex() {
+	public void onLeave() {
 		MinecraftForge.EVENT_BUS.unregister(this);
 		this.paddingRemovalQueue.clear();
 	}
 	
 	@Override
-	public void saveModConfig() {
-		this.modSetting("hide_player_chat", false).set(this.hidePlayerChat);
-		this.modSetting("hide_party_chat", false).set(this.hidePartyChat);
-		this.modSetting("hide_team_chat", false).set(this.hideTeamChat);
-		this.modSetting("hide_community_chat", false).set(this.hideComChat);
-		this.modSetting("lobby_filtration_level", 0).set(this.lobbyFiltrationLevel);
-		this.modSetting("hide_community_invites", false).set(this.hideCommunityInvites);
-		this.modSetting("attempted_adblocking", false).set(this.adblocking);
-		this.modSetting("hide_gadget_disable", false).set(this.hideGadgetMessages);
-		this.modSetting("hide_gwen_bulletin", false).set(this.hideGwenBulletin);
-		this.modSetting("hide_condition_messages", false).set(this.hideConditionMessages);
-		this.modSetting("bar_reduction_index", 0).set(this.barReductionIndex);
+	public void saveConfig() {
+		this.configValue("hide_player_chat", false).set(this.hidePlayerChat);
+		this.configValue("hide_party_chat", false).set(this.hidePartyChat);
+		this.configValue("hide_team_chat", false).set(this.hideTeamChat);
+		this.configValue("hide_community_chat", false).set(this.hideComChat);
+		this.configValue("lobby_filtration_level", 0).set(this.lobbyFiltrationLevel);
+		this.configValue("hide_community_invites", false).set(this.hideCommunityInvites);
+		this.configValue("attempted_adblocking", false).set(this.adblocking);
+		this.configValue("hide_gadget_disable", false).set(this.hideGadgetMessages);
+		this.configValue("hide_gwen_bulletin", false).set(this.hideGwenBulletin);
+		this.configValue("hide_condition_messages", false).set(this.hideConditionMessages);
+		this.configValue("bar_reduction_index", 0).set(this.barReductionIndex);
 	}
 
 	class QueuedChatComponent {

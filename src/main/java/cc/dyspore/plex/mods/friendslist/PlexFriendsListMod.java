@@ -45,9 +45,9 @@ public class PlexFriendsListMod extends PlexModBase {
 	
 	@Override
 	public void modInit() {
-		this.hideOfflineEnabled = this.modSetting("hide_offline_friends", false).getBoolean();
-		this.hideIncomingRequestsEnabled = this.modSetting("hide_incoming_friend_requests", false).getBoolean();
-		this.hideOutgoingRequestsEnabled = this.modSetting("hide_outgoing_friend_requests", false).getBoolean();
+		this.hideOfflineEnabled = this.configValue("hide_offline_friends", false).getBoolean();
+		this.hideIncomingRequestsEnabled = this.configValue("hide_incoming_friend_requests", false).getBoolean();
+		this.hideOutgoingRequestsEnabled = this.configValue("hide_outgoing_friend_requests", false).getBoolean();
 
 		//PlexCore.registerCommandListener(new PlexClientCommandListener("ff"));
 		//PlexCore.registerCommandListener(new PlexClientCommandListener("fs"));
@@ -58,7 +58,7 @@ public class PlexFriendsListMod extends PlexModBase {
 		Plex.plexCommand.addPlexHelpCommand("friends", "Displays friends list options");
 		Plex.plexCommand.addHelpCommand("ff search", "fs", "Searches your friends list for a player (chat only)");
 		
-		PlexCore.registerUiTab("Friends", PlexFriendsListUI.class);
+		PlexCore.registerMenuTab("Friends", PlexFriendsListUI.class);
 	}
 	
 	@SubscribeEvent
@@ -182,9 +182,9 @@ public class PlexFriendsListMod extends PlexModBase {
 	}
 
 	@Override
-	public void saveModConfig() {
-		this.modSetting("hide_offline_friends", false).set(this.hideOfflineEnabled);
-		this.modSetting("hide_incoming_friend_requests", false).set(this.hideIncomingRequestsEnabled);
-		this.modSetting("hide_outgoing_friend_requests", false).set(this.hideOutgoingRequestsEnabled);
+	public void saveConfig() {
+		this.configValue("hide_offline_friends", false).set(this.hideOfflineEnabled);
+		this.configValue("hide_incoming_friend_requests", false).set(this.hideIncomingRequestsEnabled);
+		this.configValue("hide_outgoing_friend_requests", false).set(this.hideOutgoingRequestsEnabled);
 	}
 }

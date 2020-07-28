@@ -19,7 +19,7 @@ public class PlexAutoThankCommand extends PlexCommandHandler {
 	@Override
 	public void processCommand(ICommandSender sender, String namespace, String[] args) throws CommandException {
 		if (args.length == 0) {
-			PlexCore.displayUIScreen(new PlexAutoThankUI());
+			PlexCore.displayMenu(new PlexAutoThankUI());
 		}
 	}
 

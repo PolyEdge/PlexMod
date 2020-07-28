@@ -35,8 +35,8 @@ public class PlexBetterReplyMod extends PlexModBase {
 	
 	@Override
 	public void modInit() {
-		this.modEnabled = this.modSetting("better_reply_enabled", false).getBoolean();
-		this.replyTimeoutSeconds = this.modSetting("reply_timeout_seconds", DEFAULT_REPLY_TIMEOUT).getInt();
+		this.modEnabled = this.configValue("better_reply_enabled", false).getBoolean();
+		this.replyTimeoutSeconds = this.configValue("reply_timeout_seconds", DEFAULT_REPLY_TIMEOUT).getInt();
 
 		this.replyListener = new PlexCommandListener("message", "whisper", "tell", "msg", "m", "t", "w", "r");
 		this.modCommandsListener = new PlexCommandListener("rr");
@@ -47,7 +47,7 @@ public class PlexBetterReplyMod extends PlexModBase {
 		
 		Plex.plexCommand.registerPlexCommand("reply", new PlexBetterReplyCommand());
 		
-		PlexCore.registerUiTab("Reply", PlexBetterReplyUI.class);
+		PlexCore.registerMenuTab("Reply", PlexBetterReplyUI.class);
 		
 		Plex.plexCommand.addPlexHelpCommand("reply", "Displays messaging screen enhancements options");
 		Plex.plexCommand.addHelpCommand("rr", "$partial username", "Messages somebody who you have messaged with previously (without typing full ign)");
@@ -63,12 +63,12 @@ public class PlexBetterReplyMod extends PlexModBase {
 		PlexCoreRegexChatMatch match = PlexCoreRegexManager.getChatMatch(e.message);
 		PlexCoreRegexChatMatchItem dm = match.get("direct_message");
 		if (dm != null) {
-			if (dm.getField("author").equalsIgnoreCase(PlexCore.getPlayerIGN())) {
+			if (dm.getField("author").equalsIgnoreCase(PlexCore.getPlayerName())) {
 				this.contacts.add(dm.getField("destination"));
 				this.lastConversationTime = Minecraft.getSystemTime();
 				this.currentConversation = dm.getField("destination");
 			}
-			else if (dm.getField("destination").equalsIgnoreCase(PlexCore.getPlayerIGN())) {
+			else if (dm.getField("destination").equalsIgnoreCase(PlexCore.getPlayerName())) {
 				this.contacts.add(dm.getField("author"));
 				if (this.currentConversation == null) {
 					this.currentConversation = dm.getField("author");
@@ -84,8 +84,8 @@ public class PlexBetterReplyMod extends PlexModBase {
 	}
 
 	@Override
-	public void saveModConfig() {
-		this.modSetting("better_reply_enabled", false).set(this.modEnabled);
-		this.modSetting("reply_timeout_seconds", 300).set(this.replyTimeoutSeconds);
+	public void saveConfig() {
+		this.configValue("better_reply_enabled", false).set(this.modEnabled);
+		this.configValue("reply_timeout_seconds", 300).set(this.replyTimeoutSeconds);
 	}
 }

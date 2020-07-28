@@ -8,12 +8,12 @@ import cc.dyspore.plex.ui.widget.PlexUISlider;
 
 public class PlexChatStreamUI extends PlexUIBase {
 	@Override
-	public String uiGetTitle() {
+	public String getTitle() {
 		return "Chat Options";
 	}
 
 	@Override
-	public void initGui(PlexUIModMenu ui) {
+	public void initScreen(PlexUIModMenu ui) {
 		int top = ui.startingYPos(92);
 		int paneSize = ui.centeredPaneSize(2, 20, 160);
 		int pane1Pos = ui.centeredPanePos(-1, 2, 20, 160);
@@ -61,7 +61,7 @@ public class PlexChatStreamUI extends PlexUIBase {
 	}
 	
 	@Override
-	public void uiSliderInteracted(PlexUISlider slider) {
+	public void onSliderInteract(PlexUISlider slider) {
 		PlexChatStreamMod modInstance = PlexCore.modInstance(PlexChatStreamMod.class);
 		if (slider.id == 11) {
 			modInstance.lobbyFiltrationLevel = Math.round(slider.sliderValue * modInstance.MAX_LOBBY_FILTRATION);
@@ -79,7 +79,7 @@ public class PlexChatStreamUI extends PlexUIBase {
 	}
 
 	@Override
-	public void uiButtonClicked(GuiButton button) {
+	public void onButtonInteract(GuiButton button) {
 		PlexChatStreamMod modInstance = PlexCore.modInstance(PlexChatStreamMod.class);
 		if (button.id == 5) {
 			modInstance.hidePlayerChat = !modInstance.hidePlayerChat;

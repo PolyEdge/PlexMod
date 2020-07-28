@@ -9,12 +9,12 @@ import cc.dyspore.plex.ui.widget.PlexUISlider;
 public class PlexRichPresenceUI extends PlexUIBase {
 
 	@Override
-	public String uiGetTitle() {
+	public String getTitle() {
 		return "Discord Integration";
 	}
 
 	@Override
-	public void initGui(PlexUIModMenu ui) {
+	public void initScreen(PlexUIModMenu ui) {
 		int top = ui.startingYPos(135);
 		int paneSize = ui.centeredPaneSize(1, 20, 160);
 		int pane1Pos = ui.centeredPanePos(0, 1, 20, 160);
@@ -51,11 +51,11 @@ public class PlexRichPresenceUI extends PlexUIBase {
 	}
 	
 	@Override
-	public void uiSliderInteracted(PlexUISlider slider) {
+	public void onSliderInteract(PlexUISlider slider) {
 	}
 
 	@Override
-	public void uiButtonClicked(GuiButton button) {
+	public void onButtonInteract(GuiButton button) {
 		PlexNewRichPresenceMod instance = PlexCore.modInstance(PlexNewRichPresenceMod.class);
 		if (button.id == 5) {
 			instance.modEnabled = !instance.modEnabled;

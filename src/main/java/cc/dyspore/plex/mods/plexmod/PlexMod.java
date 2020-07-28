@@ -3,21 +3,16 @@ package cc.dyspore.plex.mods.plexmod;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import cc.dyspore.plex.ui.PlexUIModMenu;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.google.gson.stream.JsonReader;
 
-import net.minecraft.util.ResourceLocation;
 import cc.dyspore.plex.Plex;
 import cc.dyspore.plex.commands.client.PlexCommandListener;
 import cc.dyspore.plex.core.PlexCore;
-import cc.dyspore.plex.core.util.PlexUtilTextures;
 //import PlexUtil;
 import cc.dyspore.plex.core.PlexModBase;
 
@@ -31,12 +26,12 @@ public class PlexMod extends PlexModBase {
 	
 	@Override
 	public void modInit() {
-		Plex.logger.info(":: PlexMod v" + Plex.VERSION + this.patchId(Plex.PATCHID) + " " + this.releaseNotice(Plex.RELEASENOTICE) + " (c) 2020 @Dyspore [dyspore.cc] ::");
+		Plex.logger.info(":: PlexMod v" + Plex.VERSION + this.patchId(Plex.PATCHID) + " " + this.releaseNotice(Plex.NOTICE) + " (c) 2020 @Dyspore [dyspore.cc] ::");
 
 		this.plexListener = new PlexCommandListener("plex").setAvailability(PlexCommandListener.Availability.GLOBAL);
 		this.plexListener.setHandler(Plex.plexCommand);
 		
-		PlexCore.registerUiTab("Plex", PlexModUI.class);
+		PlexCore.registerMenuTab("Plex", PlexModUI.class);
 
 		new Thread(() -> {
 			try {
@@ -74,11 +69,11 @@ public class PlexMod extends PlexModBase {
 	}
 
 	@Override
-	public void saveModConfig() {}
+	public void saveConfig() {}
 
 	@Override
-	public void joinedMineplex() {}
+	public void onJoin() {}
 
 	@Override
-	public void leftMineplex() {}
+	public void onLeave() {}
 }

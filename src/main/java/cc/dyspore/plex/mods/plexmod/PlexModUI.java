@@ -7,15 +7,16 @@ import cc.dyspore.plex.ui.PlexUIBase;
 import cc.dyspore.plex.ui.PlexUIModMenu;
 import cc.dyspore.plex.ui.widget.PlexUISlider;
 
+@SuppressWarnings("ConstantConditions")
 public class PlexModUI extends PlexUIBase {
 
 	@Override
-	public String uiGetTitle() {
+	public String getTitle() {
 		return "Plex";
 	}
 
 	@Override
-	public void initGui(PlexUIModMenu ui) {
+	public void initScreen(PlexUIModMenu ui) {
 	}
 	
 	@Override
@@ -25,8 +26,8 @@ public class PlexModUI extends PlexUIBase {
 		int pane1Pos = guiScreen.centeredPanePos(0, 1, 20, 160);
 		guiScreen.drawCenteredString(guiScreen.getFontRenderer(), "Plex Mod", pane1Pos + paneSize / 2, top + 0, 0xffffff);
 		guiScreen.drawCenteredString(guiScreen.getFontRenderer(), "v" + Plex.VERSION + (Plex.PATCHID == null ? "" : "-" + Plex.PATCHID), pane1Pos + paneSize / 2, top + 10, 0xffffff);
-		if (Plex.RELEASENOTICE != null) {
-			guiScreen.drawCenteredString(guiScreen.getFontRenderer(), "[" + Plex.RELEASENOTICE + "]", pane1Pos + paneSize / 2, top + 30, 0xffe500);
+		if (Plex.NOTICE != null) {
+			guiScreen.drawCenteredString(guiScreen.getFontRenderer(), "[" + Plex.NOTICE + "]", pane1Pos + paneSize / 2, top + 30, 0xffe500);
 			
 		}
 		
@@ -34,11 +35,11 @@ public class PlexModUI extends PlexUIBase {
 	}
 
 	@Override
-	public void uiSliderInteracted(PlexUISlider slider) {
+	public void onSliderInteract(PlexUISlider slider) {
 	}
 
 	@Override
-	public void uiButtonClicked(GuiButton button) {
+	public void onButtonInteract(GuiButton button) {
 
 	}
 

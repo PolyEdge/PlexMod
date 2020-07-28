@@ -8,12 +8,12 @@ import cc.dyspore.plex.ui.widget.PlexUISlider;
 
 public class PlexBetterReplyUI extends PlexUIBase {
 	@Override
-	public String uiGetTitle() {
+	public String getTitle() {
 		return "Better Private Messaging";
 	}
 
 	@Override
-	public void initGui(PlexUIModMenu ui) {
+	public void initScreen(PlexUIModMenu ui) {
 		PlexBetterReplyMod instance = PlexCore.modInstance(PlexBetterReplyMod.class);
 		int top = ui.startingYPos(52);
 		int paneSize = ui.centeredPaneSize(1, 20, 160);
@@ -33,7 +33,7 @@ public class PlexBetterReplyUI extends PlexUIBase {
 	}
 	
 	@Override
-	public void uiSliderInteracted(PlexUISlider slider) {
+	public void onSliderInteract(PlexUISlider slider) {
 		PlexBetterReplyMod instance = PlexCore.modInstance(PlexBetterReplyMod.class);
 		if (slider.id == 6) {
 			instance.replyTimeoutSeconds = Math.round(slider.sliderValue * PlexBetterReplyMod.MAX_REPLY_TIMEOUT);
@@ -47,7 +47,7 @@ public class PlexBetterReplyUI extends PlexUIBase {
 	}
 
 	@Override
-	public void uiButtonClicked(GuiButton button) {
+	public void onButtonInteract(GuiButton button) {
 		PlexBetterReplyMod instance = PlexCore.modInstance(PlexBetterReplyMod.class);
 		if (button.id == 5) {
 			instance.modEnabled = !instance.modEnabled;

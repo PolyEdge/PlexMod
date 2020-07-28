@@ -19,7 +19,7 @@ public class PlexAutoFriendCommand extends PlexCommandHandler {
 	@Override
 	public void processCommand(ICommandSender sender, String namespace, String[] args) throws CommandException {
 		if (args.length == 0) {
-			PlexCore.displayUIScreen(new PlexAutoFriendUI());
+			PlexCore.displayMenu(new PlexAutoFriendUI());
 		}
 	}
 

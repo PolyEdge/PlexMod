@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.*;
 
 import cc.dyspore.plex.core.PlexCore;
+import cc.dyspore.plex.core.PlexMP;
 import cc.dyspore.plex.core.util.PlexUtilRender;
 import cc.dyspore.plex.core.util.PlexUtil;
 import cc.dyspore.plex.core.util.PlexUtilTextures;
@@ -20,29 +21,23 @@ import cc.dyspore.plex.Plex;
 
 public class PlexUIModMenu extends GuiScreen {
 	public static final List<SocialMediaButton> socialMediaButtons = Collections.synchronizedList(new ArrayList<>());
-	public static List<String> ees = new ArrayList<>();
-	public static Random random = new Random();
 	public static long paletteFadeTime = 500L;
 
 	public GuiScreen parent;
-	public PlexUIBase childUI;
+	public PlexUIBase menu;
+	public GuiState state;
 	public PlexUtilColour.ColourPalette palette;
 
 	public List<GuiButton> plexInterfaceButtonList = new ArrayList<>();
 	public Map<Integer, PlexCore.PlexUITab> plexInterfaceUiTabs = new HashMap<>();
-
-	public String ee;
-	public boolean eee;
 	
 	public PlexUIModMenu(PlexUIBase screen, GuiScreen parent, PlexUtilColour.ColourPalette palette) {
-		this.childUI = screen;
+		this.menu = screen;
 		this.parent = parent;
 		this.palette = palette != null ? palette : new PlexUtilColour.ColourPalette(4, 0xffffffff, null, paletteFadeTime);
+		this.state = new GuiState();
 		this.updateGuiState();
 		updateSocialMedia();
-
-		this.ee = ees.get(random.nextInt(ees.size()));
-		this.eee = false;
 	}
 
 	public PlexUIModMenu(PlexUIBase screen) {
@@ -69,14 +64,14 @@ public class PlexUIModMenu extends GuiScreen {
 	}
 	
 	public int zoneStartX() {
-		if (this.childUI.disableSidebar() || this.childUI.disablePlexUi()) {
+		if (!this.state.showSidebar || !this.state.showPlexInterface) {
 			return 0;
 		}
 		return (this.width / 6);
 	}
 	
 	public int zoneStartY() {
-		if (this.childUI.disablePlexUi()) {
+		if (!this.state.showPlexInterface) {
 			return 0;
 		}
 		return 50;
@@ -87,7 +82,7 @@ public class PlexUIModMenu extends GuiScreen {
 	}
 	
 	public int zoneEndY() {
-		if (this.childUI.disableDoneButton()) {
+		if (!this.state.showDoneButton) {
 			return this.height;
 		}
 		return this.height - 30;
@@ -136,8 +131,8 @@ public class PlexUIModMenu extends GuiScreen {
 		this.buttonList.clear();
 		this.plexInterfaceButtonList.clear();
 		this.initializePlexInterface();
-		this.childUI.initGui(this);
-		this.childUI.uiOpened();
+		this.menu.initScreen(this, this.state);
+		this.menu.onScreenOpened();
 	}
 
 	public <T extends GuiButton> void addElement(T item) {
@@ -152,7 +147,7 @@ public class PlexUIModMenu extends GuiScreen {
 		this.plexInterfaceButtonList.add(new GuiButton(1, (this.width / 6) + ((this.width - (this.width / 6)) / 2) - 40, this.height - 25, 80, 20, "Done"));
 		this.plexInterfaceUiTabs.clear();
 
-		List<PlexCore.PlexUITab> tabs = PlexCore.getUiTabList();
+		List<PlexCore.PlexUITab> tabs = PlexCore.getMenuTabs();
 		for (int i = 0; i < tabs.size(); i++) {
 			PlexCore.PlexUITab tab = tabs.get(i);
 			this.plexInterfaceUiTabs.put(-1 - i, tab.getShallowCopy());
@@ -164,36 +159,37 @@ public class PlexUIModMenu extends GuiScreen {
 	private void updatePlexInterface() {
 		for (GuiButton button : this.plexInterfaceButtonList) {
 			if (button.id == 1) {
-				button.visible = !(this.childUI.disableDoneButton() || this.childUI.disablePlexUi());
+				button.visible = this.state.showDoneButton && this.state.showPlexInterface;
 			}
 			else if (this.plexInterfaceUiTabs.containsKey(button.id)) {
-				button.visible = !(this.childUI.disableSidebar() || this.childUI.disablePlexUi());
-				button.enabled = !(this.plexInterfaceUiTabs.get(button.id).getGuiClass().equals(this.childUI.getClass()));
+				button.visible = this.state.showSidebar && this.state.showPlexInterface;
+				button.enabled = !(this.plexInterfaceUiTabs.get(button.id).getGuiClass().equals(this.menu.getClass()));
 			}
 		}
 	}
 
 	private void updateGuiState() {
-		this.childUI.guiScreen = this;
-		this.palette.setColour(0, this.childUI.pageForegroundColour(), this.childUI.pageForegroundState());
-		this.palette.setColour(1, this.childUI.pageBackgroundColour(), this.childUI.pageBackgroundState());
-		this.palette.setColour(2, PlexUtilColour.fromRGB(0, 0, 0, this.childUI.pageBackgroundTransparency()), PlexUtilColour.PaletteState.FIXED);
+		this.menu.guiScreen = this;
+		this.menu.update(this.state);
+		this.palette.setColour(0, this.state.foreground, this.state.foregroundState);
+		this.palette.setColour(1, this.state.background, this.state.backgroundState);
+		this.palette.setColour(2, PlexUtilColour.fromRGB(0, 0, 0, this.state.backgroundAlpha), PlexUtilColour.PaletteState.FIXED);
 	}
 
 	//
 
 	@Override
 	public void actionPerformed(GuiButton button) {
-		this.childUI.uiButtonClicked(button);
+		this.menu.onButtonInteract(button);
 	}
 	
 	private void plexInterfaceButtonPressed(GuiButton button) {
 		if (button.id == 1) {
-			PlexCore.saveAllConfig();
+			PlexCore.saveConfiguration();
 			this.close();
 		}
-		else if (this.plexInterfaceUiTabs.containsKey(button.id) && !this.childUI.disablePlexUi()) {
-			PlexCore.saveAllConfig();
+		else if (this.plexInterfaceUiTabs.containsKey(button.id) && this.state.showPlexInterface) {
+			PlexCore.saveConfiguration();
 			try {
 				this.mc.displayGuiScreen(new PlexUIModMenu(this.plexInterfaceUiTabs.get(button.id).getGuiClass().newInstance(), this.parent, this.palette));
 			}
@@ -204,14 +200,14 @@ public class PlexUIModMenu extends GuiScreen {
 	@Override
 	protected void keyTyped(char par1, int par2) throws IOException {
 		if (par2 == 1) {
-			if (this.childUI.escapeTyped()) {
-				PlexCore.saveAllConfig();
+			if (this.menu.onEscapePressed()) {
+				PlexCore.saveConfiguration();
 				this.close();
 			}
 			return;
 		}
 		super.keyTyped(par1, par2);
-		this.childUI.keyTyped(par1, par2);
+		this.menu.onKeyPressed(par1, par2);
 	}
 	
 	@Override
@@ -230,25 +226,25 @@ public class PlexUIModMenu extends GuiScreen {
 			}
 		}
 		super.mouseClicked(mouseX, mouseY, button);
-		this.childUI.mouseClicked(mouseX, mouseY, button);
+		this.menu.onMousePressed(mouseX, mouseY, button);
 	}
 	
 	@Override
 	protected void mouseReleased(int mouseX, int mouseY, int state) {
 		super.mouseReleased(mouseX, mouseY, state);
-		this.childUI.mouseReleased(mouseX, mouseY, state);
+		this.menu.onMouseReleased(mouseX, mouseY, state);
 	}
 	
 	@Override
 	public void mouseClickMove(int mouseX, int mouseY, int clickedMouseButton, long timeSinceLastClick) {
 		super.mouseClickMove(mouseX, mouseY, clickedMouseButton, timeSinceLastClick);
-		this.childUI.mouseDragged(mouseX, mouseY, clickedMouseButton, timeSinceLastClick);
+		this.menu.onMouseDragged(mouseX, mouseY, clickedMouseButton, timeSinceLastClick);
 	}
 	
 	@Override
 	public void updateScreen() {
 		super.updateScreen();
-		this.childUI.updateScreen();
+		this.menu.updateScreen();
 	}
 	
 	@Override
@@ -256,12 +252,12 @@ public class PlexUIModMenu extends GuiScreen {
 		super.handleMouseInput();
         int x = Mouse.getEventX() * this.width / this.mc.displayWidth;
         int y = this.height - Mouse.getEventY() * this.height / this.mc.displayHeight - 1;
-		this.childUI.handleMouseInput(x, y);
+		this.menu.onMouseMoved(x, y);
 	}
 	
 	@Override
 	public void onGuiClosed() {
-		this.childUI.uiClosed();
+		this.menu.onScreenClosed();
 	}
 
 	//
@@ -314,64 +310,67 @@ public class PlexUIModMenu extends GuiScreen {
 	}
 
 	@Override
-	public void drawScreen(int mouseX, int mouseY, float par3) {
+	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
 		this.updatePlexInterface();
 		this.updateGuiState();
 
 		int foregroundColour = this.getForegroundColour();
 		int backgroundColour = this.getBackgroundColour();
 		
-		if (!this.childUI.disablePlexUi()) {
+		if (this.state.showPlexInterface) {
 			drawGradientRect(0, 0, this.width, this.height, -1072689136, -804253680); // screen fill
 			drawRect(this.zoneStartX(), this.zoneStartY(), this.zoneEndX(), this.zoneEndY(), backgroundColour); // zone fill
 		}
 
-		this.childUI.drawScreen(mouseX, mouseY, par3);
+		this.menu.drawScreen(mouseX, mouseY, partialTicks);
 		
-		if (!this.childUI.disablePlexUi()) {
+		if (this.state.showPlexInterface) {
 			drawGradientRect(0, 0, this.width, 25, 0xaa10100f, 0xaa10100f); // top bar
 			
-			if (!this.childUI.disableSidebar()) {
+			if (this.state.showSidebar) {
 				drawGradientRect(0, 25, this.width / 6, this.height, 0xaa10100f, 0xaa10100f); // side bar
 			}
 			
 			drawRect(this.zoneStartX(), 25, this.zoneEndX(), this.zoneStartY(), 0x7710100f); // local title bar background 
 			
-			if (!this.childUI.disableDoneButton()) {
+			if (this.state.showDoneButton) {
 				drawRect(this.zoneStartX(), this.zoneEndY(), this.zoneEndX(), this.height, 0x7710100f); // done button bar background
 			}
 			
 			drawHorizontalLine(0, this.width, 25, foregroundColour); // top bar border
 			
-			if (!this.childUI.disableSidebar()) {
+			if (this.state.showSidebar) {
 				drawVerticalLine(this.width / 6, 25, this.height, foregroundColour); // side bar border
 			}
 
-			drawCenteredString(this.fontRendererObj, this.childUI.uiGetTitle(), this.zoneCenterX(), 35, 16777215); // Local title
+			drawCenteredString(this.fontRendererObj, this.state.title, this.zoneCenterX(), 35, 16777215); // Local title
 			this.drawHeaderImage();
 			this.drawSocialMedia(mouseX, mouseY);
 
 			String lobbyName;
-			if (!Plex.gameState.isMineplex) {
+			int lobbyColour;
+			if (!PlexMP.session.isMineplex) {
 				lobbyName = "[Not Online]";
+				lobbyColour = 0xffff301e;
 			}
-			else if (Plex.gameState.currentLobby == null || Plex.gameState.currentLobby.name == null) {
+			else if (PlexMP.lobby == null || PlexMP.lobby.server == null) {
 				lobbyName = "...";
+				lobbyColour = 0xfffff31e;
 			}
 			else {
-				lobbyName = Plex.gameState.currentLobby.name;
+				lobbyName = PlexMP.lobby.server;
+				lobbyColour = 0xffdf8214;
 			}
 
 			if (mouseX > this.getPaddedSocialMediaLocation() - 30 && mouseX < this.getPaddedSocialMediaLocation() - 5 && mouseY > 2 && mouseY < 24 && Mouse.isButtonDown(1)) {
-				lobbyName = ee;
-				this.eee = true;
+				lobbyName = EE.current;
+				EE.heldDown = true;
 			}
-			else if (this.eee) {
-				this.ee = ees.get(random.nextInt(ees.size()));
-				this.eee = false;
+			else if (EE.heldDown) {
+				EE.put();
 			}
 
-			PlexUtilRender.drawScaledStringRightSide(lobbyName, this.getPaddedSocialMediaLocation() - 2, 8, 0xdf8214, 1.0F, false);
+			PlexUtilRender.drawScaledStringRightSide(lobbyName, this.getPaddedSocialMediaLocation() - 2, 8, lobbyColour, 1.0F, false);
 		}
 
 		
@@ -379,22 +378,32 @@ public class PlexUIModMenu extends GuiScreen {
 			button.drawButton(Plex.minecraft, mouseX, mouseY);
 		}
      
-		super.drawScreen(mouseX, mouseY, par3);
+		super.drawScreen(mouseX, mouseY, partialTicks);
 	}
 
-	static {
-		ees.add("Hey There!!!");
-		ees.add("Subscribe to PewDiePie");
-		ees.add("Worpp was here");
-		ees.add("what u lookin at");
-		ees.add(":)");
-		ees.add("moo");
-		ees.add("insert witty easter egg here");
-		ees.add("<o/");
-		ees.add("22.flp");
-		ees.add("swag");
-		ees.add("oh yeah yeah");
-		ees.add("void u prolly find this first");
+	private static class EE {
+		public static List<String> all = new ArrayList<>();
+		public static Random random = new Random();
+		public static String current;
+		public static boolean heldDown;
+
+		static {
+			all.add("Hey There!");
+			all.add("worpp was here");
+			all.add("what u lookin at");
+			all.add(":)");
+			all.add("nothing to see here");
+			all.add("<o/");
+			all.add("swag");
+			all.add("void u prolly find this first");
+
+			put();
+		}
+
+		public static void put() {
+			current = all.get(random.nextInt(all.size()));
+			heldDown = false;
+		}
 	}
 
 	public static void updateSocialMedia() {
@@ -425,7 +434,7 @@ public class PlexUIModMenu extends GuiScreen {
 		socialMediaButtons.add(0, new SocialMediaButton(positionX));
 	}
 
-	static class SocialMediaButton {
+	public static class SocialMediaButton {
 		private boolean isDummy;
 		private int x;
 		private int y;
@@ -482,5 +491,19 @@ public class PlexUIModMenu extends GuiScreen {
 			}
 			GuiScreen.drawScaledCustomSizeModalRect(this.getX(guiScreen), this.getY(guiScreen), 0.0F, 0.0F, socialMedia.iconWidth, socialMedia.iconHeight, this.width, this.height, socialMedia.iconWidth, socialMedia.iconHeight);
 		}
+	}
+
+	public static class GuiState {
+		public String title = "";
+
+		public int foreground = 0xffffffff;
+		public int background = 0x00ffffff;
+		public int backgroundAlpha = 35;
+		public PlexUtilColour.PaletteState foregroundState = PlexUtilColour.PaletteState.FIXED;
+		public PlexUtilColour.PaletteState backgroundState = PlexUtilColour.PaletteState.FIXED;
+
+		public boolean showPlexInterface = true;
+		public boolean showDoneButton = true;
+		public boolean showSidebar = true;
 	}
 }

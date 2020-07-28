@@ -26,7 +26,7 @@ public class PlexFriendsListCommand extends PlexCommandHandler {
 	public void processCommand(ICommandSender sender, String namespace, String[] args) throws CommandException {
 		PlexFriendsListMod instance = PlexCore.modInstance(PlexFriendsListMod.class);
 		if (namespace.equals("plex.friends")) {
-			PlexCore.displayUIScreen(new PlexFriendsListUI());
+			PlexCore.displayMenu(new PlexFriendsListUI());
 		}
 		else if (namespace.equals("ff")) {
 			if (args.length == 0) {

@@ -38,7 +38,7 @@ public class PlexModCommand extends PlexCommandHandler {
 	@Override
 	public void processCommand(ICommandSender sender, String namespace, String[] args) throws CommandException {
 		if (args.length == 0) {
-			PlexCore.displayUIScreen(new PlexModUI());
+			PlexCore.displayMenu(new PlexModUI());
 		}
 		else if (args[0].equalsIgnoreCase("info")) {
 			PlexUtilChat.chatAddMessage(PlexUtilChat.getUiChatMessage("plex.modInfo"));

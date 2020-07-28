@@ -37,9 +37,9 @@ public class PlexLobbySoundFilterMod extends PlexModBase {
 		
 		
 			
-		this.lobbyFiltrationLevel = this.modSetting("lobby_filtration_level", 0).getInt();
-		this.maxSoundRadius = this.modSetting("sounds_allowed_within", 0).getInt();
-		this.minSoundInRadiusLevel = this.modSetting("levels_allowed_within", 0).getInt();
+		this.lobbyFiltrationLevel = this.configValue("lobby_filtration_level", 0).getInt();
+		this.maxSoundRadius = this.configValue("sounds_allowed_within", 0).getInt();
+		this.minSoundInRadiusLevel = this.configValue("levels_allowed_within", 0).getInt();
 
 		//PlexCore.registerCommandListener(new PlexClientCommandListener("ts"));
 		//PlexCore.registerCommandHandler("ts", new PlexChatStreamCommand());
@@ -75,9 +75,9 @@ public class PlexLobbySoundFilterMod extends PlexModBase {
 	}
 	
 	@Override
-	public void saveModConfig() {
-		this.modSetting("lobby_filtration_level", 0).set(this.lobbyFiltrationLevel);
-		this.modSetting("sounds_allowed_within", 0).set(this.maxSoundRadius);
-		this.modSetting("levels_allowed_within", 0).set(this.minSoundInRadiusLevel);
+	public void saveConfig() {
+		this.configValue("lobby_filtration_level", 0).set(this.lobbyFiltrationLevel);
+		this.configValue("sounds_allowed_within", 0).set(this.maxSoundRadius);
+		this.configValue("levels_allowed_within", 0).set(this.minSoundInRadiusLevel);
 	}
 }

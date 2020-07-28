@@ -4,7 +4,6 @@ import cc.dyspore.plex.Plex;
 import cc.dyspore.plex.core.PlexCore;
 import cc.dyspore.plex.core.util.PlexUtilChat;
 import cc.dyspore.plex.commands.queue.PlexCommandQueue;
-import cc.dyspore.plex.commands.queue.PlexCommandQueueCommand;
 import cc.dyspore.plex.core.PlexModBase;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.common.config.Property;
@@ -29,7 +28,7 @@ public class PlexAutoFriendMod extends PlexModBase {
 
 	@Override
 	public void modInit() {
-		this.modEnabled = this.modSetting("autofriend_enabled", false).getBoolean(false);
+		this.modEnabled = this.configValue("autofriend_enabled", false).getBoolean(false);
 		this.blacklistSetting = Plex.config.get("AutoFriend.Blacklist", "blacklist", new String[0]);
 		blacklist.addAll(Arrays.asList(this.blacklistSetting.getStringList()));
 		
@@ -37,7 +36,7 @@ public class PlexAutoFriendMod extends PlexModBase {
 		
 		Plex.plexCommand.addPlexHelpCommand("autofriend", "Displays AutoFriend options");
 		
-		PlexCore.registerUiTab("AutoFriend", PlexAutoFriendUI.class);
+		PlexCore.registerMenuTab("AutoFriend", PlexAutoFriendUI.class);
 	}
 	
 	@Override
@@ -56,17 +55,17 @@ public class PlexAutoFriendMod extends PlexModBase {
 			playerMatcher.find();
 			String friendName = playerMatcher.group(1);
 			if (!blacklist.contains(friendName)) {
-				PlexCommandQueueCommand command = new PlexCommandQueueCommand("autoFriendMod", "/f " + friendName, 4000L);
+				PlexCommandQueue.Command command = new PlexCommandQueue.Command("autoFriendMod", "/f " + friendName, 4000L);
 				command.setCompleteOnSend(true);
-				friendQueue.addCommand(command);
+				friendQueue.add(command);
 			}
 		}
 	}
 
 	
 	@Override
-	public void saveModConfig() {
-		this.modSetting("autofriend_enabled", false).set(this.modEnabled);
+	public void saveConfig() {
+		this.configValue("autofriend_enabled", false).set(this.modEnabled);
 	}
 
 }

@@ -1,6 +1,6 @@
 package cc.dyspore.plex.mods.discordrichstatus;
 
-import cc.dyspore.plex.core.mineplex.PlexMPLobby;
+import cc.dyspore.plex.core.PlexMP;
 import cc.dyspore.plex.core.util.PlexUtilChat;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -94,12 +94,12 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 			}
 		});
 		
-		this.modEnabled = this.modSetting("rich_presence_enabled", false).getBoolean(false);
-		this.displayLobbyName = this.modSetting("richPresence_showLobbies", true).getBoolean(true);
-		this.displayIGN = this.modSetting("richPresence_showIGN", true).getBoolean(true);
-		this.timerMode = this.modSetting("richPresence_timerMode", 1).getInt();
-		this.showAfk = this.modSetting("richPresence_showAFK", true).getBoolean(true);
-		this.showIP = this.modSetting("richPresence_showIP", true).getBoolean(true);
+		this.modEnabled = this.configValue("rich_presence_enabled", false).getBoolean(false);
+		this.displayLobbyName = this.configValue("richPresence_showLobbies", true).getBoolean(true);
+		this.displayIGN = this.configValue("richPresence_showIGN", true).getBoolean(true);
+		this.timerMode = this.configValue("richPresence_timerMode", 1).getInt();
+		this.showAfk = this.configValue("richPresence_showAFK", true).getBoolean(true);
+		this.showIP = this.configValue("richPresence_showIP", true).getBoolean(true);
 		
 		this.gameIcons.put("bacon brawl", "raw_porkchop");
 		this.gameIcons.put("bawk bawk battles", "egg");
@@ -190,7 +190,7 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 		
 		Plex.plexCommand.addPlexHelpCommand("discord", "Displays discord integration options");
 		
-		PlexCore.registerUiTab("Discord", PlexRichPresenceUI.class);
+		PlexCore.registerMenuTab("Discord", PlexRichPresenceUI.class);
 		
 		MinecraftForge.EVENT_BUS.register(this);
 	}
@@ -238,7 +238,7 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 			presence.setDetails("AFK | " + gameState[0]);
 			presence.setSmallImage("afk", "AFK | " + gameState[0]);
 		}
-		if (Plex.gameState.currentLobby.type.equals(PlexMPLobby.LobbyType.GAME_INGAME)) {
+		if (Plex.gameState.currentLobby.type.equals(PlexMP.LobbyType.GAME_INGAME)) {
 			if (Plex.gameState.currentLobby.currentGame != null) {
 				String game = Plex.gameState.currentLobby.currentGame.name.toLowerCase().trim();
 				if (this.gameIcons.containsKey(game) && !this.isAfk) {
@@ -249,7 +249,7 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 				}
 			}
 		}
-		if (Plex.gameState.currentLobby.type.equals(PlexMPLobby.LobbyType.CLANS_SERVER)) {
+		if (Plex.gameState.currentLobby.type.equals(PlexMP.LobbyType.CLANS_SERVER)) {
 			presence.setSmallImage(gameIcons.get("clans"), "Playing Clans");
 		}
 		if (this.timerMode == 2 && Plex.gameState.joinTimeDT != null) {
@@ -273,13 +273,13 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 	}
 
 	public String getLobbyRepresentation() {
-		if (Plex.gameState.currentLobby.name == null) {
+		if (Plex.gameState.currentLobby.server == null) {
 			return null;
 		}
-		if (!Plex.gameState.currentLobby.name.matches(MATCH_SERVER_NAME)) {
+		if (!Plex.gameState.currentLobby.server.matches(MATCH_SERVER_NAME)) {
 			return null;
 		}
-		Matcher serverIDMatcher = PATTERN_SERVER_NAME.matcher(Plex.gameState.currentLobby.name);
+		Matcher serverIDMatcher = PATTERN_SERVER_NAME.matcher(Plex.gameState.currentLobby.server);
 		serverIDMatcher.find();
 		String serverID = serverIDMatcher.group(1);
 		if (lobbyNames.containsKey(serverID.toLowerCase())) {
@@ -301,14 +301,14 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 	
 	public String serverIGN(boolean addIP) {
 		String output = "";
-		if (this.displayLobbyName && Plex.gameState.currentLobby.name != null) {
-			output += Plex.gameState.currentLobby.name;
+		if (this.displayLobbyName && Plex.gameState.currentLobby.server != null) {
+			output += Plex.gameState.currentLobby.server;
 		}
 		if (this.displayIGN) {
 			if (!output.equals("")) {
 				output += " | ";
 			}
-			output += "IGN: " + PlexCore.getPlayerIGN();
+			output += "IGN: " + PlexCore.getPlayerName();
 		}
 		if (output.equals("") && addIP) {
 			output = getServerIP();
@@ -321,17 +321,17 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 	
 	public String[] getPresenceStrings() {
 		String state = serverIGN(true);
-		PlexMPLobby.LobbyType lobbyType = Plex.gameState.currentLobby.type;
+		PlexMP.LobbyType lobbyType = Plex.gameState.currentLobby.type;
 		if (lobbyType == null) {
 			return new String[] {"Playing on " + getServerIP(), serverIGN(false)};
 		}
-		if (lobbyType.equals(PlexMPLobby.LobbyType.UNDETERMINED) || lobbyType.equals(PlexMPLobby.LobbyType.UNKNOWN)) {
+		if (lobbyType.equals(PlexMP.LobbyType.UNDETERMINED) || lobbyType.equals(PlexMP.LobbyType.UNKNOWN)) {
 			return new String[] {"Playing on " + getServerIP(), serverIGN(false)};
 		}
-		if (lobbyType.equals(PlexMPLobby.LobbyType.CLANS_HUB)) {
+		if (lobbyType.equals(PlexMP.LobbyType.CLANS_HUB)) {
 			return new String[] {"Clans Hub", state};
 		}
-		if (lobbyType.equals(PlexMPLobby.LobbyType.CLANS_SERVER)) {
+		if (lobbyType.equals(PlexMP.LobbyType.CLANS_SERVER)) {
 			if (Plex.gameState.currentClansSeason == null) {
 				return new String[] {"Playing Clans", state};
 			}
@@ -341,13 +341,13 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 			}
 		}
 
-		if (lobbyType.equals(PlexMPLobby.LobbyType.MAIN_HUB)) {
+		if (lobbyType.equals(PlexMP.LobbyType.MAIN_HUB)) {
 			return new String[] {this.wrappedLobbyRepresentation("Main Hub", "In ", ""), state};
 		}
-		if (lobbyType.equals(PlexMPLobby.LobbyType.GAME_LOBBY)) {
+		if (lobbyType.equals(PlexMP.LobbyType.GAME_LOBBY)) {
 			return new String[] {this.wrappedLobbyRepresentation("Game Lobby", "Game Lobby: ", ""), state};
 		}
-		if (lobbyType.equals(PlexMPLobby.LobbyType.GAME_INGAME)) {
+		if (lobbyType.equals(PlexMP.LobbyType.GAME_INGAME)) {
 			if (Plex.gameState.currentLobby.currentGame == null) {
 				return new String[] {"In a Game", state};
 			}
@@ -357,13 +357,13 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 	}
 
 	@Override
-	public void saveModConfig() {
-		this.modSetting("rich_presence_enabled", false).set(this.modEnabled);
-		this.modSetting("richPresence_showLobbies", false).set(this.displayLobbyName);
-		this.modSetting("richPresence_showIGN", false).set(this.displayIGN);
-		this.modSetting("richPresence_timerMode", 1).set(this.timerMode);
-		this.modSetting("richPresence_showAFK", true).set(this.showAfk);
-		this.modSetting("richPresence_showIP", true).set(this.showIP);
+	public void saveConfig() {
+		this.configValue("rich_presence_enabled", false).set(this.modEnabled);
+		this.configValue("richPresence_showLobbies", false).set(this.displayLobbyName);
+		this.configValue("richPresence_showIGN", false).set(this.displayIGN);
+		this.configValue("richPresence_timerMode", 1).set(this.timerMode);
+		this.configValue("richPresence_showAFK", true).set(this.showAfk);
+		this.configValue("richPresence_showIP", true).set(this.showIP);
 
 
 		new Timer().schedule(new TimerTask() {
@@ -462,12 +462,12 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 	}
 
 	@Override
-	public void joinedMineplex() {
+	public void onJoin() {
 		lastRPupdate = 0L;
 	}
 
 	@Override
-	public void leftMineplex() {
+	public void onLeave() {
 		new Timer().schedule(new TimerTask() {
 			public void run() {
 				lastConnectionAttempt.set(0L);
@@ -496,8 +496,8 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 	}
 
 	@Override
-	public void lobbyUpdated(PlexMPLobby.LobbyType type) {
-		if (type.equals(PlexMPLobby.LobbyType.E_GAME_UPDATED)) {
+	public void onLobbyUpdate(PlexMP.LobbyType type) {
+		if (type.equals(PlexMP.LobbyType.E_GAME_UPDATED)) {
 			this.lastRPupdate = Minecraft.getSystemTime();
 			new Timer().schedule(new TimerTask() {
 				public void run() {
@@ -505,7 +505,7 @@ public class PlexNewRichPresenceMod extends PlexModBase {
 				}
 			}, 250L);
 		}
-		if (type.equals(PlexMPLobby.LobbyType.E_WORLD_CHANGE)) {
+		if (type.equals(PlexMP.LobbyType.E_WORLD_CHANGE)) {
 			this.lastRPupdate = Minecraft.getSystemTime();
 			new Timer().schedule(new TimerTask() {
 				public void run() {

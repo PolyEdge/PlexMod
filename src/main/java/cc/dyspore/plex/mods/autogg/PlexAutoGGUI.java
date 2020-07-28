@@ -22,12 +22,12 @@ public class PlexAutoGGUI extends PlexUIBase {
 	public PlexAutoGGMessage oldSelectedMessage = null;
 	
 	@Override
-	public String uiGetTitle() {
+	public String getTitle() {
 		return "Auto GG";
 	}
 
 	@Override
-	public void initGui(PlexUIModMenu ui) {
+	public void initScreen(PlexUIModMenu ui) {
 		int top = ui.startingYPos(180);
 		int paneSize = ui.centeredPaneSize(2, 20, 160);
 		int pane1Pos = ui.centeredPanePos(-1, 2, 20, 160);
@@ -167,24 +167,24 @@ public class PlexAutoGGUI extends PlexUIBase {
 	}
 	
 	@Override
-	public void mouseClicked(int par1, int par2, int button) {
+	public void onMousePressed(int par1, int par2, int button) {
 		this.ggMessagesList.mouseClicked(par1, par2, button);
 		this.ggMessageEdit.mouseClicked(par1, par2, button);
 		this.updateSelectedItem();
 	}
 
 	@Override
-	public void mouseDragged(int mouseX, int mouseY, int clickedMouseButton, long timeSinceLastClick) {
+	public void onMouseDragged(int mouseX, int mouseY, int clickedMouseButton, long timeSinceLastClick) {
 		this.ggMessagesList.mouseDragged(mouseX, mouseY, clickedMouseButton, timeSinceLastClick);
 	}
 
 	@Override
-	public void mouseReleased(int mouseX, int mouseY, int state) {
+	public void onMouseReleased(int mouseX, int mouseY, int state) {
 		this.ggMessagesList.mouseReleased(mouseX, mouseY, state);
 	}
 
 	@Override
-	public void handleMouseInput(int x, int y) {
+	public void onMouseMoved(int x, int y) {
 		this.ggMessagesList.handleMouseInput(x, y);
 	}
 	
@@ -195,7 +195,7 @@ public class PlexAutoGGUI extends PlexUIBase {
 	}
 	
 	@Override
-	public void keyTyped(char character, int keyCode) {
+	public void onKeyPressed(char character, int keyCode) {
 		if (keyCode == 200) {
 			this.moveSelection(-1);
 		}
@@ -246,7 +246,7 @@ public class PlexAutoGGUI extends PlexUIBase {
 	}
 
 	@Override
-	public void uiSliderInteracted(PlexUISlider slider) {
+	public void onSliderInteract(PlexUISlider slider) {
 		PlexAutoGGMod modInstance = PlexCore.modInstance(PlexAutoGGMod.class);
 		if (slider.id == 7) {
 			modInstance.ggDelay = (modInstance.MIN_DELAY + (slider.sliderValue * (modInstance.MAX_DELAY - modInstance.MIN_DELAY)));
@@ -260,7 +260,7 @@ public class PlexAutoGGUI extends PlexUIBase {
 	}
 
 	@Override
-	public void uiButtonClicked(GuiButton button) {
+	public void onButtonInteract(GuiButton button) {
 		PlexAutoGGMod modInstance = PlexCore.modInstance(PlexAutoGGMod.class);
 		if (button.id == 5) {
 			modInstance.modEnabled = !modInstance.modEnabled;

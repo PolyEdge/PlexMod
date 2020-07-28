@@ -7,7 +7,7 @@ import java.util.TimerTask;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import cc.dyspore.plex.core.mineplex.PlexMPLobby;
+import cc.dyspore.plex.core.PlexMP;
 import cc.dyspore.plex.core.util.PlexUtilChat;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -21,7 +21,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import cc.dyspore.plex.Plex;
 import cc.dyspore.plex.commands.queue.PlexCommandQueue;
 import cc.dyspore.plex.core.PlexCore;
-import cc.dyspore.plex.commands.queue.PlexCommandQueueCommand;
 import cc.dyspore.plex.core.PlexModBase;
 
 public class PlexAutoThankMod extends PlexModBase {
@@ -44,8 +43,8 @@ public class PlexAutoThankMod extends PlexModBase {
 
 	@Override
 	public void modInit() {
-		this.modEnabled = this.modSetting("autoThank_enabled", false).getBoolean(false);
-		this.compactMessagesEnabled = this.modSetting("autoThank_compactMessages", false).getBoolean(false);
+		this.modEnabled = this.configValue("autoThank_enabled", false).getBoolean(false);
+		this.compactMessagesEnabled = this.configValue("autoThank_compactMessages", false).getBoolean(false);
 
 		this.thankQueue.setPriority(40);
 		
@@ -68,7 +67,7 @@ public class PlexAutoThankMod extends PlexModBase {
 
 		Plex.plexCommand.registerPlexCommand("thank", new PlexAutoThankCommand());
 		
-		PlexCore.registerUiTab("AutoThank", PlexAutoThankUI.class);
+		PlexCore.registerMenuTab("AutoThank", PlexAutoThankUI.class);
 	}
 
 	@Override
@@ -92,7 +91,7 @@ public class PlexAutoThankMod extends PlexModBase {
 			this.thankQueue.cancelAll();
 			return;
 		}
-		if (Plex.gameState.currentLobby.type.equals(PlexMPLobby.LobbyType.CLANS_SERVER)) {
+		if (Plex.gameState.currentLobby.type.equals(PlexMP.LobbyType.CLANS_SERVER)) {
 			this.lastThankWave = 0L;
 			this.thankQueue.cancelAll();
 			return;
@@ -107,7 +106,7 @@ public class PlexAutoThankMod extends PlexModBase {
 		if (Plex.gameState.isMineplex && this.modEnabled) {
 			if (Minecraft.getSystemTime() > (this.lastThankWave + this.thankWaveInterval)) {
 				for (String game : this.gameNames.values()) {
-					this.thankQueue.addCommand("/amplifier thank " + game);
+					this.thankQueue.add("/amplifier thank " + game);
 				}
 				this.lastThankWave = Minecraft.getSystemTime();
 			}			
@@ -144,7 +143,7 @@ public class PlexAutoThankMod extends PlexModBase {
 				else if (messageLowercase.startsWith("you have already thanked this amplifier") ||
 						messageLowercase.startsWith("there was an error handling your request") ||
 						messageLowercase.startsWith("you can't thank yourself") ||
-						messageLowercase.startsWith("an error occured")) {
+						messageLowercase.startsWith("an error")) {
 					e.setCanceled(true);
 					thankQueue.getItem(0).markComplete();
 				}
@@ -176,36 +175,36 @@ public class PlexAutoThankMod extends PlexModBase {
 			if (command == null) {
 				PlexUtilChat.chatAddMessage(PlexUtilChat.chatStyleText("BLUE", "AutoThank> ") + PlexUtilChat.chatStyleText("RED", "Unexpectedly failed to detect which game this is. Is it a thank message?"));
 			}
-			if (this.compactMessagesEnabled) {
+			else if (this.compactMessagesEnabled) {
 				e.setCanceled(true);
 			}
-			PlexCommandQueueCommand queueCommand = this.thankQueue.newCommand(command);
-			queueCommand.setPriority(41);
-			this.thankQueue.addCommand(command);
+			PlexCommandQueue.Command queueCommand = this.thankQueue.newCommand(command);
+			queueCommand.setPriority(39);
+			this.thankQueue.add(queueCommand);
 		}
 	}
 
 	@Override
-	public void saveModConfig() {
-		this.modSetting("autoThank_enabled", false).set(this.modEnabled);
-		this.modSetting("autoThank_compactMessages", false).set(this.compactMessagesEnabled);
+	public void saveConfig() {
+		this.configValue("autoThank_enabled", false).set(this.modEnabled);
+		this.configValue("autoThank_compactMessages", false).set(this.compactMessagesEnabled);
 	}
 
 	@Override
-	public void joinedMineplex() {
+	public void onJoin() {
 		MinecraftForge.EVENT_BUS.register(this);
 		thankQueue.cancelAll();
 	}
 
 	@Override
-	public void leftMineplex() {
+	public void onLeave() {
 		MinecraftForge.EVENT_BUS.unregister(this);
 		thankQueue.cancelAll();
 	}
 
 	@Override
-	public void lobbyUpdated(PlexMPLobby.LobbyType type) {
-		if (type.equals(PlexMPLobby.LobbyType.CLANS_SERVER)) {
+	public void onLobbyUpdate(PlexMP.LobbyType type) {
+		if (type.equals(PlexMP.LobbyType.CLANS_SERVER)) {
 			new Timer().schedule(new TimerTask() {
 				public void run() {
 					PlexUtilChat.chatAddMessage(PlexUtilChat.PLEX + PlexUtilChat.chatStyleText("DARK_GRAY", "Note: AutoThank does not work on clans servers and is inactive until you leave this clans game."));

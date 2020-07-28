@@ -63,18 +63,18 @@ public class PlexMessagingUIScreen extends PlexUIBase {
 	public String setMessageFieldNextFrame = null;
 	
 	@Override
-	public String uiGetTitle() {
+	public String getTitle() {
 		return "Messaging";
 	}
 	
 	@Override
-	public void uiOpened() {
+	public void onScreenOpened() {
 		MinecraftForge.EVENT_BUS.register(this);
 		Keyboard.enableRepeatEvents(true);
 	}
 	
 	@Override
-	public void uiClosed() {
+	public void onScreenClosed() {
 		MinecraftForge.EVENT_BUS.unregister(this);
 		Keyboard.enableRepeatEvents(false);
 	}
@@ -86,14 +86,14 @@ public class PlexMessagingUIScreen extends PlexUIBase {
 		if (!Plex.minecraft.currentScreen.getClass().equals(PlexUIModMenu.class)) {
 			return false;
 		}
-		if (!((PlexUIModMenu) Plex.minecraft.currentScreen).childUI.getClass().equals(PlexMessagingUIScreen.class)) {
+		if (!((PlexUIModMenu) Plex.minecraft.currentScreen).menu.getClass().equals(PlexMessagingUIScreen.class)) {
 			return false;
 		}
 		return true;
 	}
 
 	@Override
-	public void initGui(PlexUIModMenu ui) {
+	public void initScreen(PlexUIModMenu ui) {
 		int bottom = ui.zoneEndY() - 4;
 		int startX = ui.zoneStartX() + 6;
 		int sizeX = ui.horizontalPixelCount() - (getContactsPaneSize()) - 8 - 24;
@@ -198,7 +198,7 @@ public class PlexMessagingUIScreen extends PlexUIBase {
 	}
 
 	@Override
-	public void uiButtonClicked(GuiButton button) {
+	public void onButtonInteract(GuiButton button) {
 		if (button.id == 10 && this.getChannelManager().selectedChannel != null) {
 			this.handleSendButton();
 		}
@@ -217,11 +217,11 @@ public class PlexMessagingUIScreen extends PlexUIBase {
 	}
 
 	@Override
-	public void uiSliderInteracted(PlexUISlider slider) {
+	public void onSliderInteract(PlexUISlider slider) {
 	}
 	
 	@Override
-	public void mouseClicked(int par1, int par2, int button) {
+	public void onMousePressed(int par1, int par2, int button) {
 		this.messageField.mouseClicked(par1, par2, button);
 		this.contactsList.mouseClicked(par1, par2, button);
 		this.chatWindow.mouseClicked(par1, par2, button);
@@ -230,7 +230,7 @@ public class PlexMessagingUIScreen extends PlexUIBase {
 	}
 	
 	@Override
-	public void mouseDragged(int mouseX, int mouseY, int clickedMouseButton, long timeSinceLastClick) {
+	public void onMouseDragged(int mouseX, int mouseY, int clickedMouseButton, long timeSinceLastClick) {
 		this.contactsList.mouseDragged(mouseX, mouseY, clickedMouseButton, timeSinceLastClick);
 		this.chatWindow.mouseDragged(mouseX, mouseY, clickedMouseButton, timeSinceLastClick);
 		this.messageField.mouseDragged(mouseX, mouseY, clickedMouseButton, timeSinceLastClick);
@@ -238,7 +238,7 @@ public class PlexMessagingUIScreen extends PlexUIBase {
 	}
 	
 	@Override
-	public void mouseReleased(int mouseX, int mouseY, int state) {
+	public void onMouseReleased(int mouseX, int mouseY, int state) {
 		this.contactsList.mouseReleased(mouseX, mouseY, state);
 		this.chatWindow.mouseReleased(mouseX, mouseY, state);
 		this.messageField.mouseReleased(mouseX, mouseY, state);
@@ -252,7 +252,7 @@ public class PlexMessagingUIScreen extends PlexUIBase {
 	}
 	
 	@Override 
-	public void handleMouseInput(int x, int y) {
+	public void onMouseMoved(int x, int y) {
 		int wheel = Mouse.getEventDWheel() != 0 ? (0 - (Mouse.getEventDWheel() / Math.abs(Mouse.getEventDWheel()))) : 0;
 		if (Keyboard.isKeyDown(29) && wheel != 0) {
 			this.getChannelManager().autoReady = false;
@@ -278,14 +278,14 @@ public class PlexMessagingUIScreen extends PlexUIBase {
 	}
 	
 	@Override
-	public void keyTyped(char character, int keyCode) {
+	public void onKeyPressed(char character, int keyCode) {
 		if (keyCode == this.getMessagingMod().toggleChatUI.getKeyCode() && !Character.isLetterOrDigit(character)) {
-			this.uiClosed();
-			PlexCore.displayUIScreen(null);
+			this.onScreenClosed();
+			PlexCore.displayMenu(null);
 		}
 		if (keyCode == this.getMessagingMod().quickChat.getKeyCode() && !Character.isLetterOrDigit(character)) {
-			this.uiClosed();
-			PlexCore.displayUIScreen(null);
+			this.onScreenClosed();
+			PlexCore.displayMenu(null);
 		}
 		if (keyCode == 29 && !Keyboard.isRepeatEvent()) {
 			if (Minecraft.getSystemTime() < this.lastControlPressed + this.controlShortcutTimeout) {
@@ -345,7 +345,7 @@ public class PlexMessagingUIScreen extends PlexUIBase {
 	}
 
 	@Override
-	public boolean escapeTyped() {
+	public boolean onEscapePressed() {
 		if (this.messageField.keyTyped((char) 27, 1)) {
 			return false;
 		}
@@ -602,7 +602,7 @@ public class PlexMessagingUIScreen extends PlexUIBase {
 		this.sendMessage();
 		this.searchBox.text.setFocused(false);
 		if (this.isQuickChat) {
-			PlexCore.displayUIScreen(null);
+			PlexCore.displayMenu(null);
 		}
 	}
 	

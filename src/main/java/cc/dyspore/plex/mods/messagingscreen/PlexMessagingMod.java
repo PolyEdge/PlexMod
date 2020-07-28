@@ -1,6 +1,6 @@
 package cc.dyspore.plex.mods.messagingscreen;
 
-import cc.dyspore.plex.core.mineplex.PlexMPLobby;
+import cc.dyspore.plex.core.PlexMP;
 import cc.dyspore.plex.core.util.PlexUtilChat;
 import cc.dyspore.plex.mods.messagingscreen.channel.PlexMessagingChannelBase;
 import cc.dyspore.plex.mods.messagingscreen.translate.PlexMessagingChatMessageAdapter;
@@ -45,11 +45,11 @@ public class PlexMessagingMod extends PlexModBase {
 	    ClientRegistry.registerKeyBinding(toggleChatUI);
 		ClientRegistry.registerKeyBinding(quickChat);
 	    
-	    PlexCore.registerUiTab("Messaging", PlexMessagingUIScreen.class);
+	    PlexCore.registerMenuTab("Messaging", PlexMessagingUIScreen.class);
 	}
 
 	@Override
-	public void saveModConfig() {
+	public void saveConfig() {
 	}
 	
 	@SubscribeEvent(priority=EventPriority.HIGHEST)
@@ -67,8 +67,8 @@ public class PlexMessagingMod extends PlexModBase {
 		serverItem.setAutoCompleteText("null").setSearchText("@server").setDisplayText(PlexUtilChat.chatFromAmpersand("&dCurrent Server - &3" + "null")).setGlobalSortingIndex(0);
 		autoCompleteContainer.addItem(serverItem);
 
-		if (Plex.gameState.currentLobby.name != null) {
-			serverItem.setAutoCompleteText(Plex.gameState.currentLobby.name).setDisplayText(PlexUtilChat.chatFromAmpersand("&dCurrent Server - &3" + Plex.gameState.currentLobby.name));
+		if (Plex.gameState.currentLobby.server != null) {
+			serverItem.setAutoCompleteText(Plex.gameState.currentLobby.server).setDisplayText(PlexUtilChat.chatFromAmpersand("&dCurrent Server - &3" + Plex.gameState.currentLobby.server));
 		}
 		else {
 			serverItem.setAutoCompleteText("").setDisplayText(PlexUtilChat.chatFromAmpersand("&dCurrent Server - &e" + "determining..."));
@@ -80,7 +80,7 @@ public class PlexMessagingMod extends PlexModBase {
 			autoCompleteContainer.addItem(emoteItem);
 		}
 
-		List<String> playerNameList = PlexCore.getPlayerIGNTabList();
+		List<String> playerNameList = PlexCore.getTablistPlayerNames();
 		for (String playerName : playerNameList) {
 			PlexUIAutoCompleteItem playerItem = autoCompleteContainer.getItemOrNew("tabPlayer", playerName);
 			playerItem.setAutoCompleteText(playerName).setSearchText(playerName).setDisplayText(playerName).setHead(playerName).setGlobalSortingIndex(10);
@@ -142,10 +142,10 @@ public class PlexMessagingMod extends PlexModBase {
 		if (messageAdapter.regexEntryName.equals("direct_message")) {
 			recipientEntityName = messageAdapter.formatStringWithGroups("{author}", chatMessage);
 			channelName = messageAdapter.formatStringWithGroups("{author}", chatMessage);
-			if (recipientEntityName.equalsIgnoreCase(PlexCore.getPlayerIGN())) {
+			if (recipientEntityName.equalsIgnoreCase(PlexCore.getPlayerName())) {
 				recipientEntityName = messageAdapter.formatStringWithGroups("{destination}", chatMessage);
 			}
-			if (channelName.equalsIgnoreCase(PlexCore.getPlayerIGN())) {
+			if (channelName.equalsIgnoreCase(PlexCore.getPlayerName())) {
 				channelName = messageAdapter.formatStringWithGroups("{destination}", chatMessage);
 			}	
 			channelName = "PM." + channelName;
@@ -177,7 +177,7 @@ public class PlexMessagingMod extends PlexModBase {
 			return null;
 		}
 		PlexMessagingMessage message = messageAdapter.getIncompleteMessageFromText(chatMessage).setNow().setHead(messageAdapter.formatStringWithGroups("{author}", chatMessage));
-		if (messageAdapter.formatStringWithGroups("{author}", chatMessage).equals(PlexCore.getPlayerIGN())) {
+		if (messageAdapter.formatStringWithGroups("{author}", chatMessage).equals(PlexCore.getPlayerName())) {
 			message.setRight();
 		}
 		message.setChannel(channel);
@@ -212,10 +212,10 @@ public class PlexMessagingMod extends PlexModBase {
 	@SubscribeEvent
 	public void onKeyInput(KeyInputEvent event) {
 		if (Plex.minecraft.inGameHasFocus && toggleChatUI.isPressed()) {
-			PlexCore.displayUIScreen(new PlexMessagingUIScreen());
+			PlexCore.displayMenu(new PlexMessagingUIScreen());
 		}
 		if (Plex.minecraft.inGameHasFocus && quickChat.isPressed()) {
-			PlexCore.displayUIScreen(new PlexMessagingUIScreen().setQuickChat());
+			PlexCore.displayMenu(new PlexMessagingUIScreen().setQuickChat());
 		}
 	}
 
@@ -227,8 +227,8 @@ public class PlexMessagingMod extends PlexModBase {
 	}
 
 	@Override
-	public void lobbyUpdated(PlexMPLobby.LobbyType type) {
-		if (type.equals(PlexMPLobby.LobbyType.E_LOBBY_SWITCH)) {
+	public void onLobbyUpdate(PlexMP.LobbyType type) {
+		if (type.equals(PlexMP.LobbyType.E_LOBBY_SWITCH)) {
 			this.channelManager.unreadyChannelsByClass(PlexMessagingCommunityChatChannel.class, false);
 			final PlexMessagingChannelManager finalManager = this.channelManager;
 			if (finalManager.selectedChannel != null) {

@@ -1,6 +1,6 @@
 package cc.dyspore.plex.mods.developmentmod;
 
-import cc.dyspore.plex.core.mineplex.PlexMPLobby;
+import cc.dyspore.plex.core.PlexMP;
 import cc.dyspore.plex.core.util.PlexUtilChat;
 import net.minecraft.util.IChatComponent;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
@@ -30,7 +30,7 @@ public class PlexDevelopmentMod extends PlexModBase {
 	}
 
 	@Override
-	public void saveModConfig() {
+	public void saveConfig() {
 	}
 	
 	@SubscribeEvent(receiveCanceled = true)
@@ -86,12 +86,12 @@ public class PlexDevelopmentMod extends PlexModBase {
 	}
 
 	@Override
-	public void lobbyUpdated(PlexMPLobby.LobbyType type) {
+	public void onLobbyUpdate(PlexMP.LobbyType type) {
 		if (!this.lobbySwitchStream) {
 			return ;
 		}
 		String extra = "";
-		if (type.equals(PlexMPLobby.LobbyType.E_GAME_UPDATED)) {
+		if (type.equals(PlexMP.LobbyType.E_GAME_UPDATED)) {
 			extra += PlexUtilChat.chatStyleText("BLUE", "game -> " + Plex.gameState.currentLobby.currentGame.name);
 		}
 		final String finalExtra = extra;
